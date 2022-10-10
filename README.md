@@ -2,7 +2,7 @@
 
 **Spring 2023**
 
-<span class="underline">Description:</span>
+## Description:
 
 This course develops students’ ability to write R scripts which address
 complex questions that cannot be otherwise addressed with existing R
@@ -17,7 +17,7 @@ coding). This course is aimed for students with at least moderate
 proficiency in R programming and/or strong proficiency in another
 programming language such as Python and C/C++.
 
-<span class="underline">Professor:</span>
+## Professor:
 
 > Jonathan Chipman, PhD
 > 
@@ -31,7 +31,7 @@ programming language such as Python and C/C++.
 > 
 > Email: jonathan.chipman@hci.utah.edu
 
-<span class="underline">Tentative Guest Lecturers:</span>
+## Tentative Guest Lecturers:
 
 George Vega Yon
 
@@ -43,7 +43,7 @@ Julia Silge
 
 Rebecca Barter – R package creation (starts mid-December)
 
-<span class="underline">Locations and Times</span>
+## Locations and Times
 
 Lectures: T/Th 3-4:30pm
 
@@ -51,19 +51,19 @@ In-person: TBD
 
 Office hours: TBD
 
-<span class="underline">Pre-Requisites:</span> Students must be able to
+## Pre-Requisites: Students must be able to
 write their own functions and submit homework solutions in R markdown or
 latex. Prior to the course, students may ask the professor for an
 example problem to assess their comfort with R programming.
 
-<span class="underline">Required Materials:</span>
+## Required Materials:
 
 *TARP: The Art of R Programming: A Tour of Statistical Software Design.
 Norman Matloff*
 
-<span class="underline">Course structure:</span>
+## Course structure:
 
-<span class="underline">Course objectives</span>:
+## Course objectives:
 
 1)  Write R functions to use in conjunction with vectorization (rather
     than using for loops)
@@ -96,7 +96,7 @@ Norman Matloff*
     
     9.  Know how to parallel jobs and collate results
 
-<span class="underline">Course content:</span> Rough/tentative schedule
+## Course content: Rough/tentative schedule
 
 At home readings of basics
 
@@ -207,7 +207,7 @@ Week 15: Work on final project in class
 
 Week 16: Presentations
 
-<span class="underline">Grading</span>
+## Grading
 
 TBD
 
@@ -430,7 +430,7 @@ Your success at the University of Utah is important to all of us here\!
 If you feel like you need extra support in academics, overcoming
 personal difficulties, or finding community, the U is here for you.
 
-<span class="underline">Student Support Services (TRIO)</span>
+## Student Support Services (TRIO)
 
 TRIO federal programs are targeted to serve and assist low-income
 individuals, first-generation college students, and individuals with
@@ -451,7 +451,7 @@ events, and links to other resources, view their website or contact:
 > 1901 E. S. Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">American Indian Students</span>
+## American Indian Students
 
 The AIRC works to increase American Indian student visibility and
 success on campus by advocating for and providing student centered
@@ -469,7 +469,7 @@ events, and links to other resources, view their website or contact:
 > 1925 De Trobriand St.  
 > Salt Lake City, UT 84113
 
-<span class="underline">Black Students</span>
+## Black Students
 
 Using a pan-African lens, the Black Cultural Center seeks to counteract
 persistent campus-wide and global anti-blackness. The Black Cultural
@@ -487,7 +487,7 @@ events, and links to other resources, view their website or contact:
 > 95 Fort Douglas Blvd.  
 > Salt Lake City, UT 84113
 
-<span class="underline">Students with Children</span>
+## Students with Children
 
 Our mission is to support and coordinate information, program
 development and services that enhance family resources as well as the
@@ -504,7 +504,7 @@ events, and links to other resources, view their website or contact:
 > 200 S. Central Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">Students with Disabilities</span>
+## Students with Disabilities
 
 The Center for Disability Services is dedicated to serving students with
 disabilities by providing the opportunity for success and equal access
@@ -521,7 +521,7 @@ resources, view their website or contact:
 > 200 S. Central Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">Student of Ethnic Descent</span>
+## Student of Ethnic Descent
 
 The Center for Ethnic Student Affairs offers several programs dedicated
 to the success of students with varied cultural and ethnic backgrounds.
@@ -565,7 +565,7 @@ skills. Feel free to contact:
 > 540 Arapeen Dr.  
 > Salt Lake City, UT 84108
 
-<span class="underline">Undocumented Students</span>
+## Undocumented Students
 
 Immigration is a complex phenomenon with broad impact—those who are
 directly affected by it, as well as those who are indirectly affected by
@@ -590,7 +590,7 @@ resources, view their website or contact:
 > 1901 E. S. Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">LGBTQ+ Students</span>
+## LGBTQ+ Students
 
 The LGBTQ+ Resource Center acts in accountability with the campus
 community by identifying the needs of people with a queer range of
@@ -607,7 +607,7 @@ events, and links to other resources, view their website or contact:
 > 200 S. Central Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">Veteran & Military Students</span>
+## Veteran & Military Students
 
 The mission of the Veterans Support Center is to improve and enhance the
 individual and academic success of veterans, service members, and their
@@ -625,7 +625,7 @@ events, and links to other resources, view their website or contact:
 > 200 S. Central Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">Women</span>
+## Women
 
 The Women’s Resource Center (WRC) at the University of Utah serves as
 the central resource for educational and support services for women.
@@ -643,7 +643,7 @@ events, and links to other resources, view their website or contact:
 > 200 S. Central Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">Inclusivity at the U</span>
+## Inclusivity at the U
 
 The Office for Inclusive Excellence is here to engage, support, and
 advance an environment fostering the values of respect, diversity,
@@ -669,7 +669,7 @@ resources, or to report a bias incident, view their website or contact:
 > 1901 E. S. Campus Dr.  
 > Salt Lake City, UT 84112
 
-<span class="underline">Other Student Groups at the U</span>
+## Other Student Groups at the U
 
 To learn more about some of the other resource groups available at the
 U, check out:
