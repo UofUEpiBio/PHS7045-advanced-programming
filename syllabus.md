@@ -1,4 +1,4 @@
-**Advanced Programming in R and the CHPC**
+# Advanced Programming in R and the CHPC
 
 **Spring 2023**
 
