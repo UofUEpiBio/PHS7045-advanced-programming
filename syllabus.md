@@ -17,7 +17,7 @@ coding). This course is aimed for students with at least moderate
 proficiency in R programming and/or strong proficiency in another
 programming language such as Python and C/C++.
 
-## Professor:
+## Professors:
 
 > Jonathan Chipman, PhD
 > 
@@ -27,13 +27,18 @@ programming language such as Python and C/C++.
 > 
 > Cancer Biostatistics, Huntsman Cancer Institute
 > 
-> Phone: (317) 385-3348
-> 
 > Email: jonathan.chipman@hci.utah.edu
 
-## Tentative Guest Lecturers:
 
-George Vega Yon
+> George Vega Yon, PhD
+> 
+> Research Assistant Professor
+> 
+> Division of Epidemiology, Department of Internal Medicine
+> 
+> Email: 
+
+## Tentative Guest Lecturers:
 
 Andrew Redd
 
@@ -62,6 +67,17 @@ example problem to assess their comfort with R programming.
 Norman Matloff*
 
 ## Course structure:
+
+- Github for hosting
+- Lecture slides at XXX
+- Classes will be recorded on zoom and uploaded on canvas
+- Readings prior to class
+- 6 Homeworks
+  - First three before midterm
+- Midterm and final project
+  - Midterm: Towards developing package
+  - Final: Posting on cran
+
 
 ## Course objectives:
 
