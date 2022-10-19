@@ -11,7 +11,7 @@ jobs:
 
       - name: Execute
         run: |
-          cd examples
+          cd problems
           make README.md -B
 
       - name: Commit results
