@@ -4,18 +4,18 @@
 
 ## Description:
 
-This course develops students’ ability to write R scripts which address
+This course develops students’ ability to write R scripts that address
 complex questions that cannot be otherwise addressed with existing R
-packages. The nature of these scripts are often intensive and require
-sophistication to debug and increase the efficiency of run time. Topics
-covered include: functions and vectorized programming, debugging and
-code optimization, parallel computing, C/C++ to R coding, R package
-creation, the linux environment, and running jobs on the university’s
-high performance computing nodes. Students will learn through seeing
-(lectures), doing (homeworks), and teaching (helping one another improve
+packages. These scripts are often intensive and require sophistication to
+debug and reduce computing time. Topics covered include functions and
+vectorized programming, debugging and code optimization, parallel computing,
+C/C++ to R coding, R package creation, the Linux environment, and
+running jobs on the university’s high-performance computing nodes.
+Students will learn through seeing (lectures), doing (homeworks),
+and teaching (helping one another improve 
 coding). This course is aimed for students with at least moderate
 proficiency in R programming and/or strong proficiency in another
-programming language such as Python and C/C++.
+programming language, such as Python and C/C++.
 
 ## Professors:
 
@@ -36,7 +36,7 @@ programming language such as Python and C/C++.
 > 
 > Division of Epidemiology, Department of Internal Medicine
 > 
-> Email: 
+> Email: george.vegayon@utah.edu
 
 ## Tentative Guest Lecturers:
 
@@ -68,7 +68,7 @@ Norman Matloff*
 
 ## Course structure:
 
-- Github for hosting
+- GitHub for hosting
 - Lecture slides at XXX
 - Classes will be recorded on zoom and uploaded on canvas
 - Readings prior to class
@@ -81,24 +81,26 @@ Norman Matloff*
 
 ## Course objectives:
 
-1)  Write R functions to use in conjunction with vectorization (rather
+1)  Learn how to use Git and GitHub for collaborative and reproducible research.
+
+2)  Write R functions to use in conjunction with vectorization (rather
     than using for loops)
 
-2)  Learn local-machine parallel computing methods
+3)  Learn local-machine parallel computing methods
 
-3)  Be able to degub and optimize scripts
+4)  Be able to debug and optimize scripts
     
-    1.  Know the debugger functions
+    1.  Know the debugging functions
     
     2.  Know the Rprof function
 
-4)  Write complex scripts / algorithms
+5)  Write complex scripts and algorithms
     
     3.  Newton-Raphson convergence
     
     4.  Expectation Maximization
 
-5)  Know the CHPC environment
+6)  Know the CHPC environment
     
     5.  Linux and vim
     
@@ -106,15 +108,15 @@ Norman Matloff*
     
     7.  Cluster usage
 
-6)  Submit a job to CHPC using a SLURM script
+7)  Submit a job to CHPC using a SLURM script
     
-    8.  Know difference in job parameter settings
+    8.  Know the differences in job parameters.
     
-    9.  Know how to parallel jobs and collate results
+    9.  Know how to parallelize jobs and collate results.
 
 ## Course content: Rough/tentative schedule
 
-At home readings of basics
+At-home readings of basics
 
 In class advanced
 
@@ -122,16 +124,16 @@ Week 1: Class introduction and document preparation
 
   - Syllabus and schedule
 
-  - Github: Reproducible code and version control
+  - GitHub: Reproducible code and version control
 
-  - Quarto: Document preparation
+  - Quarto: Document preparation.
     
-      - Students can choose options for collating if desired (such as
-        bookdown)
+    Students can choose options for collating if desired (such as
+    bookdown)
 
 Week 2: R Essentials
 
-  - At home reading:
+  - At-home reading:
     
       - Classes: Vectors (Chapter 2), Matrices and Arrays (Chapter 3),
         Lists (Chapter 4), Data Frames (Chapter 5)

@@ -1,0 +1,22 @@
+name: Examples
+
+on: [push, pull_request]
+
+jobs:
+  test-ubuntu:
+    runs-on: Ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Execute
+        run: |
+          cd examples
+          make README.md -B
+
+      - name: Commit results
+        run: |
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git commit -a -m 'Re-build examples' || echo Nothing has changed
+          git push origin || echo "No changes to commit"
