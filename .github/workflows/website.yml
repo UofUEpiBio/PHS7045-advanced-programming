@@ -3,20 +3,20 @@ name: Render website
 on: [push, pull_request]
 
 jobs:
-  test-ubuntu:
+  quarto-ubuntu:
     runs-on: Ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: r-lib/actions/setup-r@v2
+      # - uses: r-lib/actions/setup-r@v2
 
       - uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render
         run: |
           cd docs
-          quarto render README.Rmd
+          quarto render README.qmd
 
       - name: Commit results
         run: |
