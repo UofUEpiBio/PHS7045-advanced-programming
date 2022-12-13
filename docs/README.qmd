@@ -1,0 +1,22 @@
+---
+format: gfm
+---
+
+# PHS 7045
+
+```{r}
+#| echo: false
+#| output: asis 
+#| warning: false
+
+# List of pages to be rendered
+fns <- read.csv("pages.csv")
+
+# Moving the data
+for (i in 1:nrow(fns)) {
+
+    file.copy(from = fns$path[i], to = fns$urlpath[i])
+    cat(sprintf("-  %s ([link](%s))\n\n", fns$name[i], fns$urlpath[i]))
+
+}
+```
