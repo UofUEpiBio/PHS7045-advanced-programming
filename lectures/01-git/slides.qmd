@@ -139,13 +139,10 @@ More alternatives [here](https://git-scm.com/download/gui).
 
 ## A Common workflow
 
+![](fig/git.svg){fig-alt="Git workflow" fig-align="center" width="auto"}
 
-<div style="text-align: center;">
-  <figure>
-    <img style="width: 600px;vertical-align: middle;"  hspace="20px" src="fig/git.svg" alt="Git workflow">
-  </figure>
-  <figcaption><b>A common git workflow</b></figcaption>
-</div>
+Git has a ton of features, but the daily workflow only features a handful of commands: `git pull`, `git add`, `git commit`, and `git push`:
+
 
 
 ---
@@ -154,8 +151,11 @@ More alternatives [here](https://git-scm.com/download/gui).
 
 ::: {style="font-size: 30px"}
 
+::: {.fragment .fade-in}
 1. Start the session by pulling (possible) updates: `git pull`
+:::
 
+::: {.fragment .fade-in}
 2. Make changes
   
    a. (optional) Add untracked/new files: `git add [target file]`
@@ -163,16 +163,23 @@ More alternatives [here](https://git-scm.com/download/gui).
    b. (optional) Stage modified files: `git add [target file]`
   
    c. (optional) Revert changes: `git checkout [target file]`
+:::
   
+::: {.fragment .fade-in}
 3. Move changes to the staging area (optional): `git add`
+:::
 
+::: {.fragment .fade-in}
 4. Commit:
 
    a. If nothing pending: `git commit -m "Your comments go here."`
   
    b. If modifications are not staged: `git commit -a -m "Your comments go here."`
+:::
 
+::: {.fragment .fade-in}
 5. Upload the commit to the remote repo: `git push`.
+:::
 
 :::
 
@@ -200,23 +207,33 @@ We will start by working on our very first project. To do so, you are required
 to start using Git and GitHub so you can share your code with your team. For now,
 you can keep things local and skip Github. For this exercise, you need to
 
-a. Create a new folder with the name of your project (you can try
+::: {.fragment .fade-in}
+a.  Create a new folder with the name of your project (you can try
    `PM566-first-project`)
+:::
    
-b. Initialize git with `git init` command.
+::: {.fragment .fade-in}
+b.  Initialize git with `git init` command.
+:::
 
-c. Create a [`README.md`](https://en.wikipedia.org/wiki/README) file and write a
-   brief description of your project.
+::: {.fragment .fade-in}
+c.  Create a [`README.md`](https://en.wikipedia.org/wiki/README) file and write a
+    brief description of your project.
+:::
    
-d. Add the file to the tree using the `git add` command, and check the status.
+::: {.fragment .fade-in}
+d.  Add the file to the tree using the `git add` command, and check the status.
+:::
 
-e. Make the first commit using the `git commit` command adding a message, e.g.
+::: {.fragment .fade-in}
+e.  Make the first commit using the `git commit` command adding a message, e.g.
     
-  ```sh
-  $ git commit -m "My first commit ever!"
-  ```
+    ```sh
+    $ git commit -m "My first commit ever!"
+    ```
   
-  And use `git log` to see the history.
+    And use `git log` to see the history.
+:::
     
 
 Note 1: We are assuming that you already [installed git in your system](https://git-scm.com).
@@ -233,8 +250,8 @@ The following code is fully executable (copy-pastable)
 
 ```sh
 # (a) Creating the folder for the project (and getting in there)
-mkdir ~/PM-566-first-project
-cd ~/PM-566-first-project
+mkdir ~/PHS7045-first-project
+cd ~/PHS7045-first-project
 
 # (b) Initializing git, creating a file, and adding the file
 git init
@@ -284,7 +301,7 @@ a. Create an online repository (empty) for your project using [Github](https://g
 b. Add the remote using `git remote add`, in particular
 
   ```sh
-  $ git remote add origin https://github.com/[your user name]/PM-566-first-project.git
+  $ git remote add origin https://github.com/[your user name]/PHS7045-first-project.git
   ```
   
   Then, use the commands `git status` and `git remote -v` to see what's going on.
@@ -332,11 +349,11 @@ c. Push the changes to the remote using `git push` like this:
 ## Hands-on 2: Remote repository (solutions b)
 
 For part (b), there are a couple of solutions, first, you could try using
-your ssh-key (if you setted up)
+your ssh-key (if you set it up)
 
 ```sh
 # (b)
-git remote add origin git@github.com:gvegayon/PM-566-first-project.git
+git remote add origin git@github.com:gvegayon/PHS7045-first-project.git
 git remote -v
 git status
 ```
@@ -346,7 +363,7 @@ every time you want to push (and pull, if private).
 
 ```sh
 # (b)
-git remote add origin https://github.com/gvegayon/PM-566-first-project.git
+git remote add origin https://github.com/gvegayon/PHS7045-first-project.git
 git remote -v
 git status
 ```

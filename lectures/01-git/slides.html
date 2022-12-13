@@ -519,34 +519,46 @@
 </section>
 <section id="a-common-workflow" class="slide level2">
 <h2>A Common workflow</h2>
-<div style="text-align: center;">
-<figure>
-<img style="width: 600px;vertical-align: middle;" hspace="20px" src="fig/git.svg" alt="Git workflow">
-</figure>
-<figcaption>
-<b>A common git workflow</b>
-</figcaption>
-</div>
+
+<img data-src="fig/git.svg" alt="Git workflow" class="r-stretch quarto-figure-center"><p>Git has a ton of features, but the daily workflow only features a handful of commands: <code>git pull</code>, <code>git add</code>, <code>git commit</code>, and <code>git push</code>:</p>
 </section>
 <section id="a-common-workflow-1" class="slide level2">
 <h2>A Common workflow</h2>
 <div style="font-size: 30px">
+<div class="fragment fade-in">
 <ol type="1">
-<li><p>Start the session by pulling (possible) updates: <code>git pull</code></p></li>
+<li>Start the session by pulling (possible) updates: <code>git pull</code></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="2" type="1">
 <li><p>Make changes</p>
 <ol type="a">
 <li><p>(optional) Add untracked/new files: <code>git add [target file]</code></p></li>
 <li><p>(optional) Stage modified files: <code>git add [target file]</code></p></li>
 <li><p>(optional) Revert changes: <code>git checkout [target file]</code></p></li>
 </ol></li>
-<li><p>Move changes to the staging area (optional): <code>git add</code></p></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="3" type="1">
+<li>Move changes to the staging area (optional): <code>git add</code></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="4" type="1">
 <li><p>Commit:</p>
 <ol type="a">
 <li><p>If nothing pending: <code>git commit -m "Your comments go here."</code></p></li>
 <li><p>If modifications are not staged: <code>git commit -a -m "Your comments go here."</code></p></li>
 </ol></li>
-<li><p>Upload the commit to the remote repo: <code>git push</code>.</p></li>
 </ol>
+</div>
+<div class="fragment fade-in">
+<ol start="5" type="1">
+<li>Upload the commit to the remote repo: <code>git push</code>.</li>
+</ol>
+</div>
 </div>
 </section></section>
 <section>
@@ -565,15 +577,33 @@
 <h2>Hands-on 1: Local repository</h2>
 <div class="r-fit-text">
 <p>We will start by working on our very first project. To do so, you are required to start using Git and GitHub so you can share your code with your team. For now, you can keep things local and skip Github. For this exercise, you need to</p>
+<div class="fragment fade-in">
 <ol type="a">
-<li><p>Create a new folder with the name of your project (you can try <code>PM566-first-project</code>)</p></li>
-<li><p>Initialize git with <code>git init</code> command.</p></li>
-<li><p>Create a <a href="https://en.wikipedia.org/wiki/README"><code>README.md</code></a> file and write a brief description of your project.</p></li>
-<li><p>Add the file to the tree using the <code>git add</code> command, and check the status.</p></li>
-<li><p>Make the first commit using the <code>git commit</code> command adding a message, e.g.</p></li>
+<li>Create a new folder with the name of your project (you can try <code>PM566-first-project</code>)</li>
 </ol>
+</div>
+<div class="fragment fade-in">
+<ol start="2" type="a">
+<li>Initialize git with <code>git init</code> command.</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="3" type="a">
+<li>Create a <a href="https://en.wikipedia.org/wiki/README"><code>README.md</code></a> file and write a brief description of your project.</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="4" type="a">
+<li>Add the file to the tree using the <code>git add</code> command, and check the status.</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="5" type="a">
+<li><p>Make the first commit using the <code>git commit</code> command adding a message, e.g.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="ex">$</span> git commit <span class="at">-m</span> <span class="st">"My first commit ever!"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>And use <code>git log</code> to see the history.</p>
+<p>And use <code>git log</code> to see the history.</p></li>
+</ol>
+</div>
 <p>Note 1: We are assuming that you already <a href="https://git-scm.com">installed git in your system</a>.</p>
 <p>Note 2: Need a text editor? Check out this website <a href="https://alternativeto.net/software/vim/">link</a>.</p>
 </div>
@@ -648,7 +678,7 @@
 </section>
 <section id="hands-on-2-remote-repository-solutions-b" class="slide level2">
 <h2>Hands-on 2: Remote repository (solutions b)</h2>
-<p>For part (b), there are a couple of solutions, first, you could try using your ssh-key (if you setted up)</p>
+<p>For part (b), there are a couple of solutions, first, you could try using your ssh-key (if you set it up)</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># (b)</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="fu">git</span> remote add origin git@github.com:gvegayon/PM-566-first-project.git</span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="fu">git</span> remote <span class="at">-v</span></span>
