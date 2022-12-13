@@ -15,12 +15,12 @@ jobs:
 
       - name: Installing packages with r2u
         run: |
-          wget -q -O- https://eddelbuettel.github.io/r2u/assets/dirk_eddelbuettel_key.asc \
-            | tee -a /etc/apt/trusted.gpg.d/cranapt_key.asc
-          echo "deb [arch=amd64] https://r2u.stat.illinois.edu/ubuntu focal main" \
+          sudo wget -q -O- https://eddelbuettel.github.io/r2u/assets/dirk_eddelbuettel_key.asc \
+            | sudo tee -a /etc/apt/trusted.gpg.d/cranapt_key.asc
+          sudo echo "deb [arch=amd64] https://r2u.stat.illinois.edu/ubuntu focal main" \
             > /etc/apt/sources.list.d/cranapt.list
-          apt update
-          apt intall -y r-cran-rmarkdown
+          sudo apt update
+          sudo apt intall -y r-cran-rmarkdown
 
       - name: Render
         run: |
