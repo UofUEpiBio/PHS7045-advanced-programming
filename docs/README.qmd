@@ -15,6 +15,14 @@ fns <- read.csv("pages.csv")
 # Moving the data
 for (i in 1:nrow(fns)) {
 
+    # Getting the files
+    if (file.exists(fns$copy[i]))
+        file.copy(
+            from = fns$copy[i],
+            to   = dirname(fns$urlpath[i]),
+            recursive = TRUE
+            )
+
     file.copy(from = fns$path[i], to = fns$urlpath[i])
     cat(sprintf("-  %s ([link](%s))\n\n", fns$name[i], fns$urlpath[i]))
 
