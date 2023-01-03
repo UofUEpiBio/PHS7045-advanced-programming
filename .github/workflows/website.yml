@@ -16,12 +16,13 @@ jobs:
       - name: Render
         run: |
           cd docs
-          docker run -i --rm -v$(pwd):/home/docs -w/home/docs gvegayon/phs7045:latest make README.md
+          docker run -i --rm -v$(pwd):/home/docs -w/home/docs gvegayon/phs7045:latest make -B README.md
 
       - name: Commit results
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          cd docs/
           git add slides/* || echo Nothing to be added
           git commit -a -m 'Re-build examples' || echo Nothing has changed
           git push origin || echo "No changes to commit"
