@@ -16,7 +16,7 @@ jobs:
       - name: Render
         run: |
           mkdir docs/slides || echo Slides already there
-          docker run -i --rm -v$(pwd):/home/docs -w/home/docs gvegayon/phs7045:latest make -B README.md          
+          docker run -i --rm -v$(pwd):/home/docs -w/home/docs gvegayon/phs7045:latest make -B docs/README.md          
 
       - name: Commit results
         run: |
