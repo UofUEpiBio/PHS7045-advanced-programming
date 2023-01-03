@@ -15,6 +15,12 @@ fns <- read.csv("pages.csv")
 # Moving the data
 for (i in 1:nrow(fns)) {
 
+    # Making sure the path exists
+    tryCatch(dir.create(dirname(
+        fns$urlpath[i]), recursive = TRUE,
+        showWarnings = FALSE
+        ), error = function(e) e)
+
     # Getting the files
     if (file.exists(fns$copy[i]))
         file.copy(
