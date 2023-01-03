@@ -6,3 +6,5 @@ push:
 
 docs/README.md: docs/README.qmd
 	quarto render docs/README.qmd
+
+	
