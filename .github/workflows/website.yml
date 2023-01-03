@@ -15,7 +15,8 @@ jobs:
 
       - name: Render
         run: |
-          docker run -i --rm -v$(pwd) -w/home/docs gvegayon/phs7045:latest make README.md
+          cd docs
+          docker run -i --rm -v$(pwd):/home/docs -w/home/docs gvegayon/phs7045:latest make README.md
 
       - name: Commit results
         run: |
