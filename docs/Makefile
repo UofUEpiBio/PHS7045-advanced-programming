@@ -4,5 +4,5 @@ docker:
 push:
 	docker push gvegayon/phs7045:latest
 
-README.md: README.qmd
-	quarto render README.qmd
+docs/README.md: docs/README.qmd
+	quarto render docs/README.qmd
