@@ -16,18 +16,21 @@ fns <- read.csv("pages.csv")
 for (i in 1:nrow(fns)) {
 
     # Making sure the path exists
-    tryCatch(dir.create(dirname(
-        fns$urlpath[i]), recursive = TRUE,
+    tryCatch(dir.create(
+        dirname(fns$urlpath[i]),
         showWarnings = FALSE
-        ), error = function(e) e)
+        ), error = function(e) e)    
 
     # Getting the files
-    if (file.exists(fns$copy[i]))
-        file.copy(
-            from      = fns$copy[i],
-            to        = dirname(fns$urlpath[i]),
-            recursive = TRUE
-            )
+    tocopy <- strsplit(fns$copy[i], split = ";")[[1]]
+    for (toc in tocopy) {
+        if (file.exists(toc))
+            file.copy(
+                from      = toc,
+                to        = file.path(dirname(fns$urlpath[i])),
+                recursive = file.info(toc)$isdir[1]
+                )
+    }
 
     file.copy(from = fns$path[i], to = fns$urlpath[i])
     cat(sprintf("-  %s ([link](%s))\n\n", fns$name[i], fns$urlpath[i]))
