@@ -4,6 +4,9 @@
     Warning in file.copy(from = fns$copy[i], to = dirname(fns$urlpath[i]), recursive
     = TRUE): 'recursive' will be ignored as 'to' is not a single existing directory
 
+    Warning in file.copy(from = fns$copy[i], to = dirname(fns$urlpath[i]), recursive
+    = TRUE): cannot overwrite a non-directory with a directory
+
     Warning in file.create(to[okay]): cannot create file 'slides/01-git/index.html',
     reason 'Not a directory'
 
