@@ -1,4 +1,4 @@
 
 # PHS 7045
 
-Oficial [website](https://uofuepi.github.io/PHS7045-advanced-programming)
+- Week 1: Intro to Git ([link](slides/01-git/index.html))
