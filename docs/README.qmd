@@ -36,7 +36,7 @@ for (i in 1:nrow(fns)) {
     file.copy(from = fns$path[i], to = fns$urlpath[i])
 
     pathto <- fns$urlpath[i]
-    if (grepl("index\\.html?$", pathto)
+    if (grepl("index\\.html?$", pathto))
         pathto <- dirname(pathto)
 
     cat(sprintf("-  %s ([link](%s))\n\n", fns$name[i], pathto))
