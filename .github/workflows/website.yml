@@ -23,7 +23,6 @@ jobs:
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          cd docs/
-          git add slides/* || echo Nothing to be added
+          git add docs/* || echo Nothing to be added
           git commit -a -m 'Re-build examples' || echo Nothing has changed
           git push origin || echo "No changes to commit"

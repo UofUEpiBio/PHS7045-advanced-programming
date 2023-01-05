@@ -18,7 +18,8 @@ for (i in 1:nrow(fns)) {
     # Making sure the path exists
     tryCatch(dir.create(
         dirname(fns$urlpath[i]),
-        showWarnings = FALSE
+        showWarnings = FALSE,
+        recursive = TRUE
         ), error = function(e) e)    
 
     # Getting the files
