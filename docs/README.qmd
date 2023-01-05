@@ -39,7 +39,7 @@ for (i in 1:nrow(fns)) {
     if (grepl("index\\.html?$", pathto))
         pathto <- dirname(pathto)
 
-    cat(sprintf("-  %s ([link](%s))\n\n", fns$name[i], pathto))
+    cat(sprintf("-  %s (<a href=\"%s\" target=\"_blank\">link</a>)\n\n", fns$name[i], pathto))
 
 }
 ```
