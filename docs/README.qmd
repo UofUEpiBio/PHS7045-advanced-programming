@@ -29,11 +29,12 @@ for (i in 1:nrow(fns)) {
             file.copy(
                 from      = toc,
                 to        = file.path(dirname(fns$urlpath[i])),
-                recursive = file.info(toc)$isdir[1]
+                recursive = file.info(toc)$isdir[1],
+                overwrite = TRUE
                 )
     }
 
-    file.copy(from = fns$path[i], to = fns$urlpath[i])
+    file.copy(from = fns$path[i], to = fns$urlpath[i], overwrite = TRUE)
 
     pathto <- fns$urlpath[i]
     if (grepl("index\\.html?$", pathto))
