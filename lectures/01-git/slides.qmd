@@ -2,7 +2,9 @@
 title: "Version control and reproducible research"
 subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
-format: revealjs
+format:
+  revealjs:
+    embed-resources: true
 ---
 
 # Preamble
