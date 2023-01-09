@@ -4,7 +4,7 @@ docker:
 push:
 	docker push gvegayon/phs7045:latest
 
-docs/index.md: docs/index.qmd
+docs/index.html: docs/index.qmd
 	quarto render docs/index.qmd
 
 	
