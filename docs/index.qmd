@@ -1,13 +1,20 @@
 ---
-format: gfm
+format:
+  html: default
+  gfm: default
 ---
 
 # PHS 7045
+
+The syllabus is available [here](syllabus.md).
 
 ```{r}
 #| echo: false
 #| output: asis 
 #| warning: false
+
+# Updating syllabus
+file.copy("../syllabus.md", "syllabus.md")
 
 # List of pages to be rendered
 fns <- read.csv("pages.csv")

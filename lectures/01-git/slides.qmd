@@ -11,7 +11,7 @@ format:
 
 ## Welcome to **PHS 7045: Advanced Programming**
 
-:::: {.r-fit-text}
+::: {.r-fit-text}
 
 Before we start with the class:
 
@@ -28,7 +28,7 @@ Before we start with the class:
 
   - All submissions (labs, assignments, midterm, and final) through [GitHub](https://github.com/UofUEpi/PHS7045-advanced-programming).
 
-  - Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar.
+  - Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar (like [this presentation](https://github.com/UofUEpi/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd)!).
 
   - Weekly readings.
 
@@ -41,7 +41,7 @@ Before we start with the class:
 - More details on the syllabus.
 :::
 
-::::
+:::
 
 
 ## Today's lesson
@@ -86,7 +86,8 @@ Throughout the course, we will be using the following tools:
 :::
 
 ::: {.column width="20%"}
-<img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg" alt="Diagram of version control" width="100%">
+![](https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg)
+<!-- <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg" alt="Diagram of version control" width="100%"> -->
 :::
 :::
 
@@ -158,10 +159,10 @@ In these cases, and no doubt others, a version control system should make your l
 
 ## Git: The stupid content tracker 
 
-::: {.columns .r-fit-text}
-
-::: {.column width="80%"}
-During this class (and perhaps, the entire program) we will be using <a href="https://commons.wikimedia.org/wiki/File:Git-logo.svg" target="_blank"><img style="width: 100px;vertical-align: middle;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Git-logo.svg/500px-Git-logo.svg.png" alt="Git logo"></a>.
+::: {.r-fit-text}
+During this class (and perhaps, the entire program,) we will be using
+ <!-- <a href="" target="_blank"> -->
+[<img style="width: 100px;vertical-align: middle;" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg">](https://commons.wikimedia.org/wiki/File:Git-logo.svg) 
 
 ::: {.fragment .fade-in}
 - Git is used by [most developers in the world](https://insights.stackoverflow.com/survey/2018#work-_-version-control).
@@ -173,16 +174,6 @@ During this class (and perhaps, the entire program) we will be using <a href="ht
 
 ::: {.fragment .fade-in}
 - More on what's stupid about Git [here](https://en.wikipedia.org/wiki/Git#Naming).
-:::
-:::
-
-::: {.column width="20%"}
-
-  <figure>
-  <a href="https://en.wikipedia.org/wiki/Linus_Torvalds" target="_blank"><img style="width: 200px;vertical-align: middle;"  hspace="20px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/LinuxCon_Europe_Linus_Torvalds_03_%28cropped%29.jpg/345px-LinuxCon_Europe_Linus_Torvalds_03_%28cropped%29.jpg" alt="Linus Torvalds"></a>
-  </figure>
-  <figcaption><b>Linus Torvalds, creator of git</b></figcaption>
-
 :::
 
 :::
