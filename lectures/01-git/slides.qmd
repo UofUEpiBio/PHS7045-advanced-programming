@@ -26,9 +26,9 @@ Before we start with the class:
 ::: {.fragment .fade-up}
 - Workflow:
 
-  - All submissions (labs, assignments, midterm, and final) through [GitHub](https://github.com/UofUEpi/PHS7045-advanced-programming).
+  - All submissions (labs, assignments, midterm, and final) through [GitHub](https://github.com/UofUEpiBio/PHS7045-advanced-programming).
 
-  - Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar (like [this presentation](https://github.com/UofUEpi/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd)!).
+  - Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar (like [this presentation](https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd)!).
 
   - Weekly readings.
 
@@ -48,7 +48,7 @@ Before we start with the class:
 
 1. We will learn about version control and GitHub.
 
-2. Set-up version git and GitHub (make sure it works).
+2. Set up git and GitHub (make sure it works).
 
 
 # Part I: intro
@@ -77,7 +77,7 @@ Throughout the course, we will be using the following tools:
 
 :::
 
-## What is 'version control'
+## What is 'version control.'
 
 ::: {.columns style="text-align: center"}
 

@@ -1,6 +1,6 @@
 # PHS 7045: Advanced Programming
 
-Website: https://UofUEpi.github.io/PHS7045-advanced-programming
+Website: https://UofUEpiBio.github.io/PHS7045-advanced-programming
 
 ## Assignment workflow
 
@@ -23,10 +23,10 @@ git commit -a -m "Assignment done @gvegayon"
 This way @gvegayon will receive a notification about this assignment. Furthermore, we encourage you to use other GitHub resources, such as adding the URL of [GitHub issue]() regarding that assignment, for example, if you include the following link in your commit message:
 
 ```
-git commit -a -m "Assignment done https://github.com/UofUEpi/PHS7045-advanced-programming/issues/17"
+git commit -a -m "Assignment done https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/17"
 ```
 
-Issue #17 in the PHS7045 website will now include a link to your commit. A similar thing can be done by cross-referencing an issue; this is, if you create a new issue in your repository and include the same link (https://github.com/UofUEpi/PM566/issues/17), the issue will be shown in #17 as cross-referenced.
+Issue #17 in the PHS7045 website will now include a link to your commit. A similar thing can be done by cross-referencing an issue; this is, if you create a new issue in your repository and include the same link (https://github.com/UofUEpiBio/PM566/issues/17), the issue will be shown in #17 as cross-referenced.
 
 ## Example
 
@@ -34,7 +34,7 @@ For week #3, we will distribute a zip file named `week3-assignment.zip`. Using t
 
 ```sh
 cd ~
-wget github.com/UofUEpi/PHS7045-advanced-programming/raw/master/assignments/week3-assignment.zip
+wget github.com/UofUEpiBio/PHS7045-advanced-programming/raw/master/assignments/week3-assignment.zip
 unzip week3-assignment.zip -d week3-assignment-gvegayon
 cd week3-assignment-gvegayon
 git init

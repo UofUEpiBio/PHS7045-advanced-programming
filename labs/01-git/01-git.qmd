@@ -24,7 +24,7 @@ One of the most common tasks that people use git for is collaborating. While in 
 
 [^multiedits]: Team members could be working on the same file but editing different lines of code. If this is the case, after pull/push, git will integrate the changes without conflicts. 
 
-We will be working with the repository https://github.com/UofUEpi/PHS7045-whoami
+We will be working with the repository https://github.com/UofUEpiBio/PHS7045-whoami
 
 ## Step 1: For the project in your repo
 
