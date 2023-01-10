@@ -14,7 +14,7 @@ The syllabus is available [here](syllabus.md).
 #| warning: false
 
 # Updating syllabus
-file.copy("../syllabus.md", "syllabus.md")
+invisible(file.copy("../syllabus.md", "syllabus.md"))
 
 # List of pages to be rendered
 fns <- read.csv("pages.csv")
@@ -41,7 +41,7 @@ for (i in 1:nrow(fns)) {
                 )
     }
 
-    file.copy(from = fns$path[i], to = fns$urlpath[i], overwrite = TRUE)
+    invisible(file.copy(from = fns$path[i], to = fns$urlpath[i], overwrite = TRUE))
 
     pathto <- fns$urlpath[i]
     if (grepl("index\\.html?$", pathto))
