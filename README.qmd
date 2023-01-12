@@ -14,7 +14,7 @@ Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](s
 dat <- read.csv("pages.csv")
 
 urlpath <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming"
-urlraw  <- "https://UofUEpi.github.io/PHS7045-advanced-programming"
+urlraw  <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
 
 # Iterating through the weeks
 weeks <- sort(unique(dat$week))
