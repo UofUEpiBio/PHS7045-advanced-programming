@@ -1,7 +1,8 @@
 
 # PHS 7045: Advanced Programming
 
-Website: https://UofUEpiBio.github.io/PHS7045-advanced-programming
+Welcome to Advanced Programming in R and HPC! You can find the syllabus
+[here](syllabus.md).
 
 ## Contents
 
