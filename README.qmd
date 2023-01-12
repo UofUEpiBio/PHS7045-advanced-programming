@@ -19,7 +19,7 @@ urlraw  <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
 # Iterating through the weeks
 weeks <- sort(unique(dat$week))
 tab <- NULL
-for (i in weeks) {
+for (i in 1:nrow(dat)) {
 
   # Adding the entry to the table
   tab <- rbind(
@@ -47,16 +47,22 @@ for (i in weeks) {
       )
     ))
 
+  if (!is.na(dat[i,,drop=FALSE]$extra) && (dat[i,,drop=FALSE]$extra != ""))
+    tab[nrow(tab),]$Title <- paste(
+      tab[nrow(tab),]$Title,
+      dat[i,,drop=FALSE]$extra
+    )
+
   # Copy the files
   invisible(file.copy(
     from      = dat[i,,drop=FALSE]$lecture,
-    to        = sprintf("docs/week-%02i-slides.html", i), 
+    to        = sprintf("docs/week-%02i-slides.html", dat[i,,drop=FALSE]$week), 
     overwrite = TRUE
   ))
 
   invisible(file.copy(
     from      = dat[i,,drop=FALSE]$lab,
-    to        = sprintf("docs/week-%02i-lab.html", i), 
+    to        = sprintf("docs/week-%02i-lab.html", dat[i,,drop=FALSE]$week), 
     overwrite = TRUE
   ))
 
