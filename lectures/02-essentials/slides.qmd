@@ -17,6 +17,11 @@ format:
 
 # Introduction
 
+## Collaborative learning
+
+[Google Doc for sharing code/notes](https://docs.google.com/document/d/1VAASu4cVipWqgLwT2lY5I_Zg2hEvfMvXFDRmBolitIQ/edit?usp=sharing)
+
+
 ## Preparation
 
 Read/Watch: Selections from [R Programming for Data Science](https://bookdown.org/rdpeng/rprogdatascience/)
@@ -57,7 +62,7 @@ C. After calling `library(beepr)`, the beep function can be directly called as `
 
 D. (If time allows) Create a function that takes two inputs: a numeric vector and `sound`.  Write a loop that one-at-a-time calculates the cumulative sum each element of the vector (don't use the `cumsum` function).  Play a beep at the end of calculation using the `sound` input.  The output should be a two-column matrix with the original vector (column 1) and the cumsum (column 2). Check you answer using the `cumsum` function.
   
-  Note: Question D is designed to practice working with loops and building up the output result.  One-at-a-time calculations discouraged whenever avoidable.  In practice, it would be better to use the `cumsum`.
+  Note: Question D is designed to practice working with loops and building up the output result.  One-at-a-time calculations discouraged whenever avoidable.  In practice, it would be better to use the `cumsum` function.
 
 
 ## This week's lesson
@@ -73,6 +78,8 @@ In addition to general concepts, the below strategies improve efficient, reprodu
 1. Use matrices rather than data.frames whenever possible; they use less memory
 2. Use names for indexing and filtering; it is transparent and less error-prone
 3. Pre-initialize data-structures to be filled rather than saving over existing objects
+4. Consider if there are ways to reduce unnecesary calculations
+
 
 
 # R and RStudio
@@ -113,7 +120,7 @@ str(HairEyeColor)
 ### Functional programming language
 * Perform operations on object(s) (ex: `sum`, `'+'`, `rnorm`)
 * Functions come pre-intalled (base), installed, and custom-defined
-* Using functions is a major theme of good R programming [Matloff (pg xxii)]:
+* Using functions is a major theme of good R programming.  Avoid explicit iteration (loops and copy-paste) as much as possible.  [Matloff [(pg xxii)](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=23)]:
   * Clearer, more compact code
   * Potentially must faster execution speed
   * Less debugging, because the code is simpler
@@ -214,7 +221,7 @@ str(HairEyeColor)
 
 ## Modes
 
-Six primitive modes (data types) of R starting:
+Six primitive modes (data types) of R:
 
 2 Modes less-commonly (for me never) created in practice:
 
@@ -263,7 +270,7 @@ as.data.frame(x)
 ```
 
 
-The 6 primitive modes are also called 'atomic' modes.  This means that when data are stored together in a vector, they must be of the same mode.
+Back to modes ... The 6 primitive modes are also called 'atomic' modes.  This means that when data are stored together in a vector, they must be of the same mode.
 
 When modes are mixed (ex: `x <- c("A",0,1L,TRUE)`), R will force all elements to be of the same mode.
 
@@ -283,27 +290,27 @@ R has different types of missing values:
 
 ## Questions 1
 
-1.  What is the mode of the following vector `myvector <- c(NA, NaN, Inf)`? (First try to answer without coding, then check using the `mode()` function in R)
+1.  What is the mode of the following vector `myVector <- c(NA, NaN, Inf)`? (First try to answer without coding, then check using the `mode()` function in R)
 
 2.  The `c()` function can be used with other vectors, for example
 
     ```{r}
-    my_numeric_vector <- c(1, 2, 3)
-    my_string_vector  <- c("hello", "world")
+    myNumericVector <- c(1, 2, 3)
+    myStringVector  <- c("hello", "world")
     ```
     
-    What is the mode of the vector `c(my_integer_vector, my_string_vector)`?
+    What is the mode of the vector `c(myStringVector, myStringVector)`?
     
-3.  What do each one of the functions `is.na`, `is.null`, `is.finite`, `is.infinite`, `is.nan` return on the vector `myvector`?
+3.  What do each one of the functions `is.na`, `is.null`, `is.finite`, `is.infinite`, `is.nan` return on the vector `myVector`?
 
     ```{r, eval=FALSE, echo=FALSE}
-    is.na(myvector)
-    is.infinite(myvector)
-    is.finite(myvector)
-    is.nan(myvector)
+    is.na(myVector)
+    is.infinite(myVector)
+    is.finite(myVector)
+    is.nan(myVector)
     ```
 
-4.    What are the attributes of the following object `mymat <- matrix(runif(12), ncol=4)`?  What are the attributes of `my_numeric_vector` and how can you make sense of the attributes?
+4.    What are the attributes of the following object `myMat <- matrix(runif(12), ncol=4)`?  What are the attributes of `myNumericVector` and how can you make sense of the attributes?
 
 
 # Vectors and matrixes
@@ -317,7 +324,9 @@ Get into a habit of using vectors and matrices / arrays as much as possible.
 
 ## Creating vectors
 
-* To initialize a vector, use `vector` or `rep(NA,<length>)`.  (JC) I commonly use `rep(NA,<length>)`.  Why would you want to initialize a vector? 
+* To initialize an empty vector, use `vector`, `rep(NA,<length>)`, `numeric(<length>)`, or `character(<length>)`.  (JC) I commonly use `rep(NA,<length>)`.  
+  * A question to keep in back of mind (we will revisit when talking about loops) ... Why would you want to initialize an empty vector?
+
 
 ```{r}
 # vector(< mode >, < length >)
@@ -325,24 +334,33 @@ vector("character",2)
 vector("numeric",2)
 vector("logical",2)
 rep(NA,2)
+numeric(2)
+character(2)
 ```
 
-* Other common methods to create numeric vectors include **combine** function, `c`, `:`, `seq`, and `rep`:
+* Other common methods to create numeric vectors include **combine** function, `c()`, `:`, `seq`, and `rep`:
 
 ```{r, collapse=TRUE, comment=">"}
+# Combine 3 numeric vectors each with length 1
 c(1,2,3,4)
 
+# Vector of sequential numerics
 x <- 1:10
 x
 
+# Vector of sequential numerics from 1 to length(x)
 seq(x)
 
+# Vector of sequential numerics from 1 to 10 by 2
 seq(1,10,by=2)
 
+# Vector of sequential numerics from 1 to 10 divided equally into 3 elements
 seq(1,10,length.out=3)
 
+# Vector of repeated numerics
 rep(1:2,each=5)
 
+# Vector of repeated numerics
 rep(1:2,times=5)
 ```
 
@@ -411,7 +429,7 @@ In the last example, why is the dimension `NULL`?  (Hint, what is the class of t
 
 Why to use lists?
 
-* Lists are useful for returning output from functions.  For example, the output of `lm` is a list.  (Aside, it is also of the `class` lm which has a specific behavior when calling `print` and `summary`).
+* Lists are useful for returning output from functions.  For example, the output of `lm` is a list.  (Aside, it is also of the `class` lm which has a specific behavior when calling "generic" functions such as `print` and `summary`).
 
 ```{r}
 f <- lm(1:10~1)
@@ -472,7 +490,7 @@ x$"2010"
 Why to use data.frames?
 
 * data.frames are useful in data analysis.  
-* However, a data.frames of all one mode uses more memory than a matrix.  When possible, for heavy computation, avoid data.frames unless needed.
+* However, a data.frame of all one mode uses more memory than a matrix.  When performing heavy computations, avoid data.frames unless needed.
 * A helpful data.frame comes from `expand.grid`.  How can this be helpful in simulations?
 
 ```{r}
@@ -502,7 +520,7 @@ Borrowing from [Blog on R code best practices (one user's opinion)](https://www.
 
 Strive for names that are concise and meaningful
 
-JC Suggestions:
+Naming conventions are personal preference.  My (JC) inclination is the following:
 
 * I use lowerCamelCase for all objects and files.  (Python uses the period to access functions and properties of objects).
 * Avoid naming an object that would overwrite an existing object.  (Example, `c <- 0` overwrites the `c()` function).
@@ -592,60 +610,60 @@ names(x) <- 2010:2019
 
 4. Why would you want to use element names whenever possible?
 
-## A solution
+<!-- ## A solution -->
 
-Suppose `x` is the number of vacations in the years 2010 - 2019
-```{r, collapse=TRUE, comment=">"}
-set.seed(1)
-x <- sample.int(n=7,size=10,replace=TRUE)
-names(x) <- 2010:2019
-```
+<!-- Suppose `x` is the number of vacations in the years 2010 - 2019 -->
+<!-- ```{r, collapse=TRUE, comment=">"} -->
+<!-- set.seed(1) -->
+<!-- x <- sample.int(n=7,size=10,replace=TRUE) -->
+<!-- names(x) <- 2010:2019 -->
+<!-- ``` -->
 
-1. How many vacations were taken on the first and ninth year?
+<!-- 1. How many vacations were taken on the first and ninth year? -->
 
-```{r,collapse=TRUE, comment=">", class.source="fold-hide"}
-x[c(1,9)]
-```
+<!-- ```{r,collapse=TRUE, comment=">", class.source="fold-hide"} -->
+<!-- x[c(1,9)] -->
+<!-- ``` -->
 
-2. How many total vacations were taken on odd years?  Use `seq` for solution.
+<!-- 2. How many total vacations were taken on odd years?  Use `seq` for solution. -->
 
-```{r,collapse=TRUE, comment=">", class.source="fold-hide"}
-x[seq(1,10,by=2)]
-```
+<!-- ```{r,collapse=TRUE, comment=">", class.source="fold-hide"} -->
+<!-- x[seq(1,10,by=2)] -->
+<!-- ``` -->
 
-A more general solution would be to use the modular `%%` command (which means remainder after dividing by a number).  (Example  5 %% 2: 2 goes into 5 two times and there is a remainder of 1).
+<!-- A more general solution would be to use the modular `%%` command (which means remainder after dividing by a number).  (Example  5 %% 2: 2 goes into 5 two times and there is a remainder of 1). -->
 
-[Basic R Operators](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=171)
+<!-- [Basic R Operators](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=171) -->
 
-What are the sequential steps how R evaluates the following code?  What are strengths and weaknesses of this code?
+<!-- What are the sequential steps how R evaluates the following code?  What are strengths and weaknesses of this code? -->
 
-```{r,collapse=TRUE, comment=">", class.source="fold-hide"}
-x[as.numeric(names(x)) %% 2]
-```
+<!-- ```{r,collapse=TRUE, comment=">", class.source="fold-hide"} -->
+<!-- x[as.numeric(names(x)) %% 2] -->
+<!-- ``` -->
 
-<!-- Strength: Generalization -->
-<!-- Weakness: Slightly harder to read -->
+<!-- <!-- Strength: Generalization --> -->
+<!-- <!-- Weakness: Slightly harder to read --> -->
 
-3. How many total vacations were taken on even years?  Use element names for solution.
+<!-- 3. How many total vacations were taken on even years?  Use element names for solution. -->
 
-```{r,collapse=TRUE, comment=">"}
-x[as.character(seq(2010,2020,by=2))]
+<!-- ```{r,collapse=TRUE, comment=">"} -->
+<!-- x[as.character(seq(2010,2020,by=2))] -->
 
-x[(as.numeric(names(x)) +1) %% 2]
-```
+<!-- x[(as.numeric(names(x)) +1) %% 2] -->
+<!-- ``` -->
 
 
-4. Why would you want to use element names whenever possible?
+<!-- 4. Why would you want to use element names whenever possible? -->
 
-* Filtering by index names is transparent, easy-to-read, and less error prone
-* For example, what is an example where position indexing could go wrong if I were interested in 2010 data?
-* Using names is one of the most important concepts to implement for reproducible coding_
+<!-- * Filtering by index names is transparent, easy-to-read, and less error prone -->
+<!-- * For example, what is an example where position indexing could go wrong if I were interested in 2010 data? -->
+<!-- * Using names is one of the most important concepts to implement for reproducible coding_ -->
 
 
 # Control Statements
 
 "R is a block-structured language ... delineated by braces, though braces are optional if the block consists of just a 
-single statement.  Statements are separated by newline characters or, optionally, by semicolons." (Matlooff, page 139)
+single statement.  Statements are separated by newline characters or, optionally, by semicolons." (Matlooff, [page 139](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=165))
 
 ## If-then statements
 
@@ -735,7 +753,9 @@ names(snow) <- 1:9
 
 Suppose you are interested in the first day it consecutively snowed three days (i.e. snowed the given day and two previous days).  What is this day?  Solve using a loop with conditional logic.
 
-```{r}
+```{r,eval=FALSE,echo=FALSE}
+# JC note to self: include example using break function and pre-initializing a vector of set length
+# Comment solution
 runs <- NULL
 for(i in 1:length(snow)){
   if(i < 3) next
@@ -747,7 +767,7 @@ min(runs)
 ```
 
 
-```{r}
+```{r,eval=FALSE,echo=FALSE}
 runs <- vector()
 i <- 1
 for(s in 3:length(snow)){
@@ -759,9 +779,14 @@ for(s in 3:length(snow)){
 runs
 ```
 
+
 ## Functions
 
-*   Functions are an important aspect of work with R.
+* Repeating the strengths of functions ... Using functions is a major theme of good R programming.  Avoid explicit iteration (loops and copy-paste) as much as possible.  [Matloff [(pg xxii)](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=23)]:
+  * Clearer, more compact code
+  * Potentially must faster execution speed
+  * Less debugging, because the code is simpler
+  * Easier transition to parallel programming
 
 *   In general terms, R functions are structured as follow:
 
@@ -786,10 +811,10 @@ runs
     ```{r}
     # Function definition
     
-    # unfair_coin
+    # unfairCoin
     # n: number of tosses
     # p: biased coin (default = 0.7)
-    unfair_coin <- function(n, p = 0.7) {
+    unfairCoin <- function(n, p = 0.7) {
     
       # Sampling from the coin dist
       ans <- sample(c("H", "T"), n, replace = TRUE, prob = c(p, 1-p))
@@ -801,13 +826,16 @@ runs
     
     # Testing it
     set.seed(1)
-    unfair_coin(20)
+    tosses <- unfairCoin(20)
+    table(tosses)
+    prop.table(table(tosses))
     ```
 
+## Questions 5
 
-Now, generalize your code as a function so that for any string of days you can find the first day it consecutively snowed a given number of days.  Return `NA` if no day meets this criteria.
+Generalize your code as a function so that for any string of days you can find the first day it consecutively snowed a given number of days.  Return `NA` if no day meets this criteria.
 
-```{r}
+```{r, eval=FALSE, echo=FALSE}
 
 firstRun <- function(days, x){
   
