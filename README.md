@@ -10,6 +10,8 @@ Welcome to Advanced Programming in R and HPC! You can find the syllabus
 |-----:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------|
 |    1 | Intro to Git (Issue [3](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/3)) + [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/quarto.html) ([source](lectures/01-git/quarto.qmd)) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/week-01-slides.html) ([source](lectures/01-git/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/week-01-lab.html) ([source](labs/01-git/01-git.qmd)) |
 
+|    2 | R Essentials (Issue [4](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/4)) | [slides](https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/lectures/02-essentials/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/lectures/02-essentials/slides.qmd)) |  |
+
 ## Assignment workflow
 
 The course instructors will distribute the materials in a single
