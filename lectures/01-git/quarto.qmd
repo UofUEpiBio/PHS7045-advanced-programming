@@ -215,6 +215,7 @@ Source: Quarto website https://quarto.org/docs/faq/rmarkdown.html
     #| warning: false
     #| message: false
     #| label: multiple-regressions
+    #| echo: true
     data(diamonds, package="ggplot2")
     
     # Model 1
