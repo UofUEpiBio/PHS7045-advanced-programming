@@ -1,0 +1,49 @@
+---
+format: gfm
+---
+
+# Example Programming Projects[^cr]
+
+[^cr]: This folder was copied directly from USC's R Bootcamp for Statistical Computing [https://github.com/USCbiostats/rbootcamp](https://github.com/USCbiostats/rbootcamp).
+
+Here you'll find some examples of programming projects/problems to inspire you:
+
+```{r, results='asis', echo=FALSE}
+# Listing projects
+projects <- list.files(no..=TRUE, pattern = "README[.]R?r?md$", full.names = TRUE, recursive = TRUE)
+projects <- projects[grepl("^[.]/[a-zA-Z0-9_-]+/README[.]R?r?md$", projects)]
+
+ans <- lapply(projects, function(x) {
+  
+  # Reading the yaml header
+  y <- rmarkdown::yaml_front_matter(x)
+  
+  for (e in c("title", "description", "keywords", "difficulty", "author"))
+    if (!length(y[[e]]))
+      y[[e]] <- "-"
+  
+  # Creating link
+  l <- gsub("^[.]/", "", x)
+  l <- gsub("README[.]md", "", l)
+    
+  # Printing for the table
+  c(
+    as.integer(stringr::str_extract(l, "^[0-9]+")),
+    sprintf(
+      "[%s](%s)",
+      y$title,
+      l),
+    y$difficulty,
+    paste(y$keywords, collapse = ", "),
+    y$author)
+  })
+
+ans <- do.call(rbind, ans)
+colnames(ans) <- c("Proj. \\#","Title", "Difficulty", "Keywords", "Author")
+ans <- as.data.frame(ans)
+knitr::kable(ans)
+
+```
+
+We encourage you to use **Github** and **R Markdown** to manage and present your
+projects.

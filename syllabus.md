@@ -129,6 +129,8 @@ their comfort with R programming.
 
 ### Midterm (Week 9)
 
+  - You can find some example projects [here](https://github.com/UofUEpiBio/PHS7045-advanced-programming).
+
 ### Part 2 (Weeks 10-16)
 
   - **Command-line in Linux**: Part of the course involves becoming
