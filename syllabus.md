@@ -45,7 +45,7 @@ Git, GitHub, and dynamic reporting tools will all be taught during the
 first sessions of the course.
 
 The course evaluation has four components: class participation, homework
-assignments, a project midterm, and a final.
+assignments, a project midterm (examples [here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1)), and a final.
 <span class="underline">Class participation</span> will be measured by
 lab completion. Students must submit completed labs via GitHub by the
 Sunday of the instruction week. <span class="underline">Homework
@@ -129,7 +129,7 @@ their comfort with R programming.
 
 ### Midterm (Week 9)
 
-  - You can find some example projects [here](https://github.com/UofUEpiBio/PHS7045-advanced-programming).
+  - You can find some example projects [here]([https://github.com/UofUEpiBio/PHS7045-advanced-programming](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1)).
 
 ### Part 2 (Weeks 10-16)
 
