@@ -2571,7 +2571,7 @@ vertical-align: -.125em;
 
 <section id="learning-goals" class="level1">
 <h1>Learning goals</h1>
-<p>Today’s lab is the first steps toward designing a response-adaptive randomization (RAR) trial RAR designs are used in precision medicine trials, such as the <a href="https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG">BATTLE trial</a>, to gather early evidence of treatment arms that work best for a given biomarker. Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising. We will focus on the initial steps of coding this design.</p>
+<p>Today’s lab is the first steps toward designing a response-adaptive randomization (RAR) trial. RAR designs are used in precision medicine trials, such as the <a href="https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG">BATTLE trial</a>, to gather early evidence of treatment arms that work best for a given biomarker. Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising. We will focus on the initial steps of coding this design.</p>
 <p>The lab is motivated by the paper by Kurt Viele: <a href="https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836">Comparison of methods for control allocation in multiple arm studies using response adaptive randomization</a>. It practices:</p>
 <ul>
 <li>Pre-allocating vectors</li>
@@ -2583,15 +2583,15 @@ vertical-align: -.125em;
 <h1>Notation</h1>
 <p>Notation and criteria for study to successfully declare a treatment as efficacious:</p>
 <ul>
-<li>i = 1, <span class="math inline">\(\dots\)</span>, N = 228 participants</li>
-<li>t = 0, 1, 2, 3 study arms (t = 0 is control)</li>
-<li>Y<span class="math inline">\(_i\)</span> | t <span class="math inline">\(\sim\)</span> Bern(p<span class="math inline">\(_t\)</span>)</li>
-<li>p<span class="math inline">\(_t\)</span> <span class="math inline">\(\sim\)</span> Beta(<span class="math inline">\(\alpha, \beta\)</span>)</li>
+<li><span class="math inline">\(i = 1, \dots, N\)</span> participants</li>
+<li><span class="math inline">\(t = 0, 1, 2, 3\)</span> study arms (<span class="math inline">\(t = 0\)</span> is control)</li>
+<li><span class="math inline">\(Y_i \mid t \sim\)</span> Bern(<span class="math inline">\(p_t\)</span>) and <span class="math inline">\(y_t\)</span> is a vector of <span class="math inline">\(n_t\)</span> observed outcomes on arm <span class="math inline">\(t\)</span></li>
+<li>The prior on <span class="math inline">\(p_t \sim\)</span> Beta(<span class="math inline">\(\alpha_t, \beta_t\)</span>)</li>
 </ul>
-<p>Posterior Distribution P(p<span class="math inline">\(_t\)</span> | y) <span class="math inline">\(\sim\)</span> Beta(<span class="math inline">\(\alpha + \sum(y_t = 1), \beta + n_t - \sum(y_t = 1)\)</span> + )</p>
-<p>A trial will be successful if, at the end of enrollment, there is sufficiently high probability for at least one treatment arm to be greater than control.</p>
-<p>max<span class="math inline">\(_t\)</span> P( p<span class="math inline">\(_t\)</span> &gt; p<span class="math inline">\(_0\)</span> ) &gt; <span class="math inline">\(\delta\)</span></p>
-<p>where <span class="math inline">\(\delta\)</span> is chosen to maintain familywise type I error for the study at one-sided 2.5%.</p>
+<p>Posterior Distribution Pr(<span class="math inline">\(p_t\)</span> | <span class="math inline">\(y_t\)</span>) <span class="math inline">\(\sim\)</span> Beta(<span class="math inline">\(\alpha_t + \sum y_t, \beta_t + n_t - \sum y_t\)</span>)</p>
+<p>Quoting from the paper: The trial is considered successful at the final analysis if there is a high posterior probability that at least one arm has a higher rate than control.</p>
+<p>max<span class="math inline">\(_t\)</span> Pr( <span class="math inline">\(p_t &gt; p_0\)</span> ) &gt; <span class="math inline">\(\delta\)</span></p>
+<p>where <span class="math inline">\(\delta\)</span> is a threshold chosen to maintain familywise type I error for the study at one-sided 2.5%.</p>
 </section>
 <section id="consider-2-different-designs" class="level1">
 <h1>Consider 2 different designs:</h1>
@@ -2600,27 +2600,27 @@ vertical-align: -.125em;
 <li>RAR where the allocation probability is updated at an interim analysis as follows:</li>
 </ol>
 <ul>
-<li>V<span class="math inline">\(_t\)</span> = P<span class="math inline">\(_t\)</span> (Max)</li>
-<li>V<span class="math inline">\(_0 = min\{\sum V_t \frac{(n_t + 1)}{(n_0 + 1)}, max(V_1, V_2, V_3) \}\)</span></li>
+<li><span class="math inline">\(V_t = P_t\)</span> (Max)</li>
+<li><span class="math inline">\(V_0 = min\{\sum V_t \frac{(n_t + 1)}{(n_0 + 1)}, max(V_1, V_2, V_3) \}\)</span></li>
 </ul>
-<p>V<span class="math inline">\(_0\)</span>, V<span class="math inline">\(_1\)</span>, V<span class="math inline">\(_2\)</span>, and V<span class="math inline">\(_3\)</span> are renormalized to sum to 1 and are allocation probabilities</p>
-<p>Note: A way to calculate P<span class="math inline">\(_t\)</span>(Max) is to cbind K = [1000] draws from the posterior distribution of each arm and to see the probability that each arm is the max.</p>
+<p><span class="math inline">\(V_0, V_1, V_2,\)</span> and <span class="math inline">\(V_3\)</span> are renormalized to sum to 1 and are allocation probabilities.</p>
+<p>Note: A way to estimate <span class="math inline">\(P_t\)</span>(Max) is to <code>cbind</code> K = [1000] draws from the posterior distribution of each arm and to see how frequently (across the K draws from each arm) each arm is drawn to be the largest.</p>
 </section>
 <section id="lab-task" class="level1">
 <h1>Lab task:</h1>
 <p>Write a function for each study design to simulate one trial.</p>
 <ul>
-<li>N = 228</li>
-<li>Assume the treatment effect is 0.35 for each study arm (the null scenario)</li>
-<li>Interim analyses occur at N = 40 to 200 by 40. Use equal allocation for first 40 patients for both designs.</li>
-<li>Prior on p<span class="math inline">\(_t \sim\)</span> Beta(<span class="math inline">\(\alpha, \beta\)</span>)</li>
-<li><span class="math inline">\(\delta\)</span> to determine a successful trial:
+<li>N = 228 with interim analyses after every 40th participant starting at 40.</li>
+<li>Use equal allocation for first 40 patients for both designs.</li>
+<li>Assume a setting where treatment effect is 0.35 for each study arm (the null scenario). (But allow flexibility in function for other treatment effects).</li>
+<li><span class="math inline">\(\alpha_t = 0.35\)</span> for all <span class="math inline">\(t\)</span> and <span class="math inline">\(\beta_t = 0.65\)</span> for all arms.</li>
+<li>Use the following <span class="math inline">\(\delta\)</span> thresholds to determine a successful trial:
 <ul>
 <li>Design 1, <span class="math inline">\(\delta = 0.9912\)</span></li>
 <li>Design 2, <span class="math inline">\(\delta = 0.9892\)</span></li>
 </ul></li>
 </ul>
-<p>For simplicity, have your function return a list of (at least):</p>
+<p>For simplicity, have your function return a list of at least the following output:</p>
 <ol type="1">
 <li>The probability that the best treatment arm is better than control.</li>
 <li>The number of patients assigned to each treatment arm.</li>
@@ -2633,8 +2633,8 @@ vertical-align: -.125em;
 <li>Find <span class="math inline">\(\delta\)</span> for each design (supposing you didn’t already know it).</li>
 <li>Replicate the study design assuming treatment effects of
 <ul>
-<li>p<span class="math inline">\(_0\)</span> = p<span class="math inline">\(_1\)</span> = p<span class="math inline">\(_2\)</span> = 0.35</li>
-<li>p<span class="math inline">\(_3\)</span> = 0.65</li>
+<li><span class="math inline">\(p_0 = p_1 = p_2 = 0.35\)</span></li>
+<li><span class="math inline">\(p_3 = 0.65\)</span></li>
 </ul></li>
 </ul>
 </section>
