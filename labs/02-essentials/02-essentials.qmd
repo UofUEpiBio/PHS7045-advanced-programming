@@ -7,7 +7,7 @@ format:
 
 # Learning goals
 
-Today’s lab is the first steps toward designing a response-adaptive randomization (RAR) trial  RAR designs are used in precision medicine trials, such as the [BATTLE trial](https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG), to gather early evidence of treatment arms that work best for a given biomarker.  Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising.  We will focus on the initial steps of coding this design.
+Today’s lab is the first steps toward designing a response-adaptive randomization (RAR) trial.  RAR designs are used in precision medicine trials, such as the [BATTLE trial](https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG), to gather early evidence of treatment arms that work best for a given biomarker.  Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising.  We will focus on the initial steps of coding this design.
 
 The lab is motivated by the paper by Kurt Viele: [Comparison of methods for control allocation in multiple arm studies using response adaptive randomization](https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836).  It practices:
 
@@ -19,18 +19,18 @@ The lab is motivated by the paper by Kurt Viele: [Comparison of methods for cont
 
 Notation and criteria for study to successfully declare a treatment as efficacious:
 
-* i = 1, $\dots$, N = 228 participants
-* t = 0, 1, 2, 3 study arms (t = 0 is control)
-* Y$_i$ | t $\sim$ Bern(p$_t$)
-* p$_t$ $\sim$ Beta($\alpha, \beta$)
+* $i = 1, \dots, N$ participants
+* $t = 0, 1, 2, 3$ study arms ($t = 0$ is control)
+* $Y_i \mid t \sim$ Bern($p_t$) and $y_t$ is a vector of $n_t$ observed outcomes on arm $t$
+* The prior on $p_t \sim$ Beta($\alpha_t, \beta_t$)
 
-Posterior Distribution P(p$_t$ | y) $\sim$ Beta($\alpha + \sum(y_t = 1), \beta + n_t - \sum(y_t = 1)$ + )
+Posterior Distribution Pr($p_t$ | $y_t$) $\sim$ Beta($\alpha_t + \sum y_t, \beta_t + n_t - \sum y_t$)
 
-A trial will be successful if, at the end of enrollment, there is sufficiently high probability for at least one treatment arm to be greater than control.
+Quoting from the paper: The trial is considered successful at the final analysis if there is a high posterior probability that at least one arm has a higher rate than control.
 
-max$_t$ P( p$_t$ > p$_0$ ) > $\delta$
+max$_t$ Pr( $p_t > p_0$ ) > $\delta$
 
-where $\delta$ is chosen to maintain familywise type I error for the study at one-sided 2.5\%.
+where $\delta$ is a threshold chosen to maintain familywise type I error for the study at one-sided 2.5\%.
 
 
 # Consider 2 different designs:
@@ -38,27 +38,27 @@ where $\delta$ is chosen to maintain familywise type I error for the study at on
 1.	Equal allocation to four arms throughout design.
 2.	RAR where the allocation probability is updated at an interim analysis as follows:
 
-* V$_t$ = P$_t$ (Max)
-* V$_0 = min\{\sum V_t \frac{(n_t + 1)}{(n_0 + 1)}, max(V_1, V_2, V_3) \}$
+* $V_t = P_t$ (Max)
+* $V_0 = min\{\sum V_t \frac{(n_t + 1)}{(n_0 + 1)}, max(V_1, V_2, V_3) \}$
 
-V$_0$, V$_1$, V$_2$, and V$_3$ are renormalized to sum to 1 and are allocation probabilities
+$V_0, V_1, V_2,$ and $V_3$ are renormalized to sum to 1 and are allocation probabilities.
 
-Note: A way to calculate P$_t$(Max) is to cbind K = [1000] draws from the posterior distribution of each arm and to see the probability that each arm is the max.
+Note: A way to estimate $P_t$(Max) is to `cbind` K = [1000] draws from the posterior distribution of each arm and to see how frequently (across the K draws from each arm) each arm is drawn to be the largest.
 
 
 # Lab task:
 
 Write a function for each study design to simulate one trial.  
 
-* N = 228
-* Assume the treatment effect is 0.35 for each study arm (the null scenario)
-* Interim analyses occur at N = 40 to 200 by 40.  Use equal allocation for first 40 patients for both designs.
-* Prior on p$_t \sim$ Beta($\alpha, \beta$)
-* $\delta$ to determine a successful trial:
+* N = 228 with interim analyses after every 40th participant starting at 40.
+* Use equal allocation for first 40 patients for both designs.
+* Assume a setting where treatment effect is 0.35 for each study arm (the null scenario).  (But allow flexibility in function for other treatment effects).
+* $\alpha_t = 0.35$ for all $t$ and $\beta_t = 0.65$ for all arms.
+* Use the following $\delta$ thresholds to determine a successful trial:
   * Design 1, $\delta = 0.9912$
   * Design 2, $\delta = 0.9892$
 
-For simplicity, have your function return a list of (at least):
+For simplicity, have your function return a list of at least the following output:
 
 1. The probability that the best treatment arm is better than control.
 2. The number of patients assigned to each treatment arm.
@@ -69,8 +69,8 @@ For simplicity, have your function return a list of (at least):
 * Replicate the design many (10K) times.  Calculate the Type I error.
 * Find $\delta$ for each design (supposing you didn't already know it).
 * Replicate the study design assuming treatment effects of 
-  * p$_0$ = p$_1$ = p$_2$ = 0.35
-  * p$_3$ = 0.65
+  * $p_0 = p_1 = p_2 = 0.35$
+  * $p_3 = 0.65$
 
 
 
