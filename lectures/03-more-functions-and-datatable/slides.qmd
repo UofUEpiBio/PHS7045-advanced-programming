@@ -20,24 +20,160 @@ slides_eval <- TRUE
 
 ::: {.r-fit-text}
 
-We will learn about how to manipulate data, and in particular,
+1. Discuss some technical aspects of functions in R.
 
-- Selecting variables.
-- Filtering data.
-- Creating variables.
-- Summarize data.
+2. We will learn about how to manipulate data with `data.table`, and in particular,
 
-Throughout the session we will see examples using: 
+  - Selecting variables, filtering data, creating variables, and summarizing data.
+
+Throughout the session, we will see examples using: 
 
 - [**data.table**](https://cran.r-project.org/package=data.table) in R,
 - [**dtplyr**](https://cran.r-project.org/package=dplyr) in R, and
 - [**pydatatable**](https://github.com/h2oai/datatable)
 
-All with the [MET](https://github.com/USCbiostats/data-science-data/) dataset.
+Using the [MET](https://github.com/USCbiostats/data-science-data/) dataset.
+
+:::
+
+
+# Functions (part II)
+
+
+## Functions: Scoping and environments
+
+::: {.r-fit-text}
+
+![Search paths and scoping (source: [Hadley Wickham's Advanced R]("Scoping rules https://adv-r.hadley.nz/environments.html"))](fig/search-path.png){width=50%}
+
+- Where the object was created matters.
+
+- And the order also matters.
+
+**Question:** Two R packages with the same function name, `degree`. Are these two equivalent?
+
+```r
+library(igraph)
+library(sna)
+degree(...)
+```
+
+vs
+
+```r
+library(sna)
+library(igraph)
+degree(...)
+```
+
+
+::: {.fragment .fade-up}
+What should you do?
+:::
 
 :::
 
 ---
+
+::: {.r-fit-text}
+
+In this example, the object `a` lives where `fun` was created, the Global Environment (`.GlobalEnv`, see `?.GlobalEnv`.)
+
+```{r}
+#| label: scoping-example-1
+#| echo: true
+a <- 1
+fun <- function() {
+  return(a)
+}
+
+fun_sub <- function() {
+  a <- pi # It doesn't change the result!
+  return(fun())
+}
+
+fun_sub()
+```
+
+```{r}
+#| echo: true
+#| label: scoping-example-1-cont
+a <- 2
+fun_sub() # It gets the new value
+```
+
+::: {.fragment .fade-up}
+Question: What is the danger of this?
+:::
+
+:::
+
+---
+
+::: {.r-fit-text}
+
+Now, things change if `fun` is moved to another environment.
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: scoping-example-3
+fun_sub()
+```
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: scoping-example-3-cont
+fun_sub <- function() {
+  a <- pi
+  environment(fun) <- environment()
+  fun()
+}
+fun_sub()
+```
+
+:::
+
+## Functions: Arguments and copy-on-modify
+
+::: {.r-fit-text}
+- R is **very** smart when it comes to saving space.
+
+- Objects passed to a function are only copied if modified, the "copy-on-modify" concept.
+
+- This is very powerful as it mixes passing objects by reference and by copy dynamically (see this [wiki entry](https://en.wikipedia.org/wiki/Evaluation_strategy)).
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: example-copy-modify
+bigdata <- 123; data.table::address(bigdata)
+```
+
+```{r}
+#| echo: true
+(function(a) {
+  data.table::address(a)
+})(bigdata)
+```
+
+```{r}
+#| echo: true
+# If we change it...
+(function(a) {
+  a <- a + 0 # The input is now modified!
+  data.table::address(a)
+})(bigdata)
+```
+
+::: {.fragment .fade-up}
+**Note:** Functions that don't have a name are called ["anonymous functions."](https://en.wikipedia.org/wiki/Anonymous_function)
+:::
+
+:::
+
+# Data Table
 
 ## Data wrangling in R
 
@@ -57,39 +193,35 @@ Other methods involve, for example, using external tools such as [Spark](http://
 
 We will be focusing on data.table because of [this](https://h2oai.github.io/db-benchmark/)
 
-Take a look at this very neat cheat sheet by
+Take a look at this neat cheat sheet by
 [Erik Petrovski](http://www.petrovski.dk/) [here](https://github.com/rstudio/cheatsheets/raw/master/datatable.pdf).
 
 :::
-
----
 
 ## Selecting variables: Load the packages
 
 ```{r}
 #| label: loading-packages
 #| eval: true
+#| echo: true
 library(data.table)
 library(dtplyr)
 library(dplyr)
 library(ggplot2)
 ```
 
-The `dtplyr` R package translates `dplyr` (`tidyverse`) syntax to `data.table`,
-so that we can still use **the dplyr verbs** while at the same time leveraging the
-performance of `data.table`.
-
----
+The `dtplyr` R package translates `dplyr` (`tidyverse`) syntax to `data.table`, so that we can still use **the dplyr verbs** while at the same time leveraging the performance of `data.table`.
 
 ## Loading the data
 
-The data that we will be using is an already processed version of the MET
-dataset. We can download (and load) the data directly in our session using the
-following commands:
+::: {.r-fit-text}
+
+The data that we will be using is an already processed version of the [MET dataset](https://github.com/USCbiostats/data-science-data/raw/master/02_met/). We can download (and load) the data directly in our session using the following commands:
 
 ```{r}
 #| label: downloading-data
 #| cache: !expr slides_eval
+#| echo: true
 # Where are we getting the data from
 met_url <- "https://github.com/USCbiostats/data-science-data/raw/master/02_met/met_all.gz"
 
@@ -109,11 +241,11 @@ if (!file.exists(tmp)) {
 }
 ```
 
-Now we can load the data using the `fread()` function.
+:::
 
 ---
 
-In R
+Now we can load the data using the `fread()` function. In R
 
 ```{r}
 #| label: reading-data
@@ -152,8 +284,6 @@ square brackets. Here is common way to imagine DT:
   **=** within **j** only works in some specific cases.
   
 :::
-  
----
 
 ## `data.table` and `dtplyr`: Data Table's Syntax
 
@@ -188,9 +318,6 @@ USArrests_dt <- data.table(USArrests)
 USArrests_dt[, plot(Murder, UrbanPop)]
 ```
 
-
----
-
 ## `data.table` and `dtplyr`: Lazy table
 
 - The `dtplyr` package provides a way to translate `dplyr` verbs to `data.table` syntax.
@@ -199,7 +326,6 @@ USArrests_dt[, plot(Murder, UrbanPop)]
 
 - This function creates a wrapper that "points" to a `data.table` object
 
----
 
 ## `data.table` and `dtplyr`: Lazy table (cont.)
 
@@ -223,8 +349,6 @@ Question: What is the `immutable = FALSE` option used for?
 
 :::
 
----
-
 ## Selecting columns
 
 How can we select the columns `USAFID`, `lat`, and `lon`, using `data.table`:
@@ -239,7 +363,6 @@ dat[, list(USAFID, lat, lon)]
 
 What happens if instead of `list()` you used `c()`?
 
----
 
 ## Selecting columns (cont. 1)
 
@@ -251,7 +374,6 @@ Using the **dplyr::select** verb:
 dat_ldt %>% select(USAFID, lat, lon)
 ```
 
----
 
 ## Selecting columns (cont. 2)
 
@@ -271,8 +393,7 @@ What happens if instead of `["USAFID", "lat", "lon"]` you used `{"USAFID", "lat"
 
 ---
 
-For the rest of the session we will be using these variables:
-USAFID, WBAN, year, month, day, hour, min, lat, lon, elev, wind.sp, temp, and atm.press.
+For the rest of the session, we will use these variables: USAFID, WBAN, year, month, day, hour, min, lat, lon, elev, wind.sp, temp, and atm.press.
 
 ```{r}
 #| label: actual-selection
@@ -285,17 +406,14 @@ dat <- dat[,
 dat_ldt <- lazy_dt(dat)
 ```
 
----
 
 ## Data filtering: Logical conditions
 
 ::: {.r-fit-text}
 
-- Based on logical operations, e.g. `condition 1 [and|or condition2 [and|or ...]]`
+- Based on logical operations, *e.g.*, `condition 1 [and|or condition2 [and|or ...]]`
 
-- Need to be aware of ordering and grouping of `and` and `or` operators.
-
-- Fundamental **logical** operators:
+- Need to be aware of ordering and grouping of `and` and `or` operators (see `Comparison`).
   
   ```{r}
   #| label: operators
@@ -314,13 +432,11 @@ dat_ldt <- lazy_dt(dat)
   knitr::kable(ans, row.names = FALSE, align = "c")
   ```
 
-- Fundamental **relational** operators, in R: `<`, `>`, `<=`, `>=`, `==`, `!=`.
-
 :::
 
----
-
 ## Questions 1: How many ways can you write an XOR operator?
+
+::: {.r-fit-text}
 
 Write a function that takes two arguments `(x,y)` and applies the XOR operator
 element wise. Here you have a template:
@@ -347,15 +463,20 @@ myxor <- function(x, y) {
 
 Hint 1: Remember that negating `(x & y)` equals `(!x | !y)`.
 
-Hint 2: Logical operators are a distributive, meaning
+Hint 2: Logical operators are distributive, meaning
 `a * (b + c) = (a * b) + (a + c)`, where `*` and `+` are `&` or `|`.
 
+:::
+
 ---
+
+::: {.r-fit-text}
 
 In R
 
 ```{r}
 #| label: xor-r
+#| echo: true
 myxor1 <- function(x,y) {(x & !y) | (!x & y)}
 myxor2 <- function(x,y) {!((!x | y) & (x | !y))}
 myxor3 <- function(x,y) {(x | y) & (!x | !y)}
@@ -369,12 +490,17 @@ cbind(
 )
 ```
 
+:::
+
 ---
+
+::: {.r-fit-text .shrink}
 
 Or in python
 
 ```{python}
 #| label: xor-py
+#| echo: true
 # Loading the libraries
 import numpy as np
 import pandas as pa
@@ -392,12 +518,17 @@ ans = {
 pa.DataFrame(ans)
 ```
 
+:::
+
 ---
+
+::: {.r-fit-text}
 
 Or in python (bis)
 
 ```{python}
 #| label: xor-py-bis
+#| echo: true
 def myxor(x,y):
     return np.logical_or(
         np.logical_and(x, np.logical_not(y)),
@@ -408,9 +539,9 @@ ans['myxor'] = myxor(x,y)
 pa.DataFrame(ans)
 ```
 
-We will now see applications using the `met` dataset
+We will now see applications using the `met` dataset.
 
----
+:::
 
 ## Filtering (subsetting) the data
 
@@ -420,7 +551,7 @@ Need to select records according to some criteria. For example:
 
 - First day of the month, and
 - Above latitude 40, and
-- Elevation outside the range 500 and 1,000.
+- Elevation outside the range between 500 and 1,000.
 
 The logical expressions would be
 
@@ -438,6 +569,7 @@ In R with `data.table`:
 
 ```{r}
 #| label: filter1-dt1
+#| echo: true
 #| eval: !expr slides_eval
 dat[(day == 1) & (lat > 40) & ((elev < 500) | (elev > 1000))] %>%
   nrow()
@@ -449,6 +581,7 @@ In R with **dplyr::filter()**:
 
 ```{r}
 #| label: filter1-tv
+#| echo: true
 #| eval: !expr slides_eval
 dat_ldt %>%
   filter(day == 1, lat > 40, (elev < 500) | (elev > 1000)) %>%
@@ -458,11 +591,14 @@ dat_ldt %>%
 
 ---
 
+::: {.r-fit-text}
+
 In Python
 
 ```{python}
 #| label: filter1-py-load
 #| eval: !expr slides_eval
+#| echo: true
 import datatable as dt
 dat = dt.fread("met.gz")
 ```
@@ -471,21 +607,20 @@ dat = dt.fread("met.gz")
 ```{python}
 #| label: filter1-py
 #| eval: !expr slides_eval
+#| echo: true
 dat[(dt.f.day == 1) & (dt.f.lat > 40) & ((dt.f.elev < 500) | (dt.f.elev > 1000)), :].nrows
 # dat[dt.f.day == 1,:][dt.f.lat > 40,:][(dt.f.elev < 500) | (dt.f.elev > 1000),:].nrows
 ```
 
-In the case of pydatatable we use `dt.f.` to refer to a column. `df.` is what
-we use to refer to datatable's [namespace](https://en.wikipedia.org/wiki/Namespace).
+In the case of pydatatable we use `dt.f.` to refer to a column. `df.` is what we use to refer to datatable's [namespace](https://en.wikipedia.org/wiki/Namespace).
 
-The [`f.` is a symbol](https://datatable.readthedocs.io/en/latest/manual/f-expressions.html)
-that allows accessing column names in a datatable's `Frame`.
+The [`f.` is a symbol](https://datatable.readthedocs.io/en/latest/manual/f-expressions.html) that allows accessing column names in a datatable's `Frame`.
 
----
+:::
 
 ## Questions 2
 
-1. How many records have a temperature within 18 and 25?
+1. How many records have a temperature between 18 and 25?
 
 2. Some records have missings. Count how many records have `temp` as `NA`?
 
@@ -528,24 +663,19 @@ ggplot(map_data("state"), aes(x = long, y = lat)) +
 ```
 
 
----
-
 ## Creating variables: Data types
 
 ::: {.r-fit-text}
 
-- **logical**: Bool true/false type, e.g. dead/alive, sick/healthy, good/bad, yes/no, etc.
+- **logical**: Bool true/false type, *e.g.*, dead/alive, sick/healthy, good/bad, yes/no, etc.
 
-- **strings**: string of characters (letters/symbols), e.g. names, text, etc.
+- **strings**: string of characters (letters/symbols), *e.g.*, names, text, etc.
 
-- **integer**: Numeric variable with no decimal (discrete), e.g. age, days, counts, etc.
+- **integer**: Numeric variable with no decimal (discrete), *e.g.*, age, days, counts, etc.
 
-- **double**: Numeric variable with decimals (continuous), e.g. distance, expression level, time.
+- **double**: Numeric variable with decimals (continuous), *e.g.*, distance, expression level, time.
 
-In C (and other languages), strings, integers, and doubles may be specified 
-with size, e.g. in `python` integers can be of 9, 16, and 32 bits. This is relevant
-when managing large datasets, where saving space can be fundamental
-([more info](https://en.wikipedia.org/wiki/C_data_types#Main_types)).
+In C (and other languages), strings, integers, and doubles may be specified with size, *e.g.*, in `python` integers can be of 9, 16, and 32 bits. This is relevant when managing large datasets, where saving space can be fundamental ([more info](https://en.wikipedia.org/wiki/C_data_types#Main_types)).
 
 :::
 
@@ -555,30 +685,21 @@ when managing large datasets, where saving space can be fundamental
 
 ::: {.r-fit-text}
 
-Most programming languages have special types which are built using basic types.
-A few examples:
+Most programming languages have special types which are built using basic types. Here are a few examples:
 
-- **time**: Could be date, date + time, or a combination of both. Usually it has
-  a reference number defined as date 0. In R, the `Date` class has as reference
-  1970-01-01, in other words, "days since January 1st, 1970".
+- **time**: Could be date, date + time, or a combination of both. Usually, it has a reference number defined as date 0. In R, the `Date` class has as reference 1970-01-01, in other words, "days since January 1st, 1970".
   
-- **categorical**: Commonly used to represent strata/levels of variables, e.g. a variable
-  "country" could be represented as a factor, where the data is stored as numbers
-  but has a label.
+- **categorical**: Commonly used to represent strata/levels of variables, *e.g.*, a variable "country" could be represented as a factor where the data is stored as numbers but has a label.
   
 - **ordinal**: Similar to factor, but it has ordering, e.g.
   "satisfaction level: 5 very satisfied, ..., 1 very unsatisfied".
 
-Other special data types could be ways to represent missings (usually described as `na` or `NA`),
-or special numeric types, e.g. `+-Inf` and Undefined (`NaN`).
+Other noteworthy data types could be ways to represent missings (usually described as `na` or `NA`), or particular numeric types, e.g., `+-Inf` and Undefined (`NaN`).
 
 
-When storing/sharing datasets, it is a good practice to do it along a dictionary
-describing each column data type/format.
+When storing/sharing datasets, it is a good practice to do it along a dictionary describing each column data type/format.
 
 :::
-
----
 
 ## Questions 3: What's the best way to represent the following
 
@@ -608,13 +729,13 @@ describing each column data type/format.
 
 ## Variable creation
 
-If we wanted to create two variables, `elev^2` and the scaled version of `wind.sp` by it's
-standard error, we could do the following
+If we wanted to create two variables, `elev^2` and the scaled version of `wind.sp` by it's standard error, we could do the following:
 
-With `data.table`
+Using `data.table`
 
 ```{r}
 #| eval: !expr slides_eval
+#| echo: true
 dat[, elev2         := elev^2]
 dat[, windsp_scaled := wind.sp/sd(wind.sp, na.rm = TRUE)]
 # Alternatively:
@@ -637,9 +758,8 @@ dat_ldt %>%
   ) %>% collect()
 ```
 
-Notice that, since `dat_ldt` is a pointer, the variables are now in `dat`.
+Notice that since `dat_ldt` is a pointer, the variables are now in `dat`.
 
----
 
 ## Variable creation (cont. 2)
 
@@ -662,7 +782,6 @@ head(dat[, .SD, .SDcols = out_names], n = 4)
 
 Key things to notice here: **c(out_names)**, **.SD**, and **.SDCols**.
 
----
 
 ## Variable creation (cont. 3)
 
@@ -683,28 +802,27 @@ as_tibble(dat_ldt) %>%
   head(n = 4)
 ```
 
-Key thing here: This approach has no direct translation to `data.table`, which
-is why we used **as_tibble()**.
+A key thing here: This approach has no direct translation to `data.table`, which is why we used **as_tibble()**.
 
----
 
 ## Merging data
 
 - While building the MET dataset, we dropped the State data.
 
-- We can use the original Stations dataset and *merge* it to the MET dataset.
+- We can use the original Stations dataset and *merge* it with the MET dataset.
 
 - But we cannot do it right away. We need to process the data somewhat first.
 
 
----
-
 ## Merging data (cont. 1)
+
+::: {.r-fit-text}
 
 ```{r}
 #| label: stations-data
 #| cache: true
 #| warning: false
+#| echo: true
 stations <- fread("ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv")
 stations[, USAF := as.integer(USAF)]
 
@@ -724,9 +842,12 @@ head(stations, n = 4)
 
 Notice the function `fifelse()`. Now, let's try to merge the data!
 
----
+:::
+
 
 ## Merging data (cont. 2)
+
+::: {.r-fit-text}
 
 ```{r}
 #| label: merge-try1
@@ -754,15 +875,18 @@ stations[, n := 1:.N, by = .(USAF)]
 stations <- stations[n == 1,][, n := NULL]
 ```
 
----
+:::
 
 ## Merging data (cont. 3)
 
-We now can use the function `merge()` to add the extra data
+::: {.r-fit-text}
+
+We can now use the function `merge()` to add the extra data
 
 ```{r}
 #| label: merge
 #| eval: true
+#| echo: true
 dat <- merge(
   # Data
   x     = dat,      
@@ -778,6 +902,12 @@ dat <- merge(
 head(dat[, list(USAFID, WBAN, STATE)], n = 4)
 ```
 
+:::
+
+---
+
+::: {.r-fit-text}
+
 What happens when you change the options `all.x` and `all.y`?
 
 ```{r}
@@ -789,11 +919,13 @@ merge(x = dat, y = stations, by.x = "USAFID", by.y = "USAF",all.x = FALSE, all.y
 merge(x = dat, y = stations, by.x = "USAFID", by.y = "USAF",all.x = FALSE, all.y = FALSE) %>% nrow()
 ```
 
+:::
+
 ---
 
 ## Aggregating data: Adding groupped variables
 
-- Many times we need to either impute some data, or generate variables by strata.
+- Often, we must either impute some data or generate variables by strata.
 
 - If we, for example, wanted to impute missing temperature with the daily state
   average, we could use **by** together with the **data.table::fcoalesce()** function:
@@ -824,7 +956,7 @@ merge(x = dat, y = stations, by.x = "USAFID", by.y = "USAF",all.x = FALSE, all.y
 
 ---
 
-## Aggregating data: Adding groupped variables (cont.)
+## Aggregating data: Adding grouped variables (cont.)
 
 Let's see how it looks like
 
