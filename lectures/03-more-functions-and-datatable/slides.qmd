@@ -4,6 +4,8 @@ subtitle: "PHS 7045: Advanced Programming"
 format:
   revealjs:
     embed-resources: true
+    slide-number: true
+    scrollable: true
 author: "George G. Vega Yon, Ph.D."
 ---
 
@@ -293,6 +295,7 @@ names work as symbols, e.g.,
 ```{r}
 #| label: error-j
 #| eval: false
+#| echo: true
 data(USArrests)
 USArrests_dt <- data.table(USArrests)
 
@@ -315,6 +318,7 @@ USArrests_dt <- data.table(USArrests)
 
 ```{r}
 #| label: plot-usarrests
+#| echo: true
 USArrests_dt[, plot(Murder, UrbanPop)]
 ```
 
@@ -327,12 +331,12 @@ USArrests_dt[, plot(Murder, UrbanPop)]
 - This function creates a wrapper that "points" to a `data.table` object
 
 
-## `data.table` and `dtplyr`: Lazy table (cont.)
+## `data.table` and `dtplyr`: Lazy table (cont.) {.smaller}
 
-::: {.r-fit-text}
 
 ```{r}
 #| label: lazy-dt
+#| echo: true
 # Creating a lazy table object
 dat_ldt <- lazy_dt(dat, immutable = FALSE)
 
@@ -341,21 +345,21 @@ address(dat)
 address(dat_ldt$parent)
 ```
 
-<div align="center">
-<img src="pointer-paths.svg" width="800px">
-</div>
+![](pointer-paths.svg){width="800px"}
 
 Question: What is the `immutable = FALSE` option used for?
 
-:::
 
 ## Selecting columns
+
+::: {.r-fit-text}
 
 How can we select the columns `USAFID`, `lat`, and `lon`, using `data.table`:
 
 ```{r}
 #| label: select1-dt
 #| eval: !expr slides_eval
+#| echo: true
 dat[, list(USAFID, lat, lon)]
 # dat[, .(USAFID, lat, lon)]       # Alternative 1
 # dat[, c("USAFID", "lat", "lon")] # Alternative 2
@@ -363,33 +367,33 @@ dat[, list(USAFID, lat, lon)]
 
 What happens if instead of `list()` you used `c()`?
 
+:::
 
-## Selecting columns (cont. 1)
+
+## Selecting columns (cont. 1) 
 
 Using the **dplyr::select** verb:
 
 ```{r}
 #| label: select1-tv
 #| eval: !expr slides_eval
+#| echo: true
 dat_ldt %>% select(USAFID, lat, lon)
 ```
 
-
-## Selecting columns (cont. 2)
-
-::: {.r-fit-text}
+## Selecting columns (cont. 2) {.small}
 
 In the case of `pydatatable`
 
 ```{python}
 #| label: select1-py
 #| eval: !expr slides_eval
+#| echo: true
 dat[:,["USAFID", "lat", "lon"]]
 ```
 
 What happens if instead of `["USAFID", "lat", "lon"]` you used `{"USAFID", "lat", "lon"}` (vector vs set).
 
-:::
 
 ---
 
@@ -397,6 +401,7 @@ For the rest of the session, we will use these variables: USAFID, WBAN, year, mo
 
 ```{r}
 #| label: actual-selection
+#| echo: true
 # Data.table
 dat <- dat[,
   .(USAFID, WBAN, year, month, day, hour, min, lat, lon, elev,
@@ -407,9 +412,7 @@ dat_ldt <- lazy_dt(dat)
 ```
 
 
-## Data filtering: Logical conditions
-
-::: {.r-fit-text}
+## Data filtering: Logical conditions {.small}
 
 - Based on logical operations, *e.g.*, `condition 1 [and|or condition2 [and|or ...]]`
 
@@ -432,14 +435,11 @@ dat_ldt <- lazy_dt(dat)
   knitr::kable(ans, row.names = FALSE, align = "c")
   ```
 
-:::
 
-## Questions 1: How many ways can you write an XOR operator?
-
-::: {.r-fit-text}
+## Questions 1: How many ways can you write an XOR operator? 
 
 Write a function that takes two arguments `(x,y)` and applies the XOR operator
-element wise. Here you have a template:
+element-wise. Here you have a template:
 
 ```r
 myxor <- function(x, y) {
@@ -453,13 +453,13 @@ myxor <- function(x, y) {
 
 Or if vectorized (which would be better)
 
-```r
+<!-- ```r
 myxor <- function(x, y) {
   # INSERT YOUR CODE HERE
 }
-```
+``` -->
 
-
+::: {style="font-size: 10pt"}
 
 Hint 1: Remember that negating `(x & y)` equals `(!x | !y)`.
 
@@ -467,6 +467,7 @@ Hint 2: Logical operators are distributive, meaning
 `a * (b + c) = (a * b) + (a + c)`, where `*` and `+` are `&` or `|`.
 
 :::
+
 
 ---
 
@@ -494,7 +495,7 @@ cbind(
 
 ---
 
-::: {.r-fit-text .shrink}
+::: {.smaller}
 
 Or in python
 
@@ -522,7 +523,7 @@ pa.DataFrame(ans)
 
 ---
 
-::: {.r-fit-text}
+<!-- ::: {.r-fit-text} -->
 
 Or in python (bis)
 
@@ -541,11 +542,11 @@ pa.DataFrame(ans)
 
 We will now see applications using the `met` dataset.
 
-:::
+<!-- ::: -->
 
 ## Filtering (subsetting) the data
 
-::: {.r-fit-text}
+::: {.smaller}
 
 Need to select records according to some criteria. For example:
 
@@ -703,7 +704,7 @@ When storing/sharing datasets, it is a good practice to do it along a dictionary
 
 ## Questions 3: What's the best way to represent the following
 
-::: {.r-fit-text}
+::: {.smaller}
 
 - 0, 1, 1, 0, 0, 1
 
