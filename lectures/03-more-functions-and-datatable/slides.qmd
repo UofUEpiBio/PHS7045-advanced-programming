@@ -306,11 +306,13 @@ USArrests[, Murder]
 USArrests_dt[, Murder]
 ```
 
+---
+
 Furthermore, we can do things like this:
   
 ```{r}
 #| label: load-usarrests
-#| echo: true
+#| echo: false
 data("USArrests")
 USArrests_dt <- data.table(USArrests)
 ```
@@ -392,7 +394,11 @@ In the case of `pydatatable`
 dat[:,["USAFID", "lat", "lon"]]
 ```
 
+::: {style="font-size: 20pt"}
+
 What happens if instead of `["USAFID", "lat", "lon"]` you used `{"USAFID", "lat", "lon"}` (vector vs set).
+
+:::
 
 
 ---
@@ -412,7 +418,9 @@ dat_ldt <- lazy_dt(dat)
 ```
 
 
-## Data filtering: Logical conditions {.small}
+## Data filtering: Logical conditions 
+
+::: {style="font-size: 20pt"}
 
 - Based on logical operations, *e.g.*, `condition 1 [and|or condition2 [and|or ...]]`
 
@@ -435,6 +443,7 @@ dat_ldt <- lazy_dt(dat)
   knitr::kable(ans, row.names = FALSE, align = "c")
   ```
 
+:::
 
 ## Questions 1: How many ways can you write an XOR operator? 
 
@@ -459,7 +468,7 @@ myxor <- function(x, y) {
 }
 ``` -->
 
-::: {style="font-size: 10pt"}
+::: {style="font-size: 20pt"}
 
 Hint 1: Remember that negating `(x & y)` equals `(!x | !y)`.
 
@@ -546,7 +555,7 @@ We will now see applications using the `met` dataset.
 
 ## Filtering (subsetting) the data
 
-::: {.smaller}
+::: {style="font-size: 20pt"}
 
 Need to select records according to some criteria. For example:
 
