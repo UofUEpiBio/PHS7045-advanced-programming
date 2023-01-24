@@ -34,13 +34,13 @@ your assignment, you will have to ping one of the instructors in your
 commit message, for example:
 
 ``` sh
-git commit -a -m "Assignment done @gvegayon"
+git commit -a -m "Assignment done @gvegayon and @chipmanj"
 ```
 
-This way @gvegayon will receive a notification about this assignment.
-Furthermore, we encourage you to use other GitHub resources, such as
-adding the URL of [GitHub issue]() regarding that assignment, for
-example, if you include the following link in your commit message:
+This way @gvegayon and @chipmanj will receive a notification about this
+assignment. Furthermore, we encourage you to use other GitHub resources,
+such as adding the URL of [GitHub issue]() regarding that assignment,
+for example, if you include the following link in your commit message:
 
     git commit -a -m "Assignment done https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/17"
 
