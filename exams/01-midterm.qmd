@@ -1,0 +1,45 @@
+---
+title: "Midterm"
+format:
+  html:
+    embed-resources: true
+---
+
+## Due date
+
+TBD
+
+## Task
+
+Develop an R package that solves a problem.  This could be from your own research or you may get approval to do a related but modified example from ([posted projects](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects)).  
+
+## Deliverables
+
+* R package with a vignette, at least 2-5 pages, including example of real data or simulation (70% of grade)
+* Oral presentation of no more than 7 minutes (30% of grade)
+
+## Requirements
+
+Basic requirements include:
+
+* R code is well documented
+* Package should be able to install
+* Available on github with README.md
+* Package sets a class with generic summary, plot, and print functions
+
+
+Further, the package should incorporate the content of least 3 topics, including: 
+
+* Rcpp
+* Vignette built in Quarto
+* Simulation and timing
+* *apply functions
+* data.table
+* parallel computing
+
+Bonus points will be given for continuous integration.
+
+
+## Grading
+
+The grade will be based upon clear communication and coding.
