@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*_files/
+*_cache/
+libs
+*.gz
+*.docx
+*.xlsx
