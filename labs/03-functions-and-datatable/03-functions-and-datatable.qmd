@@ -23,13 +23,13 @@ This markdown document should be rendered using `gfm` document.
 
 1. Go to your documents (or wherever you are planning to store the data) in your computer, and create a folder for this project, for example, "PHS7045-labs"
 
-2. In that folder, save [this template](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/labs/03-functions-and-datatable/03-functions-and-datatable.qmd) as "README.Rmd". This will be the markdown file where all the magic will happen.
+2. In that folder, save [this template](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/labs/03-functions-and-datatable/03-functions-and-datatable.qmd) as "README.qmd." This will be the markdown file where all the magic will happen.
 
 3. Go to your GitHub account and create a new repository, hopefully of the same name this folder has, i.e., "PHS7045-labs".
 
 4. Initialize the Git project, add the "README.qmd" file, and make your first commit.
 
-5. Add the repo you just created on GitHub.com to the list of remotes, and push your commit to origin while setting the upstream.
+5. Add the repo you just created on GitHub.com to the list of remotes, and push your commit to `origin` while setting the upstream.
 
 Most of the steps can be done using the command line:
 
@@ -96,7 +96,7 @@ Write a function using the ellipsis argument (`...`) with the goal of (i) retrie
 Knit the document, commit your changes, and push them to GitHub.
 
 
-## Question 2: **Lady evaluation**
+## Question 2: **Lazy evaluation**
 
 A concept we did not review was lazy evaluation. Write a function with two arguments (`a` and `b`)  that only uses one of them as an integer, and then call the function passing the following arguments `(1, this_stuff)`
 
