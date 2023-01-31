@@ -2713,6 +2713,17 @@ vertical-align: -.125em;
 <li><code>system.time</code> and <code>bench::mark</code></li>
 <li><code>profvis::provis</code></li>
 </ul>
+<ol start="3" type="1">
+<li>Improving efficiency</li>
+</ol>
+<ul>
+<li><a href="https://adv-r.hadley.nz/perf-improve.html">Ch. 24: Improving Performance</a></li>
+<li>Use vectorization</li>
+<li>Beware of copy-on-change (example: continual <code>rbind</code>’ing)</li>
+<li>Use <code>data.table</code> as appropriate</li>
+<li>Use parallel computing</li>
+<li>Compile code in C (<code>rcpp</code>)</li>
+</ul>
 </section>
 </section>
 </section>
@@ -2766,7 +2777,7 @@ vertical-align: -.125em;
 </section>
 <section id="example" class="level2">
 <h2 class="anchored" data-anchor-id="example">Example</h2>
-<p>An R package example of modular programming and anti-bugging: <a href="https://github.com/chipmanj/SeqSGPV/tree/master/R">seqSGPV</a>.</p>
+<p>An R package example of modular programming and anti-bugging: <a href="https://github.com/chipmanj/SeqSGPV">seqSGPV</a>.</p>
 </section>
 <section id="interactive-debugging" class="level2">
 <h2 class="anchored" data-anchor-id="interactive-debugging">Interactive debugging</h2>
@@ -2798,7 +2809,7 @@ vertical-align: -.125em;
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">+</span> <span class="dv">10</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Debug using Rstudio &#39;Rerun with Debug&#39;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Traceback and debug using Rstudio &#39;Rerun with Debug&#39;</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter debugging mode for a function until deactivating debugging mode</span></span>
@@ -2857,7 +2868,7 @@ vertical-align: -.125em;
 <p>Find a set of code you’ve written and know well to share with a classmate.</p>
 <p>As the classmate,</p>
 <ul>
-<li>Do you have any feedback on how to make the code more readable?</li>
+<li>Do you have any feedback on how to make the code more readable? More efficient?</li>
 <li>Insert a bug(s) into the code</li>
 </ul>
 <p>When you get your code back, can you find and fix the bug?</p>
@@ -2884,21 +2895,21 @@ vertical-align: -.125em;
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>t1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.004   0.006   0.010 </code></pre>
+  0.007   0.013   0.020 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>t2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   user  system elapsed 
-  0.332   0.005   0.336 </code></pre>
+  0.336   0.008   0.344 </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The loop is longer by a factor of:</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>t2[<span class="st">&quot;elapsed&quot;</span>] <span class="sc">/</span> t1[<span class="st">&quot;elapsed&quot;</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>elapsed 
-   33.6 </code></pre>
+   17.2 </code></pre>
 </div>
 </div>
-<p>Why is <code>t2</code> 33.6? times longer?</p>
+<p>Why is <code>t2</code> 17.2? times longer?</p>
 <ul>
 <li>Seemingly hidden functions are <code>:</code> and <code>[</code> (subsetting) which add to the collective set of functions called (i.e. the “stack frame”).</li>
 </ul>
@@ -2913,11 +2924,19 @@ vertical-align: -.125em;
 <h2 class="anchored" data-anchor-id="profvis">profvis</h2>
 <p><code>profvis::profvis</code> is a good go-to for evaluating performance of multiple calls.</p>
 <p>We’ll work through the <a href="http://rstudio.github.io/profvis/">tutorial</a> together.</p>
-<p>Profile your (or a classmate’s) warm-up problem solution.</p>
+<p>Walk through profiling SeqSGPV.</p>
+<p>Profile the code you earlier shared with your classmate.</p>
 </section>
 <section id="improving-efficiency" class="level2">
 <h2 class="anchored" data-anchor-id="improving-efficiency">Improving efficiency</h2>
 <p><a href="https://adv-r.hadley.nz/perf-improve.html">Ch. 24: Improving Performance</a></p>
+<p>Parts to highlight:</p>
+<ul>
+<li><a href="https://adv-r.hadley.nz/perf-improve.html#introduction-23">introduction</a></li>
+<li><a href="https://adv-r.hadley.nz/perf-improve.html#vectorise">vectorize</a></li>
+<li><a href="https://adv-r.hadley.nz/perf-improve.html#be-lazy">do as little as possible</a></li>
+<li><a href="https://adv-r.hadley.nz/perf-improve.html#avoid-copies">avoid copies</a></li>
+</ul>
 </section>
 </section>
 <section id="session-info" class="level1">
@@ -3251,239 +3270,254 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Profiling code</span>
 <span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span><span class="in">`system.time`</span> and <span class="in">`bench::mark`</span></span>
 <span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span><span class="in">`profvis::provis`</span></span>
-<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a><span class="fu"># Debugging</span></span>
-<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a><span class="fu">## Debug in a Modular, Top-Down Manner</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Improving efficiency</span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span><span class="co">[</span><span class="ot">Ch. 24: Improving Performance</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html)</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Use vectorization</span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Beware of copy-on-change (example: continual <span class="in">`rbind`</span>&#39;ing)</span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Use <span class="in">`data.table`</span> as appropriate</span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Use parallel computing</span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a><span class="ss">  * </span>Compile code in C (<span class="in">`rcpp`</span>)</span>
 <span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>How do you organize files on your computer?</span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>A friend of mine stored _all_ documents in the downloads folder!  When it came time to find a file, it was like finding a needle in a haystack (there also wasn&#39;t a uniform naming convention).</span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a><span class="fu"># Debugging</span></span>
 <span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Quoting from Matloff</span><span class="co">](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=312)</span></span>
-<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a>&quot;Most good software developers agree that code should be written in a modular manner. Your first-level code should not be longer than, say, a dozen lines, with much of it consisting of function calls. And those functions should not be too lengthy and should call other functions if necessary. This makes the code easier to organize during the writing stage and easier for others to understand when it comes time for the code to be extended.&quot;</span>
-<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>Question: What can be &quot;modularized&quot; in homework 1?</span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## Debug in a Modular, Top-Down Manner</span></span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>How do you organize files on your computer?</span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a>A friend of mine stored _all_ documents in the downloads folder!  When it came time to find a file, it was like finding a needle in a haystack (there also wasn&#39;t a uniform naming convention).</span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>Top-down modular level: </span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Quoting from Matloff</span><span class="co">](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=312)</span></span>
 <span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Analysis / Summary</span>
-<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Design functions</span>
-<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Function to draw posterior distributions</span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a>&quot;Most good software developers agree that code should be written in a modular manner. Your first-level code should not be longer than, say, a dozen lines, with much of it consisting of function calls. And those functions should not be too lengthy and should call other functions if necessary. This makes the code easier to organize during the writing stage and easier for others to understand when it comes time for the code to be extended.&quot;</span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a>Question: What can be &quot;modularized&quot; in homework 1?</span>
 <span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a>With debugging start top-down.  Assume lower-level functions are correct until finishing debugging / checking top-level modules.</span>
+<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a>Top-down modular level: </span>
 <span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a>An example from collaboration.</span>
-<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a><span class="fu">## Antibugging</span></span>
-<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a>Pro-actively stop a function (or provide a warning or message) if a condition is not met:</span>
-<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, error=TRUE}</span></span>
-<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(x))</span>
-<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a>Here, is an equivalent stop command using if-logic.  <span class="in">`deparse(subsitute([var]))`</span> prints the name of the object:</span>
-<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, error=TRUE}</span></span>
-<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.character</span>(x)){</span>
-<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="fu">paste0</span>(<span class="fu">deparse</span>(<span class="fu">substitute</span>(x)), <span class="st">&quot; is not a character&quot;</span>))</span>
-<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.character</span>(x)){</span>
-<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="fu">paste0</span>(<span class="fu">deparse</span>(<span class="fu">substitute</span>(x)), <span class="st">&quot; is not a character&quot;</span>))</span>
-<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a><span class="fu">## Example</span></span>
-<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a>An R package example of modular programming and anti-bugging: <span class="co">[</span><span class="ot">seqSGPV</span><span class="co">](https://github.com/chipmanj/SeqSGPV/tree/master/R)</span>.</span>
-<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Analysis / Summary</span>
+<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Design functions</span>
+<span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Function to draw posterior distributions</span>
+<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a>With debugging start top-down.  Assume lower-level functions are correct until finishing debugging / checking top-level modules.</span>
+<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a>An example from collaboration.</span>
+<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## Antibugging</span></span>
+<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a>Pro-actively stop a function (or provide a warning or message) if a condition is not met:</span>
+<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, error=TRUE}</span></span>
+<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(x))</span>
+<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a>Here, is an equivalent stop command using if-logic.  <span class="in">`deparse(subsitute([var]))`</span> prints the name of the object:</span>
+<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, error=TRUE}</span></span>
+<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.character</span>(x)){</span>
+<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="fu">paste0</span>(<span class="fu">deparse</span>(<span class="fu">substitute</span>(x)), <span class="st">&quot; is not a character&quot;</span>))</span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">is.character</span>(x)){</span>
+<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="fu">paste0</span>(<span class="fu">deparse</span>(<span class="fu">substitute</span>(x)), <span class="st">&quot; is not a character&quot;</span>))</span>
+<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-133"><a href="#cb20-133" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interactive debugging</span></span>
-<span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a>When an error occurs, use the <span class="in">`traceback`</span> function to get a sense of where the error occurred.</span>
-<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a>Options to debug a function from top-to-bottom:</span>
+<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a><span class="fu">## Example</span></span>
+<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a>An R package example of modular programming and anti-bugging: <span class="co">[</span><span class="ot">seqSGPV</span><span class="co">](https://github.com/chipmanj/SeqSGPV)</span>.</span>
+<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`debug (undebug)`</span></span>
-<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`debugonce`</span></span>
-<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a>This will interactively walk you through the function call with the following commands:</span>
-<span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`n`</span>: next line of code</span>
-<span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`s`</span>: step into the next function</span>
-<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`f`</span>: continue forward through the current <span class="in">`{}`</span> code block (example, a loop or the rest of the function)</span>
-<span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`c`</span>: continue the rest of the function to see if it&#39;ll complete as anticipated</span>
-<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`Q`</span>: quit interactive </span>
-<span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`where`</span>: shows the trace stack (the possibly multiple layers of a function call)</span>
-<span id="cb20-151"><a href="#cb20-151" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`any r command`</span> may be run when in debugger mode</span>
-<span id="cb20-152"><a href="#cb20-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a>Some examples ...</span>
-<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
-<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(a) <span class="fu">g</span>(a)</span>
-<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="cf">function</span>(b) <span class="fu">h</span>(b)</span>
-<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="cf">function</span>(c) <span class="fu">i</span>(c)</span>
-<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
-<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(d)) {</span>
-<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;`d` must be numeric&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">+</span> <span class="dv">10</span></span>
-<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a><span class="co"># Debug using Rstudio &#39;Rerun with Debug&#39;</span></span>
-<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
-<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter debugging mode for a function until deactivating debugging mode</span></span>
-<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a><span class="fu">debug</span>(f)</span>
-<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
-<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
-<span id="cb20-174"><a href="#cb20-174" aria-hidden="true" tabindex="-1"></a><span class="fu">undebug</span>(f)</span>
+<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a><span class="fu">## Interactive debugging</span></span>
+<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a>When an error occurs, use the <span class="in">`traceback`</span> function to get a sense of where the error occurred.</span>
+<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a>Options to debug a function from top-to-bottom:</span>
+<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`debug (undebug)`</span></span>
+<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`debugonce`</span></span>
+<span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a>This will interactively walk you through the function call with the following commands:</span>
+<span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-151"><a href="#cb20-151" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`n`</span>: next line of code</span>
+<span id="cb20-152"><a href="#cb20-152" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`s`</span>: step into the next function</span>
+<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`f`</span>: continue forward through the current <span class="in">`{}`</span> code block (example, a loop or the rest of the function)</span>
+<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`c`</span>: continue the rest of the function to see if it&#39;ll complete as anticipated</span>
+<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`Q`</span>: quit interactive </span>
+<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`where`</span>: shows the trace stack (the possibly multiple layers of a function call)</span>
+<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`any r command`</span> may be run when in debugger mode</span>
+<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>Some examples ...</span>
+<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(a) <span class="fu">g</span>(a)</span>
+<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="cf">function</span>(b) <span class="fu">h</span>(b)</span>
+<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="cf">function</span>(c) <span class="fu">i</span>(c)</span>
+<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
+<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(d)) {</span>
+<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;`d` must be numeric&quot;</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">+</span> <span class="dv">10</span></span>
+<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a><span class="co"># Traceback and debug using Rstudio &#39;Rerun with Debug&#39;</span></span>
+<span id="cb20-174"><a href="#cb20-174" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
 <span id="cb20-175"><a href="#cb20-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-176"><a href="#cb20-176" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter debug mode for a single call</span></span>
-<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a><span class="fu">debugonce</span>(f)</span>
+<span id="cb20-176"><a href="#cb20-176" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter debugging mode for a function until deactivating debugging mode</span></span>
+<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a><span class="fu">debug</span>(f)</span>
 <span id="cb20-178"><a href="#cb20-178" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
 <span id="cb20-179"><a href="#cb20-179" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
-<span id="cb20-180"><a href="#cb20-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-180"><a href="#cb20-180" aria-hidden="true" tabindex="-1"></a><span class="fu">undebug</span>(f)</span>
 <span id="cb20-181"><a href="#cb20-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-182"><a href="#cb20-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a><span class="in">`View`</span> and <span class="in">`debug`</span> are good ways to learn the underlying code to a function.</span>
-<span id="cb20-184"><a href="#cb20-184" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-185"><a href="#cb20-185" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,eval=FALSE}</span></span>
-<span id="cb20-186"><a href="#cb20-186" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(lm)</span>
-<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a><span class="fu">debugonce</span>(lm)</span>
-<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span><span class="sc">~</span><span class="dv">1</span>,<span class="at">method =</span> <span class="st">&quot;model.frame&quot;</span>)</span>
-<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-182"><a href="#cb20-182" aria-hidden="true" tabindex="-1"></a><span class="co"># Enter debug mode for a single call</span></span>
+<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a><span class="fu">debugonce</span>(f)</span>
+<span id="cb20-184"><a href="#cb20-184" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
+<span id="cb20-185"><a href="#cb20-185" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="st">&quot;a&quot;</span>)</span>
+<span id="cb20-186"><a href="#cb20-186" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a><span class="in">`View`</span> and <span class="in">`debug`</span> are good ways to learn the underlying code to a function.</span>
 <span id="cb20-190"><a href="#cb20-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a>You can use the <span class="in">`browser`</span> function to enter debugging mode partially through a function</span>
-<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
-<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x, remainder){</span>
-<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1, add 1 to even elements</span></span>
-<span id="cb20-198"><a href="#cb20-198" aria-hidden="true" tabindex="-1"></a>  x[x<span class="sc">%%</span><span class="dv">2</span>] <span class="ot">&lt;-</span> x[x<span class="sc">%%</span><span class="dv">2</span>] <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb20-199"><a href="#cb20-199" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2, see if each value in sequence is even or odd</span></span>
-<span id="cb20-201"><a href="#cb20-201" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> x <span class="sc">%%</span> remainder</span>
+<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a><span class="in">```{r,eval=FALSE}</span></span>
+<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(lm)</span>
+<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a><span class="fu">debugonce</span>(lm)</span>
+<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span><span class="sc">~</span><span class="dv">1</span>,<span class="at">method =</span> <span class="st">&quot;model.frame&quot;</span>)</span>
+<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-198"><a href="#cb20-198" aria-hidden="true" tabindex="-1"></a>You can use the <span class="in">`browser`</span> function to enter debugging mode partially through a function</span>
+<span id="cb20-199"><a href="#cb20-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb20-201"><a href="#cb20-201" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(x, remainder){</span>
 <span id="cb20-202"><a href="#cb20-202" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(<span class="fu">unique</span>(out))<span class="sc">!=</span> <span class="dv">2</span>) <span class="fu">browser</span>()</span>
-<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2, for elements with 0 remainder, add 1</span></span>
-<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a>  x[out <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> x[out <span class="sc">==</span> <span class="dv">0</span>] <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb20-207"><a href="#cb20-207" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3, report number of unique elements</span></span>
-<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">unique</span>(x))</span>
-<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-211"><a href="#cb20-211" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">remainder=</span><span class="dv">3</span>)</span>
-<span id="cb20-213"><a href="#cb20-213" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-215"><a href="#cb20-215" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a>The browser function can be helpful if you want to debug a loop mid-way through iterations.</span>
-<span id="cb20-217"><a href="#cb20-217" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-218"><a href="#cb20-218" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
-<span id="cb20-219"><a href="#cb20-219" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(){</span>
-<span id="cb20-220"><a href="#cb20-220" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span><span class="sc">^</span><span class="dv">5</span>){</span>
-<span id="cb20-221"><a href="#cb20-221" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(i)</span>
-<span id="cb20-222"><a href="#cb20-222" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">100</span>) <span class="fu">browser</span>()</span>
-<span id="cb20-223"><a href="#cb20-223" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-224"><a href="#cb20-224" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb20-225"><a href="#cb20-225" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>()</span>
-<span id="cb20-226"><a href="#cb20-226" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-227"><a href="#cb20-227" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-228"><a href="#cb20-228" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-229"><a href="#cb20-229" aria-hidden="true" tabindex="-1"></a>While embedding <span class="in">`browser`</span> into code can be helpful, you must remember to remove the browser calls when done.  Rstudio also provides a feature to set breakpoints by clicking on the line-number where you&#39;d want to start debugging.  See also <span class="co">[</span><span class="ot">breakpoints</span><span class="co">](https://adv-r.hadley.nz/debugging.html#breakpoints)</span>.</span>
-<span id="cb20-230"><a href="#cb20-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-231"><a href="#cb20-231" aria-hidden="true" tabindex="-1"></a>Using your warm up problem, set breakpoints.</span>
-<span id="cb20-232"><a href="#cb20-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 1, add 1 to even elements</span></span>
+<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a>  x[x<span class="sc">%%</span><span class="dv">2</span>] <span class="ot">&lt;-</span> x[x<span class="sc">%%</span><span class="dv">2</span>] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2, see if each value in sequence is even or odd</span></span>
+<span id="cb20-207"><a href="#cb20-207" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> x <span class="sc">%%</span> remainder</span>
+<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(<span class="fu">unique</span>(out))<span class="sc">!=</span> <span class="dv">2</span>) <span class="fu">browser</span>()</span>
+<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-211"><a href="#cb20-211" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 2, for elements with 0 remainder, add 1</span></span>
+<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a>  x[out <span class="sc">==</span> <span class="dv">0</span>] <span class="ot">&lt;-</span> x[out <span class="sc">==</span> <span class="dv">0</span>] <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb20-213"><a href="#cb20-213" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Step 3, report number of unique elements</span></span>
+<span id="cb20-215"><a href="#cb20-215" aria-hidden="true" tabindex="-1"></a>  <span class="fu">length</span>(<span class="fu">unique</span>(x))</span>
+<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-217"><a href="#cb20-217" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-218"><a href="#cb20-218" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">remainder=</span><span class="dv">3</span>)</span>
+<span id="cb20-219"><a href="#cb20-219" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-220"><a href="#cb20-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-221"><a href="#cb20-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-222"><a href="#cb20-222" aria-hidden="true" tabindex="-1"></a>The browser function can be helpful if you want to debug a loop mid-way through iterations.</span>
+<span id="cb20-223"><a href="#cb20-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-224"><a href="#cb20-224" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb20-225"><a href="#cb20-225" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>(){</span>
+<span id="cb20-226"><a href="#cb20-226" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span><span class="sc">^</span><span class="dv">5</span>){</span>
+<span id="cb20-227"><a href="#cb20-227" aria-hidden="true" tabindex="-1"></a>    <span class="fu">print</span>(i)</span>
+<span id="cb20-228"><a href="#cb20-228" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="sc">==</span> <span class="dv">100</span>) <span class="fu">browser</span>()</span>
+<span id="cb20-229"><a href="#cb20-229" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-230"><a href="#cb20-230" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-231"><a href="#cb20-231" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>()</span>
+<span id="cb20-232"><a href="#cb20-232" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb20-233"><a href="#cb20-233" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-234"><a href="#cb20-234" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-235"><a href="#cb20-235" aria-hidden="true" tabindex="-1"></a><span class="fu">## Practice</span></span>
+<span id="cb20-235"><a href="#cb20-235" aria-hidden="true" tabindex="-1"></a>While embedding <span class="in">`browser`</span> into code can be helpful, you must remember to remove the browser calls when done.  Rstudio also provides a feature to set breakpoints by clicking on the line-number where you&#39;d want to start debugging.  See also <span class="co">[</span><span class="ot">breakpoints</span><span class="co">](https://adv-r.hadley.nz/debugging.html#breakpoints)</span>.</span>
 <span id="cb20-236"><a href="#cb20-236" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-237"><a href="#cb20-237" aria-hidden="true" tabindex="-1"></a>Find a set of code you&#39;ve written and know well to share with a classmate.  </span>
+<span id="cb20-237"><a href="#cb20-237" aria-hidden="true" tabindex="-1"></a>Using your warm up problem, set breakpoints.</span>
 <span id="cb20-238"><a href="#cb20-238" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-239"><a href="#cb20-239" aria-hidden="true" tabindex="-1"></a>As the classmate, </span>
+<span id="cb20-239"><a href="#cb20-239" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-240"><a href="#cb20-240" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-241"><a href="#cb20-241" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Do you have any feedback on how to make the code more readable?</span>
-<span id="cb20-242"><a href="#cb20-242" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Insert a bug(s) into the code</span>
-<span id="cb20-243"><a href="#cb20-243" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-244"><a href="#cb20-244" aria-hidden="true" tabindex="-1"></a>When you get your code back, can you find and fix the bug?</span>
-<span id="cb20-245"><a href="#cb20-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-241"><a href="#cb20-241" aria-hidden="true" tabindex="-1"></a><span class="fu">## Practice</span></span>
+<span id="cb20-242"><a href="#cb20-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-243"><a href="#cb20-243" aria-hidden="true" tabindex="-1"></a>Find a set of code you&#39;ve written and know well to share with a classmate.  </span>
+<span id="cb20-244"><a href="#cb20-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-245"><a href="#cb20-245" aria-hidden="true" tabindex="-1"></a>As the classmate, </span>
 <span id="cb20-246"><a href="#cb20-246" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-247"><a href="#cb20-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-248"><a href="#cb20-248" aria-hidden="true" tabindex="-1"></a><span class="fu"># Profiling</span></span>
+<span id="cb20-247"><a href="#cb20-247" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Do you have any feedback on how to make the code more readable? More efficient?</span>
+<span id="cb20-248"><a href="#cb20-248" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Insert a bug(s) into the code</span>
 <span id="cb20-249"><a href="#cb20-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-250"><a href="#cb20-250" aria-hidden="true" tabindex="-1"></a><span class="fu">## system.time</span></span>
+<span id="cb20-250"><a href="#cb20-250" aria-hidden="true" tabindex="-1"></a>When you get your code back, can you find and fix the bug?</span>
 <span id="cb20-251"><a href="#cb20-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-252"><a href="#cb20-252" aria-hidden="true" tabindex="-1"></a>For a quick profiling of code, use <span class="in">`system.time()`</span>.  </span>
+<span id="cb20-252"><a href="#cb20-252" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-253"><a href="#cb20-253" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-256"><a href="#cb20-256" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb20-257"><a href="#cb20-257" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10000000</span>)</span>
-<span id="cb20-258"><a href="#cb20-258" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10000000</span>)</span>
-<span id="cb20-259"><a href="#cb20-259" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">system.time</span>(z <span class="ot">&lt;-</span> x <span class="sc">+</span> y)</span>
-<span id="cb20-260"><a href="#cb20-260" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-261"><a href="#cb20-261" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">10000000</span>)</span>
-<span id="cb20-262"><a href="#cb20-262" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
-<span id="cb20-263"><a href="#cb20-263" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)) {</span>
-<span id="cb20-264"><a href="#cb20-264" aria-hidden="true" tabindex="-1"></a>    z[i] <span class="ot">&lt;-</span> x[i] <span class="sc">+</span> y[i]</span>
-<span id="cb20-265"><a href="#cb20-265" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-266"><a href="#cb20-266" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb20-267"><a href="#cb20-267" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-268"><a href="#cb20-268" aria-hidden="true" tabindex="-1"></a><span class="co"># Time duration</span></span>
-<span id="cb20-269"><a href="#cb20-269" aria-hidden="true" tabindex="-1"></a>t1</span>
-<span id="cb20-270"><a href="#cb20-270" aria-hidden="true" tabindex="-1"></a>t2</span>
-<span id="cb20-271"><a href="#cb20-271" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-272"><a href="#cb20-272" aria-hidden="true" tabindex="-1"></a><span class="co"># The loop is longer by a factor of:</span></span>
-<span id="cb20-273"><a href="#cb20-273" aria-hidden="true" tabindex="-1"></a>t2[<span class="st">&quot;elapsed&quot;</span>] <span class="sc">/</span> t1[<span class="st">&quot;elapsed&quot;</span>]</span>
-<span id="cb20-274"><a href="#cb20-274" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb20-275"><a href="#cb20-275" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-276"><a href="#cb20-276" aria-hidden="true" tabindex="-1"></a>Why is <span class="in">`t2`</span> <span class="in">`r round(t2[&quot;elapsed&quot;] / t1[&quot;elapsed&quot;],2)`</span>? times longer?</span>
+<span id="cb20-254"><a href="#cb20-254" aria-hidden="true" tabindex="-1"></a><span class="fu"># Profiling</span></span>
+<span id="cb20-255"><a href="#cb20-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-256"><a href="#cb20-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## system.time</span></span>
+<span id="cb20-257"><a href="#cb20-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-258"><a href="#cb20-258" aria-hidden="true" tabindex="-1"></a>For a quick profiling of code, use <span class="in">`system.time()`</span>.  </span>
+<span id="cb20-259"><a href="#cb20-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-262"><a href="#cb20-262" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-263"><a href="#cb20-263" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10000000</span>)</span>
+<span id="cb20-264"><a href="#cb20-264" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10000000</span>)</span>
+<span id="cb20-265"><a href="#cb20-265" aria-hidden="true" tabindex="-1"></a>t1 <span class="ot">&lt;-</span> <span class="fu">system.time</span>(z <span class="ot">&lt;-</span> x <span class="sc">+</span> y)</span>
+<span id="cb20-266"><a href="#cb20-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-267"><a href="#cb20-267" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">10000000</span>)</span>
+<span id="cb20-268"><a href="#cb20-268" aria-hidden="true" tabindex="-1"></a>t2 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
+<span id="cb20-269"><a href="#cb20-269" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)) {</span>
+<span id="cb20-270"><a href="#cb20-270" aria-hidden="true" tabindex="-1"></a>    z[i] <span class="ot">&lt;-</span> x[i] <span class="sc">+</span> y[i]</span>
+<span id="cb20-271"><a href="#cb20-271" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-272"><a href="#cb20-272" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb20-273"><a href="#cb20-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-274"><a href="#cb20-274" aria-hidden="true" tabindex="-1"></a><span class="co"># Time duration</span></span>
+<span id="cb20-275"><a href="#cb20-275" aria-hidden="true" tabindex="-1"></a>t1</span>
+<span id="cb20-276"><a href="#cb20-276" aria-hidden="true" tabindex="-1"></a>t2</span>
 <span id="cb20-277"><a href="#cb20-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-278"><a href="#cb20-278" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Seemingly hidden functions are <span class="in">`:`</span> and <span class="in">`[`</span> (subsetting) which add to the collective set of functions called (i.e. the &quot;stack frame&quot;).</span>
-<span id="cb20-279"><a href="#cb20-279" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-280"><a href="#cb20-280" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-281"><a href="#cb20-281" aria-hidden="true" tabindex="-1"></a><span class="in">`system.time`</span> is not as precise for quick calls and can require many iterations to get a meaningful timing (example: 10e6 in above example). <span class="in">`bench::mark`</span> can provide more precise timings (see warm up problem).</span>
-<span id="cb20-282"><a href="#cb20-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-278"><a href="#cb20-278" aria-hidden="true" tabindex="-1"></a><span class="co"># The loop is longer by a factor of:</span></span>
+<span id="cb20-279"><a href="#cb20-279" aria-hidden="true" tabindex="-1"></a>t2[<span class="st">&quot;elapsed&quot;</span>] <span class="sc">/</span> t1[<span class="st">&quot;elapsed&quot;</span>]</span>
+<span id="cb20-280"><a href="#cb20-280" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-281"><a href="#cb20-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-282"><a href="#cb20-282" aria-hidden="true" tabindex="-1"></a>Why is <span class="in">`t2`</span> <span class="in">`r round(t2[&quot;elapsed&quot;] / t1[&quot;elapsed&quot;],2)`</span>? times longer?</span>
 <span id="cb20-283"><a href="#cb20-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-284"><a href="#cb20-284" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>ns (nanoseconds) &lt; $\mu$s (microseconds) &lt; ms (milliseconds) &lt; s (seconds) &lt; m (minutes) &lt; h (hours) &lt; d (days) &lt; w (weeks)</span>
-<span id="cb20-285"><a href="#cb20-285" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`relative`</span> option in <span class="in">`mark`</span> does not report in raw time but in comparing different calls</span>
-<span id="cb20-286"><a href="#cb20-286" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`check=FALSE`</span> allows for running different code which may return different results (example: due to sampling)</span>
-<span id="cb20-287"><a href="#cb20-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-284"><a href="#cb20-284" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>Seemingly hidden functions are <span class="in">`:`</span> and <span class="in">`[`</span> (subsetting) which add to the collective set of functions called (i.e. the &quot;stack frame&quot;).</span>
+<span id="cb20-285"><a href="#cb20-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-286"><a href="#cb20-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-287"><a href="#cb20-287" aria-hidden="true" tabindex="-1"></a><span class="in">`system.time`</span> is not as precise for quick calls and can require many iterations to get a meaningful timing (example: 10e6 in above example). <span class="in">`bench::mark`</span> can provide more precise timings (see warm up problem).</span>
 <span id="cb20-288"><a href="#cb20-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-289"><a href="#cb20-289" aria-hidden="true" tabindex="-1"></a><span class="fu">## profvis</span></span>
-<span id="cb20-290"><a href="#cb20-290" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-291"><a href="#cb20-291" aria-hidden="true" tabindex="-1"></a><span class="in">`profvis::profvis`</span> is a good go-to for evaluating performance of multiple calls.</span>
-<span id="cb20-292"><a href="#cb20-292" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-293"><a href="#cb20-293" aria-hidden="true" tabindex="-1"></a>We&#39;ll work through the <span class="co">[</span><span class="ot">tutorial</span><span class="co">](http://rstudio.github.io/profvis/)</span> together.</span>
+<span id="cb20-289"><a href="#cb20-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-290"><a href="#cb20-290" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span>ns (nanoseconds) &lt; $\mu$s (microseconds) &lt; ms (milliseconds) &lt; s (seconds) &lt; m (minutes) &lt; h (hours) &lt; d (days) &lt; w (weeks)</span>
+<span id="cb20-291"><a href="#cb20-291" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`relative`</span> option in <span class="in">`mark`</span> does not report in raw time but in comparing different calls</span>
+<span id="cb20-292"><a href="#cb20-292" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="in">`check=FALSE`</span> allows for running different code which may return different results (example: due to sampling)</span>
+<span id="cb20-293"><a href="#cb20-293" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-294"><a href="#cb20-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-295"><a href="#cb20-295" aria-hidden="true" tabindex="-1"></a>Profile your (or a classmate&#39;s) warm-up problem solution.</span>
+<span id="cb20-295"><a href="#cb20-295" aria-hidden="true" tabindex="-1"></a><span class="fu">## profvis</span></span>
 <span id="cb20-296"><a href="#cb20-296" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-297"><a href="#cb20-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-298"><a href="#cb20-298" aria-hidden="true" tabindex="-1"></a><span class="fu">## Improving efficiency</span></span>
-<span id="cb20-299"><a href="#cb20-299" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-300"><a href="#cb20-300" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Ch. 24: Improving Performance</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html)</span></span>
-<span id="cb20-301"><a href="#cb20-301" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-297"><a href="#cb20-297" aria-hidden="true" tabindex="-1"></a><span class="in">`profvis::profvis`</span> is a good go-to for evaluating performance of multiple calls.</span>
+<span id="cb20-298"><a href="#cb20-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-299"><a href="#cb20-299" aria-hidden="true" tabindex="-1"></a>We&#39;ll work through the <span class="co">[</span><span class="ot">tutorial</span><span class="co">](http://rstudio.github.io/profvis/)</span> together.</span>
+<span id="cb20-300"><a href="#cb20-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-301"><a href="#cb20-301" aria-hidden="true" tabindex="-1"></a>Walk through profiling SeqSGPV.</span>
 <span id="cb20-302"><a href="#cb20-302" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-303"><a href="#cb20-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-304"><a href="#cb20-304" aria-hidden="true" tabindex="-1"></a><span class="fu"># Session info</span></span>
-<span id="cb20-307"><a href="#cb20-307" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb20-308"><a href="#cb20-308" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span>
-<span id="cb20-309"><a href="#cb20-309" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-303"><a href="#cb20-303" aria-hidden="true" tabindex="-1"></a>Profile the code you earlier shared with your classmate.</span>
+<span id="cb20-304"><a href="#cb20-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-305"><a href="#cb20-305" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-306"><a href="#cb20-306" aria-hidden="true" tabindex="-1"></a><span class="fu">## Improving efficiency</span></span>
+<span id="cb20-307"><a href="#cb20-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-308"><a href="#cb20-308" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Ch. 24: Improving Performance</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html)</span></span>
+<span id="cb20-309"><a href="#cb20-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-310"><a href="#cb20-310" aria-hidden="true" tabindex="-1"></a>Parts to highlight:</span>
+<span id="cb20-311"><a href="#cb20-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-312"><a href="#cb20-312" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="co">[</span><span class="ot">introduction</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html#introduction-23)</span></span>
+<span id="cb20-313"><a href="#cb20-313" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="co">[</span><span class="ot">vectorize</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html#vectorise)</span></span>
+<span id="cb20-314"><a href="#cb20-314" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="co">[</span><span class="ot">do as little as possible</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html#be-lazy)</span></span>
+<span id="cb20-315"><a href="#cb20-315" aria-hidden="true" tabindex="-1"></a><span class="ss">* </span><span class="co">[</span><span class="ot">avoid copies</span><span class="co">](https://adv-r.hadley.nz/perf-improve.html#avoid-copies)</span></span>
+<span id="cb20-316"><a href="#cb20-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-317"><a href="#cb20-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-318"><a href="#cb20-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-319"><a href="#cb20-319" aria-hidden="true" tabindex="-1"></a><span class="fu"># Session info</span></span>
+<span id="cb20-322"><a href="#cb20-322" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-323"><a href="#cb20-323" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">session_info</span>()</span>
+<span id="cb20-324"><a href="#cb20-324" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
