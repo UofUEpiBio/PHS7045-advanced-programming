@@ -68,7 +68,13 @@ bench::mark( <solutions>, relative==TRUE, check = FALSE)
 2. Profiling code
   * `system.time` and `bench::mark`
   * `profvis::provis`
-
+3. Improving efficiency
+  * [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
+  * Use vectorization
+  * Beware of copy-on-change (example: continual `rbind`'ing)
+  * Use `data.table` as appropriate
+  * Use parallel computing
+  * Compile code in C (`rcpp`)
 
 
 
@@ -126,7 +132,7 @@ if(!is.character(x)){
 
 ## Example
 
-An R package example of modular programming and anti-bugging: [seqSGPV](https://github.com/chipmanj/SeqSGPV/tree/master/R).
+An R package example of modular programming and anti-bugging: [seqSGPV](https://github.com/chipmanj/SeqSGPV).
 
 
 ## Interactive debugging
@@ -162,7 +168,7 @@ i <- function(d) {
   d + 10
 }
 
-# Debug using Rstudio 'Rerun with Debug'
+# Traceback and debug using Rstudio 'Rerun with Debug'
 f("a")
 
 # Enter debugging mode for a function until deactivating debugging mode
@@ -236,7 +242,7 @@ Find a set of code you've written and know well to share with a classmate.
 
 As the classmate, 
 
-* Do you have any feedback on how to make the code more readable?
+* Do you have any feedback on how to make the code more readable? More efficient?
 * Insert a bug(s) into the code
 
 When you get your code back, can you find and fix the bug?
@@ -288,14 +294,21 @@ Why is `t2` `r round(t2["elapsed"] / t1["elapsed"],2)`? times longer?
 
 We'll work through the [tutorial](http://rstudio.github.io/profvis/) together.
 
-Profile your (or a classmate's) warm-up problem solution.
-
 Walk through profiling SeqSGPV.
+
+Profile the code you earlier shared with your classmate.
 
 
 ## Improving efficiency
 
 [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
+
+Parts to highlight:
+
+* [introduction](https://adv-r.hadley.nz/perf-improve.html#introduction-23)
+* [vectorize](https://adv-r.hadley.nz/perf-improve.html#vectorise)
+* [do as little as possible](https://adv-r.hadley.nz/perf-improve.html#be-lazy)
+* [avoid copies](https://adv-r.hadley.nz/perf-improve.html#avoid-copies)
 
 
 
