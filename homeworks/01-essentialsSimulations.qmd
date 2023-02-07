@@ -9,6 +9,10 @@ format:
 
 Tuesday, February 7
 
+# Update
+
+Deliverables for this assignment have been updated to creating a function for Design 1 and 2.  Your code should be vectorized and modularized to redundancy. 
+
 # Background
 
 Response-adaptive randomization (RAR) has been used in precision medicine trials, such as the trials [I-SPY-2](https://www.nejm.org/doi/pdf/10.1056/NEJMoa1513750?articleTools=true), [BATTLE-1](https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG), and [BATTLE-2](https://cdn.amegroups.cn/journals/amepc/files/journals/12/articles/6846/public/6846-PB2-R2.pdf) to gather early evidence of treatment arms that work best for a given biomarker.  Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising.  RAR is criticized for the following reasons [(Korn)](https://watermark.silverchair.com/djx013.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAvswggL3BgkqhkiG9w0BBwagggLoMIIC5AIBADCCAt0GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUKqYjuX4J38OrUAJAgEQgIICrkuWgqA03alHxi4xfUz3ybPTepY21z2PaOZFRSmRgKhEf4ROr5tIP8MoeLwYxIexRpjXLTjKQ_Yn6s2oYBYUTJEG_gVqeevFGwvxyi8zas8R1GyiQWDyjnhBsjKcAsKCl6M63_K-LXEPLj7nyw4FZEefXgMSO91jz_bKseNLmhDEmZ7oPvO_xlBzWptEW4gE8I7mrv8h3NbFrM0BrbDIeOkIr36F3X-F3ip5a8lEDirZwrKyLCb598ivER1JVlr7iCzNV9OYHv6P79E6YxKGxJPDNk1WJ-ClcUb6aA87-Gae81SVipvqhu2npbLCFtWVikZKliWQ5lPE9CieOB9hnd93HLsp7Da9U3D0jodTMbk9RE28I7kzuoWHO8BEoPK8p1_1nTWw6pV5CbS02RFxtTr4-aCMm364vJAHrgP3rNmvi-KEGB4rxufA_hebdi2yS20nll2HdAVT81m_cm87x3YvVP7Ut9H-0zTCAVYACBJJUjKS7w7QKkIN-FqdQ7N7u_YJ83bl69sMF0fddIVTA6WFAJWpVmiij5ou34auXuzDtEKLN5nmQ-467HZtpMAkoyFxcyCdtI_ieuyCp1jlP3IC07JZAWvA_8A2W8hEFaRBimq0STpclvxEgt2OCDtE9kTXvS8v6ArS4U6ZkuM7Uw3PSG1ISoYAWPPvWzGMKWU4W4nCS0rT-TPWPJkPf8TGkUK9Q1cDemuYlWZBrYN-RUJ8X204vbqa-p9jsRKIfsQ0QDrW97qHYxf-659kKav288WZ8d5wmESsLKyHEc8JatY2dvmsIMIdeK3mKA68qDUqS3C1yO7X0T4BJZpJPGjjPzFrrqaLAmLdhdqITE5AcT_Eiy3upRuYw3TdqbznbDog3k2K2yIgQUZwu2HC9q_fJhqmxh0WkHQDyYeiXyqb): 
