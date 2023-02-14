@@ -199,11 +199,11 @@ parallel::stopCluster(cl)
 **Problem**: Run multiple regressions for each column of a very wide dataset. Report the $\beta$ coefficients from fitting the following regression models:
 
 $$
-y_{ij} = X_{ij}\beta_i + \varepsilon_{ij},\quad \varepsilon_{ij} \sim N(0, \sigma^2_i)
+y = X_{i}\beta_i + \varepsilon_{i},\quad \varepsilon_{i} \sim N(0, \sigma^2_i)
 $$
 
 $$
-\quad\forall \text{ observations } j \in \left\{1, \dots, 500 \right\} \text{ in column } i \in \left\{1, \dots, 999 \right\}
+\quad\forall \text{ columns } i \in \left\{1, \dots, 999 \right\}
 $$
 
 ```{r lots-of-lm-dgp, echo=TRUE}
