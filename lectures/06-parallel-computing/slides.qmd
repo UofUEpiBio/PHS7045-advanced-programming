@@ -165,6 +165,12 @@ And there's also a more advanced set of options
 
 4.  Stop the cluster with `parallel::clusterStop`
 
+
+[parallel::clusterApply documentation](https://stat.ethz.ch/R-manual/R-devel/library/parallel/html/clusterApply.html)
+
+[parallel documentation](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)
+
+
 # Ex 1: Hello world!
 
 ```{r parallel-ex-psock, echo=TRUE, cache=TRUE}
@@ -194,7 +200,11 @@ parallel::stopCluster(cl)
 following regression models:
 
 $$
-y_{ij} = X_{ij}\beta_i + \varepsilon,\quad \varepsilon\sim N(0, \sigma^2_i),\\ \quad\forall \text{ observations } j \in \left\{1, \dots, 500 \right\} \text{ in column } i \in \left\{1, \dots, 999 \right\}
+y_{ij} = X_{ij}\beta_i + \varepsilon_{ij},\quad \varepsilon_{ij} \sim N(0, \sigma^2_i)
+$$
+
+$$
+\quad\forall \text{ observations } j \in \left\{1, \dots, 500 \right\} \text{ in column } i \in \left\{1, \dots, 999 \right\}
 $$
 
 ```{r lots-of-lm-dgp, echo=TRUE}
