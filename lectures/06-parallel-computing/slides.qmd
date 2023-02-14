@@ -376,6 +376,7 @@ There may be smarter ways, though this is how I approached it: [SeqSGPV package]
 
 # See also
 
+*   [Blog example](http://gradientdescending.com/simple-parallel-processing-in-r/)
 *   [Package parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf) 
 *   [Using the iterators package](https://cran.r-project.org/web/packages/iterators/vignettes/iterators.pdf)
 *   [Using the foreach package](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf)
