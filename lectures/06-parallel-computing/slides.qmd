@@ -34,7 +34,7 @@ Loosely, from R's perspective, we can think of HPC in terms of two, maybe three 
 
 2.  Parallel computing: How to take advantage of multiple core systems
 
-3.  Compiled code: Write your own low-level code (if R doesn't has it yet...)
+3.  Compiled code: Write your own low-level code (if R doesn't have it yet...)
 
 (Checkout [CRAN Task View on HPC](https://cran.r-project.org/web/views/HighPerformanceComputing.html))
 
@@ -165,6 +165,12 @@ And there's also a more advanced set of options
 
 4.  Stop the cluster with `parallel::clusterStop`
 
+
+[parallel::clusterApply documentation](https://stat.ethz.ch/R-manual/R-devel/library/parallel/html/clusterApply.html)
+
+[parallel documentation](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf)
+
+
 # Ex 1: Hello world!
 
 ```{r parallel-ex-psock, echo=TRUE, cache=TRUE}
@@ -190,11 +196,14 @@ parallel::stopCluster(cl)
 
 # Ex 2: Parallel regressions
 
-**Problem**: Run multiple regressions for each column of a very wide dataset. We need to fit the
-following regression models:
+**Problem**: Run multiple regressions for each column of a very wide dataset. Report the $\beta$ coefficients from fitting the following regression models:
 
 $$
-y_{ij} = X_{ij}\beta_i + \varepsilon,\quad \varepsilon\sim N(0, \sigma^2_i),\\ \quad\forall \text{ observations } j \in \left\{1, \dots, 500 \right\} \text{ in column } i \in \left\{1, \dots, 999 \right\}
+y = X_{i}\beta_i + \varepsilon_{i},\quad \varepsilon_{i} \sim N(0, \sigma^2_i)
+$$
+
+$$
+\quad\forall \text{ columns } i \in \left\{1, \dots, 999 \right\}
 $$
 
 ```{r lots-of-lm-dgp, echo=TRUE}
@@ -239,7 +248,7 @@ str(y)
 
 .
 
-Use `apply` (forloop) to solve it
+Use `apply` (for loop) to solve it
 
 ```{r lots-of-lm-serial, cache = TRUE, strip.white=FALSE}
 
@@ -367,6 +376,7 @@ There may be smarter ways, though this is how I approached it: [SeqSGPV package]
 
 # See also
 
+*   [Blog example](http://gradientdescending.com/simple-parallel-processing-in-r/)
 *   [Package parallel](https://stat.ethz.ch/R-manual/R-devel/library/parallel/doc/parallel.pdf) 
 *   [Using the iterators package](https://cran.r-project.org/web/packages/iterators/vignettes/iterators.pdf)
 *   [Using the foreach package](https://cran.r-project.org/web/packages/foreach/vignettes/foreach.pdf)
