@@ -23,7 +23,7 @@ slides_eval <- TRUE
 
 ::: {style="font-size: 20pt"}
 
-  - Have a look at some R-package-dev practices based mostly on my own
+  - Have a look at some R-package-dev practices based primarily on my own
     experience (so the product is sold AS-IS)
 
   - We won’t discuss either Rcpp or coding R itself. (for that I
@@ -32,13 +32,13 @@ slides_eval <- TRUE
     Rcpp and/or
     RcppArmadillo”](https://github.com/patrickmuchmore/RPackageTemplate))
 
-  - We won’t discuss github in depth. I’ll assume that the user already
-    knows the basics of git(hub): Creating a repo online, and start
+  - We won’t discuss GitHub in depth. I’ll assume that the user already
+    knows the basics of git(hub): Creating a repo online and start
     using it locally. (A good reference is [“Pro
     Git”](https://git-scm.com/book/en/v2))
 
-  - We won’t talk about software engineering/design, rather we’ll take a
-    look at some tools and dev cycle. (For that you have [“Code
+  - We won’t discuss software engineering/design; we’ll 
+    look at some tools and dev cycles. (For that, you have [“Code
     Complete”](http://cc2e.com/))
 
 :::
@@ -67,15 +67,15 @@ slides_eval <- TRUE
 :::
 
 
-## Why ‘spending’ time writing an R package?
+## Why ‘spend’ time writing an R package?
 
 ::: {style="font-size: 20pt"}
 
 To name a few:
 
-1.  Easy way to share code: Just type `install.packages` and voilà\!
+1.  Easy way to share code: Type `install.packages` and voilà\!
 
-2.  Already standarized: So you don’t need to think about how to
+2.  Already standardized: So you don’t need to think about how to
     structure it.
 
 3.  CRAN checks everything for you: Force yourself to code things right.
@@ -109,25 +109,25 @@ According to Hadley Wickham’s [“R packages”](http://r-pkgs.had.co.nz/)
 
 Folders
 
-  - **R** Where the R scripts live, e.g. `addnums.r`, `funny-pkg.r`.
+  - **R** Where the R scripts live, e.g., `addnums.r`, `funny-pkg.r`.
 
-  - **tests** Where the tests live, e.g. `testthat/test-addnums.r`
+  - **tests** Where the tests live, e.g., `testthat/test-addnums.r`
     (using testthat).
 
-  - **vignettes** Where vignettes live, e.g.
+  - **vignettes** Where vignettes live, e.g.,
     `vignettes/mode_details_on_addnums.rmd`.
 
-  - **data** Where the data lives, e.g. `fakedata.rda`,
+  - **data** Where the data lives, e.g., `fakedata.rda`,
     `aneattable.csv`.
 
-  - **man** Where the manuals live, e.g. `addnums.Rd`, `funnypkg.Rd`.
+  - **man** Where the manuals live, e.g., `addnums.Rd`, `funnypkg.Rd`.
 
 And files
 
   - **DESCRIPTION** The metadata of the package: name, description,
     version, author(s), dependencies, etc.
 
-  - **NAMESPACE** Declares the name of the objects (functions mostly)
+  - **NAMESPACE** Declares the name of the objects (functions mainly)
     that will be part of the package (and will be visible to the user)
 
 More info [here](http://r-pkgs.had.co.nz/package.html) and
@@ -151,11 +151,11 @@ Writing R packages is an iterative process
     1.  Write `f`
     
     2.  Document `f`: what it does, what the inputs are, what it
-        returns, examples.
+        returns, and examples.
     
-    3.  Add some tests: is it doing what is supposed to do?
+    3.  Add some tests: is it doing what it is supposed to do?
     
-    4.  `R CMD Check`: Will CRAN, and the rest of the functions, ‘like’
+    4.  `R CMD Check`: Will CRAN and the rest of the functions ‘like’
         it?
     
     5.  Commit your changes\!: Update `ChangeLog`+`news.md`, and commit
@@ -232,19 +232,17 @@ devtools::use_news_md()
 
 ::: {style="font-size: 20pt"}
 
-What did just happen?
+What did happen?
 
-1.  `use_readme_rmd()`: Creates a readme file that will be in the main
-    folder of the project. Think about it as the home page of your
-    project.
+1.  `use_readme_rmd()`: Creates a readme file that will be in the project's main
+    folder. Think about it as the home page of your project.
 
-2.  `use_testthat()`: Will create the basic infrastructure for package
-    testing.
+2.  `use_testthat()`: The basic infrastructure for testing packages will be created.
 
 3.  `use_coverage(type = "codecov")`: Creates the [.travis.yml
     file](https://en.wikipedia.org/wiki/Comparison_of_continuous_integration_software)
     for Unix CI, and sets it up for code coverage using
-    [codecov.io](https://codecov.io/).
+    [codecov.io](https://codecov.io/).[^travis]
 
 4.  `devtools::use_appveyor()`: Creates the
     [appveyor.yml](https://www.appveyor.com/) for windows CI.
@@ -254,10 +252,13 @@ What did just happen?
     Vega Yon’.
 
 6.  `devtools::use_news_md()`: Creates the `news.md` file which us used
-    for tracking changes, and communicating them to the users (e.g.
+    for tracking changes and communicating them to the users (e.g.
     [netdiffuseR](https://github.com/USCCANA/netdiffuseR/blob/master/NEWS.md))
 
 Now that we have the structure, we can start coding!
+
+[^travis]: Today, the most common way to set up continuous integration is via GitHub actions.
+We will learn more about that next week.
 
 :::
 
@@ -271,7 +272,7 @@ Now that we have the structure, we can start coding!
     code, we create the `R/addnums.r` file (right).
 
 - Type `devtools::document()`, or press Ctrl + Shift + D (RStudio
-    will: create the manual, and the NAMESPACE). Make sure you activate
+    will: create the manual and the NAMESPACE). Make sure you activate
     this option in RStudio (not the default).
 
 - Notice that the output is defined using S3-type objects ([read
@@ -341,11 +342,11 @@ plot.funnypkg_addnums <- function(x, y = NULL, ...) {
 
 ::: {.column width="40%"}
 
-  - Here we are adding a function that is documented in `addnums`. The
+  - Here, we are adding a function that is documented in `addnums`. The
     plot method (left).
 
   - You’ll need to update the `man/*Rd` every time that you add new
-    roxygen content. Just press Ctrl + Shift + D and RStudio will do it
+    roxygen content. Press Ctrl + Shift + D, and RStudio will do it
     for you.
 
 :::
@@ -418,7 +419,7 @@ Imports: graphics
   
 :::
 
-The `Suggests` and `RoxygenNote` fields where added automagically by
+The `Suggests` and `RoxygenNote` fields were added automagically by
     `devtools`.
 
 :::
@@ -453,7 +454,7 @@ Test are run every time that you run R CMD check
     ```
   - You can run the tests using Ctrl + Shift + t
 
-  - Furthermore, tests are use to evaluate code coverage.
+  - Furthermore, tests are used to evaluate code coverage.
 
 :::
 
@@ -606,17 +607,21 @@ everything went well.
 
 ## Step 3: Submit your package to CRAN/Bioconductor
 
+::: {style="font-size: 20pt"}
+
 
   - You can release your package using `devtools::release()` function.
 
   - The devtools package was built to make life easier. Such is it’s
-    creator’s confidence on the `release` function that it comes with a
+    creator’s confidence in the `release` function that it comes with a
     warranty\!
     
     > If a devtools bug causes one of the CRAN maintainers to **treat
     > you impolitely**, I will personally send you a handwritten apology
     > note. Please forward me the email and your address, and I’ll get a
     > card in the mail.
+
+:::
 
 ## Dev Cycle (once again\!)
 
