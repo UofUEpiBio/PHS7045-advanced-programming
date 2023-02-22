@@ -207,30 +207,30 @@ code):
 
 ::: {style="font-size: 20pt"}
 
-And, using the `devtools` package, we can add some extras
+And, using the ~~`devtools`~~ `usethis` package, we can add some extras
 
 ```r
 # Creating a README for the project
-devtools::use_readme_rmd()
+usethis::use_readme_rmd()
 
 # Infrastructure for testing
-devtools::use_testthat()
+usethis::use_testthat()
 
 # Infrastructure for Code Coverage
-devtools::use_coverage(type = "codecov") # This creates the .travis.yml
-devtools::use_appveyor()
+usethis::use_coverage(type = "codecov") # This creates the .travis.yml
+usethis::use_appveyor()
 
 # A LICENSE file (required by CRAN)
 # The line "license: MIT + file" in the DESCRIPTION file
-devtools::use_mit_license(copyright_holder = "George G. Vega Yon")
-devtools::use_news_md()
+usethis::use_mit_license(copyright_holder = "George G. Vega Yon")
+usethis::use_news_md()
 ```
 
 :::
 
 ## Step 1: Set up the structure (cont. 2)
 
-::: {style="font-size: 20pt"}
+::: {style="font-size: 18pt"}
 
 What did happen?
 
@@ -434,7 +434,8 @@ Test are run every time that you run R CMD check
     e.g. `test-addnums.r`
     
     ```r
-    context("Basic set of tests")
+    context("Basic set of tests") # This will generate a warning as the current 
+                                  # version is deprecated 
     test_that("addnums(a, b) = a+b", {
       # Preparing the test
       a <- 1
@@ -449,7 +450,10 @@ Test are run every time that you run R CMD check
     })
     
     test_that("Plot returns -funnypkg_foo-", {
-      expect_s3_class(plot(addnums(1,2)), "funnypkg_foo")
+      expect_s3_class(
+        plot(addnums(1,2)), "funnypkg_foo"
+        ) # This will generate an error as the function plot.funnypkg_addnum
+          # does not return an object of that class.
     })
     ```
   - You can run the tests using Ctrl + Shift + t
@@ -574,6 +578,32 @@ R CMD check results
 0 errors | 0 warnings | 0 notes
 
 R CMD check succeeded
+```
+
+:::
+
+## Step 2.4: R CMD check (cont. 1)
+
+::: {style="font-size: 25pt"}
+
+R packages can be shared by "building" them. For example, the following
+command:
+
+```shell
+R CMD build ~/Documents/funnypkg
+```
+
+Will generate package the R package into a file named `funnypkg_0.1.0.tar.gz` that
+can later be distributed. Users can install this package either through command line:
+
+```shell
+R CMD INSTALL funnypkg_0.1.0.tar.gz
+```
+
+Or through the console in R
+
+```r
+install.packages("funnypkg_0.1.0.tar.gz", repos = NULL)
 ```
 
 :::
