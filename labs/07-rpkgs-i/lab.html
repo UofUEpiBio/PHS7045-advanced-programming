@@ -133,7 +133,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="lab-description" class="level1">
 <h1>Lab description</h1>
-<p>Today we will write an R package that uses <code>Rcpp</code>.</p>
+<p>Today we will write an R package that uses <code>Rcpp</code>. To do so, we will use a <a href="https://github.com/UofUEpiBio/egpkg">template package</a> that has the following set up:</p>
+<ul>
+<li><p>Has a single Rcpp function.</p></li>
+<li><p>Uses <code>roxygen2</code>.</p></li>
+<li><p>Uses GitHub Actions for continuous integration.</p></li>
+</ul>
+<p>The R package doesn’t have any testing in place, needs a license, and doesn’t have coverage checking.</p>
 <section id="question-1-make-sure-you-can-compile-the-package" class="level2">
 <h2 class="anchored" data-anchor-id="question-1-make-sure-you-can-compile-the-package">Question 1: Make sure you can compile the package</h2>
 <p>Fork the following repository <a href="https://github.com/UofUEpiBio/egpkg">UofUEpiBio/egpkg</a>, and clone it to your local computer. Once you have a copy, do the following:</p>
@@ -143,12 +149,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Run R CMD check using RStudio.</p></li>
 <li><p>RUn R CMD check using the command line (if available).</p></li>
 </ol>
+<p>If you don’t fork it and instead downloaded it manually, make sure you set up a GitHub repository in your account to push your changes.</p>
 </section>
 <section id="question-2-adding-a-c-function" class="level2">
 <h2 class="anchored" data-anchor-id="question-2-adding-a-c-function">Question 2: Adding a C++ function</h2>
-<p>Add the <code>ps_match</code> function <a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/8#issuecomment-1424974938">we wrote on Week 5</a>. The function should be named <code>ps_match</code>. Once you are sure is compiling, do the following:</p>
+<p>Add the <code>ps_match</code> function <a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/8#issuecomment-1424974938">we wrote on Week 5</a>. The function should be named <code>ps_match</code>:</p>
 <ol type="1">
-<li><p>Write an example with artificial data passing a random vector with ten elements distributed U[0, 1].</p></li>
+<li>Add the function in a separate c++ file in the <code>src</code> folder. Make sure to document it using <code>roxygen</code>. Once you finish that, ensure it compiles and the function is visible.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> (then commit and push)</li>
+</ol>
+<ol start="2" type="1">
+<li><p>Write an example with artificial data passing a random vector with ten elements distributed U[0, 1]. Add the example to the documentation using the <code>@examples</code> tag. (then commit and push)</p></li>
 <li><p>Write a test using the <code>tinytest</code>. The C++ function should match the results of the equivalent R function:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">1231</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a> x <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">runif</span>(<span class="dv">20</span>))</span>
@@ -166,15 +176,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ol>
+<p>(then commit and push)</p>
 </section>
-<section id="question-3-checkout-the-coverage-of-the-package" class="level2">
-<h2 class="anchored" data-anchor-id="question-3-checkout-the-coverage-of-the-package">Question 3: Checkout the coverage of the package</h2>
+<section id="question-3-checkout-the-coverage-of-the-package-if-time-permits" class="level2">
+<h2 class="anchored" data-anchor-id="question-3-checkout-the-coverage-of-the-package-if-time-permits">Question 3: Checkout the coverage of the package (if time permits)</h2>
 <p>Using the <code>covr</code> R package, checkout the coverage using the following function</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>covr<span class="sc">::</span><span class="fu">package_coverage</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Remember to run <code>roxygen2::roxygenise()</code> or Ctr + Shift + D, if using RStudio.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

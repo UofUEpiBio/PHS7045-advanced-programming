@@ -11,7 +11,18 @@ format: html
 
 # Lab description
 
-Today we will write an R package that uses `Rcpp`. 
+Today we will write an R package that uses `Rcpp`. To do so, we will use a
+[template package](https://github.com/UofUEpiBio/egpkg) that has the following
+set up:
+
+- Has a single Rcpp function.
+
+- Uses `roxygen2`.
+
+- Uses GitHub Actions for continuous integration.
+
+The R package doesn't have any testing in place, needs a license, and doesn't
+have coverage checking.
 
 ## Question 1: Make sure you can compile the package
 
@@ -26,16 +37,24 @@ and clone it to your local computer. Once you have a copy, do the following:
 
 4. RUn R CMD check using the command line (if available).
 
+If you don't fork it and instead downloaded it manually, make sure you 
+set up a GitHub repository in your account to push your changes.
 
 ## Question 2: Adding a C++ function
 
 Add the `ps_match` function [we wrote on Week 5](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/8#issuecomment-1424974938).
-The function should be named `ps_match`. Once you are sure is compiling, do the following:
+The function should be named `ps_match`:
 
-1. Write an example with artificial data passing a random vector with ten elements
-   distributed U[0, 1].
+1. Add the function in a separate c++ file in the `src` folder. Make sure to document
+it using `roxygen`. Once you finish that, ensure it compiles and the function
+is visible.[^reminder] (then commit and push)
 
-2. Write a test using the `tinytest`. The C++ function should match the results of
+[^reminder]: Remember to run `roxygen2::roxygenise()` or Ctr + Shift + D, if using RStudio.
+
+2. Write an example with artificial data passing a random vector with ten elements
+   distributed U[0, 1]. Add the example to the documentation using the `@examples` tag. (then commit and push)
+
+3. Write a test using the `tinytest`. The C++ function should match the results of
    the equivalent R function:
 
    ```r
@@ -56,7 +75,9 @@ The function should be named `ps_match`. Once you are sure is compiling, do the 
     }
    ```
 
-## Question 3: Checkout the coverage of the package
+(then commit and push)
+
+## Question 3: Checkout the coverage of the package (if time permits)
 
 Using the `covr` R package, checkout the coverage using the following function
 
