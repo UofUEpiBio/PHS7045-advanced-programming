@@ -1,6 +1,8 @@
 ---
 title: "Lab 05 - Rcpp"
-format: html
+format:
+  html:
+    embed-resources: true
 ---
 
 # Learning goals
