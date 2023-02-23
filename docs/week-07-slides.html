@@ -1341,26 +1341,26 @@ George G. Vega Yon, Ph.D.
 <section id="step-1-set-up-the-structure-cont.-1" class="slide level2">
 <h2>Step 1: Set up the structure (cont. 1)</h2>
 <div style="font-size: 20pt">
-<p>And, using the <code>devtools</code> package, we can add some extras</p>
+<p>And, using the <del><code>devtools</code></del> <code>usethis</code> package, we can add some extras</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Creating a README for the project</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>devtools<span class="sc">::</span><span class="fu">use_readme_rmd</span>()</span>
+<span id="cb2-2"><a href="#cb2-2"></a>usethis<span class="sc">::</span><span class="fu">use_readme_rmd</span>()</span>
 <span id="cb2-3"><a href="#cb2-3"></a></span>
 <span id="cb2-4"><a href="#cb2-4"></a><span class="co"># Infrastructure for testing</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a>devtools<span class="sc">::</span><span class="fu">use_testthat</span>()</span>
+<span id="cb2-5"><a href="#cb2-5"></a>usethis<span class="sc">::</span><span class="fu">use_testthat</span>()</span>
 <span id="cb2-6"><a href="#cb2-6"></a></span>
 <span id="cb2-7"><a href="#cb2-7"></a><span class="co"># Infrastructure for Code Coverage</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>devtools<span class="sc">::</span><span class="fu">use_coverage</span>(<span class="at">type =</span> <span class="st">&quot;codecov&quot;</span>) <span class="co"># This creates the .travis.yml</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>devtools<span class="sc">::</span><span class="fu">use_appveyor</span>()</span>
+<span id="cb2-8"><a href="#cb2-8"></a>usethis<span class="sc">::</span><span class="fu">use_coverage</span>(<span class="at">type =</span> <span class="st">&quot;codecov&quot;</span>) <span class="co"># This creates the .travis.yml</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>usethis<span class="sc">::</span><span class="fu">use_appveyor</span>()</span>
 <span id="cb2-10"><a href="#cb2-10"></a></span>
 <span id="cb2-11"><a href="#cb2-11"></a><span class="co"># A LICENSE file (required by CRAN)</span></span>
 <span id="cb2-12"><a href="#cb2-12"></a><span class="co"># The line &quot;license: MIT + file&quot; in the DESCRIPTION file</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>devtools<span class="sc">::</span><span class="fu">use_mit_license</span>(<span class="at">copyright_holder =</span> <span class="st">&quot;George G. Vega Yon&quot;</span>)</span>
-<span id="cb2-14"><a href="#cb2-14"></a>devtools<span class="sc">::</span><span class="fu">use_news_md</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-13"><a href="#cb2-13"></a>usethis<span class="sc">::</span><span class="fu">use_mit_license</span>(<span class="at">copyright_holder =</span> <span class="st">&quot;George G. Vega Yon&quot;</span>)</span>
+<span id="cb2-14"><a href="#cb2-14"></a>usethis<span class="sc">::</span><span class="fu">use_news_md</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="step-1-set-up-the-structure-cont.-2" class="slide level2">
 <h2>Step 1: Set up the structure (cont. 2)</h2>
-<div style="font-size: 20pt">
+<div style="font-size: 18pt">
 <p>What did happen?</p>
 <ol type="1">
 <li><p><code>use_readme_rmd()</code>: Creates a readme file that will be in the project’s main folder. Think about it as the home page of your project.</p></li>
@@ -1488,23 +1488,27 @@ George G. Vega Yon, Ph.D.
 <p>Test are run every time that you run R CMD check</p>
 <ul>
 <li><p>In the <code>tests/testthat/</code> dir, add/edit a source file with tests, e.g. <code>test-addnums.r</code></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">context</span>(<span class="st">&quot;Basic set of tests&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">test_that</span>(<span class="st">&quot;addnums(a, b) = a+b&quot;</span>, {</span>
-<span id="cb7-3"><a href="#cb7-3"></a>  <span class="co"># Preparing the test</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>  a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a>  b <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a></span>
-<span id="cb7-7"><a href="#cb7-7"></a>  <span class="co"># Calling the function</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a>  ans0 <span class="ot">&lt;-</span> a<span class="sc">+</span>b</span>
-<span id="cb7-9"><a href="#cb7-9"></a>  ans1 <span class="ot">&lt;-</span> <span class="fu">addnums</span>(a, b)</span>
-<span id="cb7-10"><a href="#cb7-10"></a></span>
-<span id="cb7-11"><a href="#cb7-11"></a>  <span class="co"># Are these equal?</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a>  <span class="fu">expect_equal</span>(ans0, ans1<span class="sc">$</span>ab)</span>
-<span id="cb7-13"><a href="#cb7-13"></a>})</span>
-<span id="cb7-14"><a href="#cb7-14"></a></span>
-<span id="cb7-15"><a href="#cb7-15"></a><span class="fu">test_that</span>(<span class="st">&quot;Plot returns -funnypkg_foo-&quot;</span>, {</span>
-<span id="cb7-16"><a href="#cb7-16"></a>  <span class="fu">expect_s3_class</span>(<span class="fu">plot</span>(<span class="fu">addnums</span>(<span class="dv">1</span>,<span class="dv">2</span>)), <span class="st">&quot;funnypkg_foo&quot;</span>)</span>
-<span id="cb7-17"><a href="#cb7-17"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">context</span>(<span class="st">&quot;Basic set of tests&quot;</span>) <span class="co"># This will generate a warning as the current </span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>                              <span class="co"># version is deprecated </span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="fu">test_that</span>(<span class="st">&quot;addnums(a, b) = a+b&quot;</span>, {</span>
+<span id="cb7-4"><a href="#cb7-4"></a>  <span class="co"># Preparing the test</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  b <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a></span>
+<span id="cb7-8"><a href="#cb7-8"></a>  <span class="co"># Calling the function</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>  ans0 <span class="ot">&lt;-</span> a<span class="sc">+</span>b</span>
+<span id="cb7-10"><a href="#cb7-10"></a>  ans1 <span class="ot">&lt;-</span> <span class="fu">addnums</span>(a, b)</span>
+<span id="cb7-11"><a href="#cb7-11"></a></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="co"># Are these equal?</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>  <span class="fu">expect_equal</span>(ans0, ans1<span class="sc">$</span>ab)</span>
+<span id="cb7-14"><a href="#cb7-14"></a>})</span>
+<span id="cb7-15"><a href="#cb7-15"></a></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="fu">test_that</span>(<span class="st">&quot;Plot returns -funnypkg_foo-&quot;</span>, {</span>
+<span id="cb7-17"><a href="#cb7-17"></a>  <span class="fu">expect_s3_class</span>(</span>
+<span id="cb7-18"><a href="#cb7-18"></a>    <span class="fu">plot</span>(<span class="fu">addnums</span>(<span class="dv">1</span>,<span class="dv">2</span>)), <span class="st">&quot;funnypkg_foo&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a>    ) <span class="co"># This will generate an error as the function plot.funnypkg_addnum</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>      <span class="co"># does not return an object of that class.</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 <li><p>You can run the tests using Ctrl + Shift + t</p></li>
 <li><p>Furthermore, tests are used to evaluate code coverage.</p></li>
 </ul>
@@ -1615,6 +1619,17 @@ George G. Vega Yon, Ph.D.
 <span id="cb9-90"><a href="#cb9-90"></a>R CMD check succeeded</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
+<section id="step-2.4-r-cmd-check-cont.-1" class="slide level2">
+<h2>Step 2.4: R CMD check (cont. 1)</h2>
+<div style="font-size: 25pt">
+<p>R packages can be shared by “building” them. For example, the following command:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>R CMD build ~/Documents/funnypkg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Will generate package the R package into a file named <code>funnypkg_0.1.0.tar.gz</code> that can later be distributed. Users can install this package either through command line:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a href="#cb11-1"></a>R CMD INSTALL funnypkg_0.1.0.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or through the console in R</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;funnypkg_0.1.0.tar.gz&quot;</span>, <span class="at">repos =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
 <section id="step-2.5-commit-your-changes" class="slide level2">
 <h2>Step 2.5: Commit your changes</h2>
 <div style="font-size: 20pt">
@@ -1622,9 +1637,9 @@ George G. Vega Yon, Ph.D.
 <ol type="1">
 <li><p>Edit the <a href="https://github.com/hadley/dplyr/blob/master/NEWS.md"><code>NEWS.md</code></a> file and the <a href="https://github.com/RcppCore/RcppArmadillo/blob/master/ChangeLog"><code>ChangeLog</code></a> (if you have one).</p></li>
 <li><p>Add the new files to the tree, commit your changes, and push them to Github</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a href="#cb10-1"></a>$ git add R/newfile.r man/newfile.Rd</span>
-<span id="cb10-2"><a href="#cb10-2"></a>$ git commit -a -m &quot;Adding new function&quot;</span>
-<span id="cb10-3"><a href="#cb10-3"></a>$ git push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb13-1"><a href="#cb13-1"></a>$ git add R/newfile.r man/newfile.Rd</span>
+<span id="cb13-2"><a href="#cb13-2"></a>$ git commit -a -m &quot;Adding new function&quot;</span>
+<span id="cb13-3"><a href="#cb13-3"></a>$ git push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ol>
 <p>Once uploaded, I recommend checking Travis and AppVeyor to see if everything went well.</p>
 </div>
@@ -1673,7 +1688,7 @@ George G. Vega Yon, Ph.D.
  collate  en_US.UTF-8
  ctype    en_US.UTF-8
  tz       America/Denver
- date     2023-02-20
+ date     2023-02-21
  pandoc   2.5 @ /usr/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
