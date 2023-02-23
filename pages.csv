@@ -5,4 +5,4 @@ week,name,lecture,lecture_source,lab,lab_source,issue,extra
 4,Debugging and profiling,lectures/04-debugging-and-profiling/slides.html,lectures/04-debugging-and-profiling/slides.qmd,labs/04-debugging-and-profiling/04-debugging-and-profiling.html,labs/04-debugging-and-profiling/04-debugging-and-profiling.qmd,7,
 5,Rcpp,lectures/05-rcpp/slides.html,lectures/05-rcpp/slides.qmd,labs/05-rcpp/lab.html,labs/05-rcpp/lab.qmd,8,
 6,Parallel Computing,lectures/06-parallel-computing/slides.html,lectures/06-parallel-computing/slides.qmd,labs/06-parallel-computing/lab.html,labs/06-parallel-computing/lab.qmd,11,
-7,R packages I,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i.html,labs/07-rpkgs-i.qmd,12,
+7,R packages I,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
