@@ -34,16 +34,20 @@ for (i in 1:nrow(dat)) {
         ),
 
       # Lecture links
-      Lecture = sprintf(
-        "[slides](%s/week-%02i-slides.html) ([source](%s))",
-        urlraw, week, lecture_source 
-        ),
+      Lecture = if (lecture_source != "") {
+        sprintf(
+          "[slides](%s/week-%02i-slides.html) ([source](%s))",
+          urlraw, week, lecture_source 
+        )
+        } else {""},
 
       # Lab links
-      Lab = sprintf(
-        "[lab](%s/week-%02i-lab.html) ([source](%s))",
-        urlraw, week, lab_source 
+      Lab = if (lab_source != "") {
+        sprintf(
+          "[lab](%s/week-%02i-lab.html) ([source](%s))",
+          urlraw, week, lab_source 
         )
+      } else {""}
       )
     ))
 
@@ -54,17 +58,23 @@ for (i in 1:nrow(dat)) {
     )
 
   # Copy the files
-  invisible(file.copy(
-    from      = dat[i,,drop=FALSE]$lecture,
-    to        = sprintf("docs/week-%02i-slides.html", dat[i,,drop=FALSE]$week), 
-    overwrite = TRUE
-  ))
+  if (file.exists(dat[i,,drop=FALSE]$lecture)) {
+    invisible(file.copy(
+      from      = dat[i,,drop=FALSE]$lecture,
+      to        = sprintf("docs/week-%02i-slides.html", dat[i,,drop=FALSE]$week), 
+      overwrite = TRUE
+    ))
+  }
 
-  invisible(file.copy(
-    from      = dat[i,,drop=FALSE]$lab,
-    to        = sprintf("docs/week-%02i-lab.html", dat[i,,drop=FALSE]$week), 
-    overwrite = TRUE
-  ))
+  if (file.exists(dat[i,,drop=FALSE]$lab)) {
+    
+    invisible(file.copy(
+      from      = dat[i,,drop=FALSE]$lab,
+      to        = sprintf("docs/week-%02i-lab.html", dat[i,,drop=FALSE]$week), 
+      overwrite = TRUE
+    ))
+    
+  }
 
 }
 

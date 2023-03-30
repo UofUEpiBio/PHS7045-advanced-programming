@@ -1,5 +1,5 @@
 ---
-title: "Lab 06 - Parallel computing"
+title: "Lab 08 - RcppArmadillo + OpenMP + Slurm"
 format:
   html:
     embed-resources: true
@@ -7,35 +7,235 @@ format:
 
 # Learning goals
 
-* Learn from HW 1 and revisit vectorizing
-* Parallel computing for simulations
+* How we can use OpenMP to speed up loops.
+* Submit a job (array) to Slurm.
 
 # Lab task
 
-**Part 1 (20 minutes)**:
+We have the following C++ function that needs to be sped up:
 
-Write an outline of [lab 2  / HW 1 solution](https://github.com/UofUEpiBio/PHS7045-advanced-programming-solutions).
+```cpp
+#include <RcppArmadillo.h>
+// [[Rcpp::depends(RcppArmadillo)]]
+using namespace Rcpp;
 
-
-Two people will present their outline.  After the first presenter, the second presenter will add any additional details/insights.
-
-```{r,eval=FALSE}
-set.seed(NULL)
-sample(c("Daniel", "Eric", "Haojia", "Hyejung", "Kline", "Linda", "Ransmond", "Ravi"),2)
+//' Fourth order biweight kernel
+// [[Rcpp::export]]
+arma::mat K4B_v1(
+    arma::mat X,
+    arma::mat Y,
+    arma::vec h
+) {
+  
+  arma::uword n_n = X.n_rows;
+  arma::uword n_m = Y.n_cols;
+  arma::mat Nhat(n_n, n_m);
+  arma::vec Dhat(n_n);
+  arma::mat Yhat(n_n, n_m);
+  
+  for (arma::uword i = 0; i < n_n; ++i)
+  {
+    
+    const auto xrow_i = X.row(i);
+    for (arma::uword j = 0; j < i; ++j)
+    {
+      
+      arma::vec Dji_h = (X.row(j) - xrow_i) / h;
+      auto Dji_h2 = arma::pow(Dji_h, 2.0);
+      
+      double Kji_h = prod(
+        (arma::abs(Dji_h) < 1) %
+          (1.0 - 3.0 * Dji_h2) %
+          arma::pow(1.0 - Dji_h2, 2.0) * 105.0 / 64.0
+      );
+      
+      Dhat(i) += Kji_h;
+      Dhat(j) += Kji_h;
+      
+      Nhat.row(i) += Y.row(j) * Kji_h;
+      Nhat.row(j) += Y.row(i) * Kji_h;
+      
+    }
+    
+  }
+  
+  for (size_t i = 0u; i < n_n; ++i)
+  {
+    if (Dhat(i) != 0)
+      Yhat.row(i) = Nhat.row(i)/Dhat(i);
+  }
+  
+  return(Yhat);
+  
+}
 ```
 
+We will use OpenMP to accelerate the function.
 
-**Part 2 (30 minutes)**:
+# RcppArmadillo and OpenMP
 
-Re-write design 1 and/or design 2 based upon what you've learned/outlined from the solution.  Compare efficiency between your submission and your revision using the `bench` package.
+<p style="text-align:center;color:white;font-size:200%;">
+RcppArmadillo + OpenMP<br>=<br><img src="https://media.giphy.com/media/WUq1cg9K7uzHa/giphy.gif" style="width:400px">
+</p>
+
+*   Friendlier than [**RcppParallel**](http://rcppcore.github.io/RcppParallel/)...
+    at least for 'I-use-Rcpp-but-don't-actually-know-much-about-C++' users (like myself!).
+
+*   Must run only 'Thread-safe' calls, so calling R within parallel blocks can cause
+    problems (almost all the time).
+    
+*   Use `arma` objects, e.g. `arma::mat`, `arma::vec`, etc. Or, if you are used to them
+    `std::vector` objects as these are thread safe.
+
+*   Pseudo Random Number Generation is not very straight forward... But C++11 has
+    a [nice set of functions](http://en.cppreference.com/w/cpp/numeric/random) that can be used together with OpenMP
+
+*   Need to think about how processors work, cache memory, etc. Otherwise you could
+    get into trouble... if your code is slower when run in parallel, then you probably
+    are facing [false sharing](https://software.intel.com/en-us/articles/avoiding-and-identifying-false-sharing-among-threads)
+    
+*   If R crashes... try running R with a debugger (see
+    [Section 4.3 in Writing R extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-memory-access)):
+    
+    ```shell
+    ~$ R --debugger=valgrind
+    ```
 
 
-**Part 3 (25 minutes)**:
+## RcppArmadillo and OpenMP workflow
 
-Using either submitted design in HW 1 or revisions made in Part 2, use a parallelization method to simulate 1000 replicates.  Compare the timing to simulating the same 1000 replicates without parallelization.
+1.  Tell Rcpp that you need to include that in the compiler:
+    
+    ```cpp
+    #include <omp.h>
+    // [[Rcpp::plugins(openmp)]]
+    ```
 
-Extra time? Take any next steps on completing the simluation from the original homework assignment:
+2.  Within your function, set the number of cores, e.g
 
-* Assess the Type I error (increase the number of replicates)
-* Refine $\delta$ as needed
-* Simulate under the alternative hypothesis
+    ```cpp
+    // Setting the cores
+    omp_set_num_threads(cores);
+    ```
+
+## RcppArmadillo and OpenMP workflow
+
+3.  Tell the compiler that you'll be running a block in parallel with OpenMP
+    
+    ```cpp
+    #pragma omp [directives] [options]
+    {
+      ...your neat parallel code...
+    }
+    ```
+    
+    You'll need to specify how OMP should handle the data:
+    
+    *   `shared`: Default, all threads access the same copy.
+    *   `private`: Each thread has its own copy, uninitialized.
+    *   `firstprivate` Each thread has its own copy, initialized.
+    *   `lastprivate` Each thread has its own copy. The last value used is returned.
+    
+    
+    Setting `default(none)` is a good practice.
+    
+3.  Compile!
+
+## Ex 5: RcppArmadillo + OpenMP
+
+Our own version of the `dist` function... but in parallel!
+
+```{r}
+#| echo: false
+#| results: asis
+#| warning: false
+cat("```cpp\n")
+cat(readLines("dist_par.cpp"), sep = "\n")
+cat("\n```")
+```
+
+The key lines:
+
+- `#include <omp.h>` Includes the OpenMP library in our program.
+
+- `// [[Rcpp::plugins(openmp)]]` Notifies `Rcpp::sourceCpp` we are using OpenMP.
+
+- `omp_set_num_threads(cores)` Sets the number of cores.
+
+- `#pragma omp parallel for...` Specifies the instruction.
+
+Let's see how much faster our function is
+
+```{r}
+#| label: dist-dat
+#| echo: true
+#| cache: true
+# Sourcing
+Rcpp::sourceCpp("dist_par.cpp")
+
+# Simulating data
+set.seed(1231)
+K <- 50
+n <- 10000
+x <- matrix(rnorm(n*K), ncol=K)
+# Are we getting the same?
+hist(as.matrix(dist(x)) - dist_par(x, 4)) # Only zeros
+```
+
+```{r}
+#| label: dist-benchmark
+#| echo: true
+#| cache: true
+#| dependson: -1
+# Benchmarking!
+bm <- microbenchmark::microbenchmark(
+  dist(x),                 # stats::dist
+  dist_par(x, cores = 1),  # 1 core
+  dist_par(x, cores = 4),  # 4 cores
+  dist_par(x, cores = 8),  # 8 cores
+  times = 1
+)
+
+print(bm, unit = "s")
+print(bm, unit = "relative")
+```
+
+There's more to `OpenMP`. I invite you to go over a set of experiments where I compare different strategies of implementing the same function here: [https://github.com/UofUEpiBio/r-parallel-benchmark](https://github.com/UofUEpiBio/r-parallel-benchmark)
+
+# Submitting jobs to Slurm
+
+We need to execute the following Rscript in CHPC:
+
+```{r}
+#| echo: false
+#| results: asis
+cat("```r\n")
+cat(readLines("distance.R"), sep = "\n")
+cat("\n```")
+```
+
+Two ways of doing it: Single or multiple jobs (using job arrays.) To submit the job, I have created two bash (slurm) scripts we can submit with the `sbatch` function. Most of the time, we will be submitting single jobs (time consuming operations, large memory, etc.) Job arrays are useful when the entire script can be parallelized.
+
+## Single job
+
+
+```{r}
+#| echo: false
+#| results: asis
+#| warning: false
+cat("```bash\n")
+cat(readLines("distance-job.slurm"), sep = "\n")
+cat("\n```")
+```
+
+## Job array
+
+```{r}
+#| echo: false
+#| results: asis
+#| warning: false
+cat("```bash\n")
+cat(readLines("distance-job-array.slurm"), sep = "\n")
+cat("\n```")
+```
+
