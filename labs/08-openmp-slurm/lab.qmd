@@ -202,9 +202,13 @@ print(bm, unit = "relative")
 
 There's more to `OpenMP`. I invite you to go over a set of experiments where I compare different strategies of implementing the same function here: [https://github.com/UofUEpiBio/r-parallel-benchmark](https://github.com/UofUEpiBio/r-parallel-benchmark)
 
+Before continuing to the next section. Try to apply what we just learned to include OpenMP the function `K4B_v1`.
+
 # Submitting jobs to Slurm
 
-We need to execute the following Rscript in CHPC:
+We need to execute the following Rscript in CHPC[^Rscript]:
+
+[^Rscript]: The `distance.R` R script can be downloaded [here](week-08/distance.R).
 
 ```{r}
 #| echo: false
@@ -218,6 +222,7 @@ Two ways of doing it: Single or multiple jobs (using job arrays.) To submit the 
 
 ## Single job
 
+The [`distance-job.slurm`](week-08/distance-job.slurm) contains the following lines:
 
 ```{r}
 #| echo: false
@@ -229,6 +234,8 @@ cat("\n```")
 ```
 
 ## Job array
+
+The [`distance-job-array.slurm`](week-08/distance-job.slurm) contains the following lines:
 
 ```{r}
 #| echo: false
