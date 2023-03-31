@@ -85,12 +85,12 @@ RcppArmadillo + OpenMP<br>=<br><img src="https://media.giphy.com/media/WUq1cg9K7
     problems (almost all the time).
     
 *   Use `arma` objects, e.g. `arma::mat`, `arma::vec`, etc. Or, if you are used to them
-    `std::vector` objects as these are thread safe.
+    `std::vector` objects as these are thread-safe.
 
-*   Pseudo Random Number Generation is not very straight forward... But C++11 has
+*   Pseudo Random Number Generation is not very straightforward... But C++11 has
     a [nice set of functions](http://en.cppreference.com/w/cpp/numeric/random) that can be used together with OpenMP
 
-*   Need to think about how processors work, cache memory, etc. Otherwise you could
+*   Need to think about how processors work, cache memory, etc. Otherwise, you could
     get into trouble... if your code is slower when run in parallel, then you probably
     are facing [false sharing](https://software.intel.com/en-us/articles/avoiding-and-identifying-false-sharing-among-threads)
     
@@ -200,9 +200,40 @@ print(bm, unit = "s")
 print(bm, unit = "relative")
 ```
 
-There's more to `OpenMP`. I invite you to go over a set of experiments where I compare different strategies of implementing the same function here: [https://github.com/UofUEpiBio/r-parallel-benchmark](https://github.com/UofUEpiBio/r-parallel-benchmark)
+There's more to `OpenMP`. I invite you to go over a set of experiments where I compare different strategies for implementing the same function here: [https://github.com/UofUEpiBio/r-parallel-benchmark](https://github.com/UofUEpiBio/r-parallel-benchmark)
 
-Before continuing to the next section. Try to apply what we just learned to include OpenMP the function `K4B_v1`.
+Before continuing to the next section. Try to apply what we just learned to include OpenMP in the function `K4B_v1`. To do so, write a C++ function named `K4B_v2` and try it out using the following code:
+
+```r
+n <- 500
+Y <- matrix(rnorm(n * n), ncol = n)
+X <- cbind(rnorm(n))
+
+# Running the benchmark
+res <- microbenchmark::microbenchmark(
+  K4B_v1(X, Y, 2),
+  K4B_v2(X, Y, 2, 4),
+  check = "equal",
+  times = 10
+)
+
+print(res, unit = "relative")
+print(res, unit = "ms")
+# Unit: relative
+#                expr     min       lq     mean   median       uq      max neval
+#     K4B_v1(X, Y, 2) 3.32887 3.356954 2.268484 2.412626 1.781527 1.462261    10
+#  K4B_v2(X, Y, 2, 4) 1.00000 1.000000 1.000000 1.000000 1.000000 1.000000    10
+#  cld
+#    b
+#   a 
+# Unit: milliseconds
+#                expr       min        lq     mean    median       uq      max
+#     K4B_v1(X, Y, 2) 227.04614 229.69930 231.3196 231.48199 233.8489 234.0478
+#  K4B_v2(X, Y, 2, 4)  68.20517  68.42492 101.9710  95.94608 131.2631 160.0588
+#  neval cld
+#     10   b
+#     10  a 
+```
 
 # Submitting jobs to Slurm
 
@@ -218,7 +249,27 @@ cat(readLines("distance.R"), sep = "\n")
 cat("\n```")
 ```
 
-Two ways of doing it: Single or multiple jobs (using job arrays.) To submit the job, I have created two bash (slurm) scripts we can submit with the `sbatch` function. Most of the time, we will be submitting single jobs (time consuming operations, large memory, etc.) Job arrays are useful when the entire script can be parallelized.
+Two ways of doing it: Single or multiple jobs (using job arrays.) To submit the job, I have created two bash (slurm) scripts we can submit with the `sbatch` function. Most of the time, we will be submitting single jobs (time-consuming operations, large memory, etc.) Job arrays are useful when the entire script can be parallelized. Submitting jobs using `sbatch` is straightforward:
+
+```bash
+sbatch [your-slurm-script]
+```
+
+Where `your-slurm-script` should be replaced with the name (and path, if needed) of the Slurm script. To check the status of your submitted jobs, you can use the `squeue` command, *e.g.*,
+
+```bash
+squeue -u[your user id]
+```
+
+Where `your user id` should be replaced with... your user ID. This is equivalent to typing the following command
+
+```bash
+squeue -u$(id -u)
+```
+
+Once your job is submitted, the R script should generate a boxplot like the following:
+
+<img src="openmp-exampl.png" style="width: 80%">
 
 ## Single job
 
@@ -233,7 +284,30 @@ cat(readLines("distance-job.slurm"), sep = "\n")
 cat("\n```")
 ```
 
-## Job array
+## Job arrays
+
+Job arrays are a way to submit the same job multiple times. The benefits of using job arrays are manyfold. One of the key advantages of this type of submission is that a single script can be executed across many nodes; making job arrays a powerful tool.
+
+When job arrays start, Slurm generates a set of environment variables available to the user. One of those is the `SLURM_ARRAY_TASK_ID` environment variable. With the latter, we can identify which of the `n` tasks is the job running. In our R script, we do so using the `Sys.getenv()` function (to which we assign the object `id`):
+
+```r
+# If not in a job array, the default value of id is "0"
+id <- as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID", unset = "0"))
+```
+
+ That way, our R script can be instructed to behave differently depending on the array id. If your R script depends on generating random numbers (*e.g.*, a simulation study,) it is paramount to properly deal with RNG seeds. A common way to do so is to set a seed for a baseline job, and then sample individual seeds for each one of the tasks. We do that as follows:
+
+```r
+# Generating seeds
+set.seed(123)
+
+# Need to make sure all arrays have different seeds
+if (is_array) {
+  seeds <- as.integer(Sys.getenv("SLURM_ARRAY_TASK_COUNT", 1))
+  seeds <- sample.int(.Machine$integer.max, seeds)
+  set.seed(seeds[id])
+}
+```
 
 The [`distance-job-array.slurm`](week-08/distance-job.slurm) contains the following lines:
 
