@@ -7,3 +7,4 @@ week,name,lecture,lecture_source,lab,lab_source,issue,extra
 6,Parallel Computing,lectures/06-parallel-computing/slides.html,lectures/06-parallel-computing/slides.qmd,labs/06-parallel-computing/lab.html,labs/06-parallel-computing/lab.qmd,11,
 7,R packages I,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
 8,Rcpp + OpenMP + Slurm,,,labs/08-openmp-slurm/lab.html,labs/08-openmp-slurm/lab.qmd,16,
+9,More practice with slurm (and netplot),,,labs/09-slurm-practice/lab.html,labs/09-slurm-practice/lab.qmd,17,
