@@ -7,7 +7,7 @@ format:
 
 ## Due date
 
-There are two due dates: Thursday, May 1st (presentation) and May 4th (R package), 2023.
+There are two due dates: Thursday, May 2nd (presentation) and May 4th (R package), 2023.
 
 ## Task
 
@@ -20,7 +20,7 @@ This will be an extension of the package submitted for the midterm. The new comp
 
 ## Requirements
 
-The presentation (May 1st):
+The presentation (May 2nd):
 
  - The time allocation will be the same as the midterm (7 minutes).
 
