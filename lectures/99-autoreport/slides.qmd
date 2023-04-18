@@ -1,0 +1,337 @@
+---
+title: "Automatic reports with Github Actions"
+subtitle: "PHS 7045: Advanced Programming"
+author: "George G. Vega Yon, Ph.D."
+format:
+  revealjs:
+    embed-resources: true
+    slide-number: true
+    scrollable: true
+---
+
+# Intro
+
+```{r}
+#| echo: false
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(eval = TRUE, fig.width = 7, fig.height = 5)
+slides_eval <- TRUE
+```
+
+## Today 
+
+We will review three technologies to build automatic reports based on web-scraped data:
+
+```{mermaid}
+flowchart LR
+  GA[GitHub Actions] --> docker[Docker Containers]
+  docker --> webs[Web Scraping]
+```
+
+::: {.fragment}
+
+Before we proceed, let's take a look at the specific goal:
+
+> Webscrape PubMed to download a list of the most recent ABM papers.
+
+:::
+
+::: {.fragment}
+The resulting report can be viewed at [https://github.com/UofUEpiBio/PHS-7045-egga](https://github.com/UofUEpiBio/PHS-7045-egga){target="_blank"}.
+:::
+
+# The task
+
+## PubMed
+
+We need to extract the information from [this website](https://pubmed.ncbi.nlm.nih.gov/?term=agent-based+model&sort=date){target="_blank"}:
+
+![](fig/pubmed.png){width="70%" fig-align="center"}
+
+::: {.fragment}
+Let's start by looking into the Quarto document used to do so. You can download it from [here](https://github.com/UofUEpiBio/PHS-7045-egga){target="_blank"}.
+:::
+
+## Our report
+
+# Web scraping
+
+## Fundamentals of Web Scrapping  {style="font-size: 80%"}
+
+**What?**
+
+> Web scraping, web harvesting, or web data extraction is data scraping used for extracting data from websites -- [Wikipedia](https://en.wikipedia.org/wiki/Web_scraping)
+
+**How?**
+
+- The [`rvest`](https://cran.r-project.org/package=rvest) R package provides various tools for reading and processing web data.
+
+- Under the hood, `rvest` is a wrapper of the [`xml2`](https://cran.r-project.org/package=xml2)
+and [`httr`](https://cran.r-project.org/package=httr) R packages.
+
+(in the case of [dynamic websites](https://en.wikipedia.org/wiki/Dynamic_web_page), take a look at [selenium](https://en.wikipedia.org/wiki/Selenium_(software)))
+
+---
+
+## Web scraping raw HTML: Example
+
+We want to directly capture the table of COVID-19 death rates per country from Wikipedia.
+
+```{r}
+#| label: setup-scrape
+library(rvest)
+library(xml2)
+
+# Reading the HTML table with the function xml2::read_html
+covid <- read_html(
+  x = "https://en.wikipedia.org/w/index.php?title=COVID-19_pandemic_death_rates_by_country&oldid=1117643862"
+  )
+
+# Let's see the output
+covid
+```
+
+---
+
+## Web scraping raw HTML: Example (cont 1.) {style="font-size: 80%"}
+
+- We want to get the HTML table in the doc. To do such, we can use the
+  function `xml2::xml_find_all()` and `rvest::html_table()`
+
+- The first will locate the place in the document that matches a given **XPath** expression.
+  
+- [XPath](https://en.wikipedia.org/wiki/XPath), XML Path Language, is a query language to select nodes in an XML document.
+  
+- An excellent tutorial can be found [here](https://www.w3schools.com/xml/xpath_intro.asp)
+
+- Modern Web browsers make it easy to use XPath!
+
+Live Example! (inspect elements in [Google Chrome](https://developers.google.com/web/tools/chrome-devtools/open),
+[Mozilla Firefox](https://developer.mozilla.org/en-US/docs/Tools/Page_Inspector/How_to/Open_the_Inspector), [Internet Explorer](https://docs.microsoft.com/en-us/microsoft-edge/devtools-guide-chromium/ie-mode), and [Safari](https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/Web_Inspector_Tutorial/EditingCode/EditingCode.html#//apple_ref/doc/uid/TP40017576-CH4-DontLinkElementID_25))
+  
+---
+
+## Web scraping with `xml2` and the `rvest` package (cont. 2)  {style="font-size: 80%"}
+
+Now that we know what the path is, let's use that and extract
+
+```{r}
+#| label: get-table-covid
+#| echo: true
+table <- xml_find_all(covid, xpath = '//*[@id="covid-19-pandemic-cases-and-mortality-by-country"]/div[5]/table')
+table <- html_table(table) # This returns a list of tables
+head(table[[1]])
+```
+
+---
+
+# GitHub Actions 
+
+## GA: What
+
+In simple terms: Free cloud computing time (2,000 minutes/month)  on any OS, whenever you want
+
+![Source: GitHub Actions website https://github.com/features/actions](https://github.githubassets.com/images/modules/site/features/actions-workflow.svg){width="90%" fig-align="center"}
+
+
+## GA: Some examples
+
+::: {.fragment}
+- Build a website using `quarto`.
+:::
+
+::: {.fragment}
+- Update `Docker` images.
+:::
+
+::: {.fragment}
+- `R CMD check` R packages (or any software) on various versions.
+:::
+
+::: {.fragment}
+- Build automatic reports (like what we will be doing!).
+:::
+
+::: {.fragment}
+The core component of GitHub actions is the [workflow files](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions#workflows).
+:::
+
+## GitHub Actions: Workflow {.smaller}
+
+::: {style="font-size: 80%"}
+
+The [workflow file](https://github.com/UofUEpiBio/PHS-7045-egga/blob/c7269f35550732f80772f48f1fc40e0d4df7bf11/.github/workflows/build-it.yaml){target="_blank"} (stored under `.github/workflows`)
+
+```yaml
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+on:
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: '0 0 * * 0' # https://crontab.guru/
+
+name: Build it
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    container: rocker/tidyverse:4.2.2
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_REPO: ${{ github.event.repository.name }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+    
+      # Installing quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 0.3.71
+    
+      - name: Install packags and render
+        run: |
+          install2.r xml2 quarto
+          quarto render README.qmd
+    
+      # There's an error with EndBug, need to use the safe.directory
+      # option. More here
+      # https://git-scm.com/docs/git-config#Documentation/git-config.txt-safedirectory
+      - name: Dealing with GitConfig
+        run: |
+          git config --global --add safe.directory /__w/${GITHUB_REPO}/${GITHUB_REPO}
+          
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: README.md
+```
+
+Let's see bit by bit
+
+:::
+
+---
+
+### GA: Trigger
+
+When the action triggers:
+
+- When there's a push to the main or master branches.
+
+- And once a week, every Monday at 0 hours.
+
+```yml
+on:
+  push:
+    branches: [main, master]
+  schedule:
+    - cron: '0 0 * * 0' # https://crontab.guru/
+```
+
+---
+
+### GA: Configuration of the Jobs
+
+- It runs on the lastest version of Ubuntu
+
+- But within a container ([rocker/tidyverse:4.2.2](https://rocker-project.org/images/versioned/rstudio.html){target="blank"})
+
+```yml
+Build:
+    runs-on: ubuntu-latest
+    container: rocker/tidyverse:4.2.2
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_REPO: ${{ github.event.repository.name }}
+```
+
+- It sets two environment variables (accessible with the dollar sign): `GITHUB_PAT` and `GITHUB_REPO`.
+
+---
+
+### GA: Steps
+
+The `Build` job has five steps:
+
+::: {.columns style="font-size: 70%"}
+
+::: {.column width="50%"}
+
+::: {.fragment}
+1. Clone the current repository.
+:::
+
+::: {.fragment}
+2. Install `quarto` version 0.3.71.
+:::
+
+::: {.fragment}
+3. Install the `xml2` and `quarto` R packages and render the `README.qmd` document.
+:::
+
+::: {.fragment}
+4. ...
+:::
+
+::: {.fragment}
+5. Commit the changes.
+:::
+
+:::
+
+::: {.column width="50%"}
+
+```yml
+- uses: actions/checkout@v3
+  with:
+    fetch-depth: 0
+
+- uses: quarto-dev/quarto-actions/setup@v2
+  with:
+    version: 0.3.71
+
+- name: Install packags and render
+  run: |
+    install2.r xml2 quarto
+    quarto render README.qmd
+
+- name: Dealing with GitConfig
+  run: |
+    git config --global --add safe.directory /__w/${GITHUB_REPO}/${GITHUB_REPO}
+    
+- uses: EndBug/add-and-commit@v9
+  with:
+    add: README.md
+```
+
+:::
+
+:::
+
+::: {.fragment}
+Of these five steps, steps 1, 2, and 5 were pulled directly from the [GA marketplace](https://github.com/marketplace/actions/){target="_blank"}.
+:::
+
+# Docker containers
+
+## Docker: What are containers
+
+> Containers are isolated from one another and bundle their own software, libraries and configuration files; they can communicate with each other through well-defined channels.[8] Because all of the containers share the services of a single operating system kernel, they use fewer resources than virtual machines -- [Wiki](https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1148220158){target="_blank"}
+
+## Docker's Architecture
+
+![Source: https://docs.docker.com/get-started/overview/](https://docs.docker.com/assets/images/architecture.svg){width="90%" fig-align="center"}
+
+# The rocker/tidyverse image
+
+## {background-iframe="https://rocker-project.org/" background-interactive="true"}
+
+## The tidyverse image
+
+> rocker/tidyverse has already installed many R packages and their dependencies apt packages. e.g. the tidyverse package, the devtools package, the rmarkdown package, some R Database Interface packages, the data.table package, the fst package, and the Apache Arrow R package. -- Source: [Rocker Project](https://rocker-project.org/images/versioned/rstudio.html#overview)
+
+# Let's see it start-to-finish!
+
+[https://github.com/UofUEpiBio/PHS-7045-egga](https://github.com/UofUEpiBio/PHS-7045-egga){target="_blank"}
