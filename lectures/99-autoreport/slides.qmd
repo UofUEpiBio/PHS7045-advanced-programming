@@ -80,6 +80,7 @@ We want to directly capture the table of COVID-19 death rates per country from W
 
 ```{r}
 #| label: setup-scrape
+#| echo: true
 library(rvest)
 library(xml2)
 
