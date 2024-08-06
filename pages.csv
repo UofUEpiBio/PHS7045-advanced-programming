@@ -12,10 +12,7 @@ date,week,name,lecture,lecture_source,lab,lab_source,issue,extra
 10/29 and 10/31,11,Slurm,,,labs/08-openmp-slurm/lab.html,labs/08-openmp-slurm/lab.qmd,16,
 11/05 and 11/07,12,R packages I,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
 11/12 and 11/14,13,R packages I,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
-
-8,Slurm,,,labs/08-openmp-slurm/lab.html,labs/08-openmp-slurm/lab.qmd,16,
-9,More practice with slurm (and netplot),,,labs/09-slurm-practice/lab.html,labs/09-slurm-practice/lab.qmd,17,
-10,Automatic Reports with GitHub Actions,lectures/99-autoreport/slides.html,lectures/99-autoreport/slides.qmd,,,19,
-
-
-12/12 and 11/14,13,R packages I,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
+11/19 and 11/21,14,Automatic Reports with GitHub Actions,lectures/99-autoreport/slides.html,lectures/99-autoreport/slides.qmd,,,19,
+11/26 and 11/28 (off),15,More practice with slurm (and netplot),,,labs/09-slurm-practice/lab.html,labs/09-slurm-practice/lab.qmd,17,
+12/03 and 12/05,16,Final Prep (Hackathon),lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
+12/12,17,Final,lectures/07-rpkgs-i/slides.html,lectures/07-rpkgs-i/slides.qmd,labs/07-rpkgs-i/lab.html,labs/07-rpkgs-i/lab.qmd,12,
