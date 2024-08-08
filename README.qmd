@@ -12,6 +12,7 @@ Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](s
 #| echo: false
 #| warning: false
 dat <- read.csv("pages.csv")
+library(data.table)
 
 urlpath <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming"
 urlraw  <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
@@ -25,13 +26,17 @@ for (i in 1:nrow(dat)) {
   tab <- rbind(
     tab,
     with(dat[i,,drop=FALSE], data.frame(
-      Week  = week,
+      Week  = date,
 
       # Title of the week
-      Title = sprintf(
-        "%s (Issue [%i](%s/issues/%i))",
-        name, issue, urlpath, issue
-        ),
+      Title = fifelse(
+        !is.na(issue),
+        sprintf(
+          "%s (Issue [%i](%s/issues/%i))",
+          name, issue, urlpath, issue
+          ),
+        sprintf("%s", name)
+      ),
 
       # Lecture links
       Lecture = if (lecture_source != "") {
