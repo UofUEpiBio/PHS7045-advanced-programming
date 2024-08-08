@@ -4,7 +4,7 @@ format: gfm
 
 # PHS 7045: Advanced Programming
 
-Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](syllabus.md).
+Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](syllabus.md). Readings for the week can be found in the GitHub issues associated with them.
 
 ## Contents
 
