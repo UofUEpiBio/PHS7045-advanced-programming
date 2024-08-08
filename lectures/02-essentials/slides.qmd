@@ -13,6 +13,8 @@ format:
     code-tools: true
     smooth-scroll: true
     embed-resources: true
+  revealjs: default
+  pdf: default
 ---
 
 # Introduction
