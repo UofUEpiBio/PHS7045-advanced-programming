@@ -19,7 +19,7 @@ Begin by creating a matrix with 10 rows and 4 columns. Label the columns to indi
 
 Compare the probability of success under each experimental arm compared to control, i.e., Pr ($p_t > p_0$). 
 
-Here, we'll use a bayesian framework to estimate the distribution of $p_t$ under each arm. With Bernoulli outcomes and Beta($\alpha_t = 0.35, \beta_t = 0.65$) prior distribution on the success rate, the posterior distribution is Pr($p_t$ | $y_t$) $\sim$ Beta($\alpha_t + y_t, \beta_t + n_t - y_t$).
+Here, we'll use a bayesian framework to estimate the distribution of $p_t$ under each arm. With Bernoulli outcomes and a Beta($\alpha_t = 0.35, \beta_t = 0.65$) prior distribution on the success rate, the posterior distribution is Pr($p_t$ | $y_t$) $\sim$ Beta($\alpha_t + y_t, \beta_t + n_t - y_t$).
 
 <!-- Using a Beta-Binomial conjugate prior^[In the Bayesian framework, the success rate is random. The posterior distribution is the estimated distribution of the success rate. Here we are assuming the observed outcomes are Bernoulli distributed and the prior is distributed Beta($\alpha = 0.35, \beta = 0.65$)], estimate the distribution of the success rate under each arm. -->
 
@@ -27,11 +27,13 @@ Here, we'll use a bayesian framework to estimate the distribution of $p_t$ under
 
 <!-- Do this using a Bayesian posterior probability as follow: -->
 
-To estimate Pr ($p_t > p_0$), use vectors take many [such as 1000] random draws from each arm’s posterior distribution: `rbeta(n=1000, 0.35 + sum y_t, 0.65 + n_t - sum y_t)`. Use vectorization to compare how often a randomly generated experimental success rate is greater than a randomly generated control success rate.
+To estimate Pr ($p_t > p_0$), use vectors take many [such as 1000] random draws from each arm’s posterior distribution: `rbeta(n=1000, 0.35 + y_t, 0.65 + n_t - y_t)`. Use vectorization to compare how often a randomly generated experimental success rate is greater than a randomly generated control success rate.
 
 Declare the trial a “success” if the maximum of Pr ($p_t > p_0$) > $\delta$ = 0.025.
 
 Throughout the work, use labels wherever appropriate.  Submit this as your lab assignment.  
+
+# Next steps
 
 With minor modifications, this is the set-up for the first of two trial designs of  HW 1.  If you have extra time, begin working on HW 1.
 
