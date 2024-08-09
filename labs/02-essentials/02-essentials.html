@@ -3026,9 +3026,6 @@ vertical-align: -.125em;
 <p>Begin by creating a matrix with 10 rows and 4 columns. Label the columns to indicate each treatment arm and generate the observed outcomes under each treatment arm. The total number of observations and successes under arm <span class="math inline">\(t\)</span> is, respectively, <span class="math inline">\(n_t\)</span> and <span class="math inline">\(y_t\)</span>.</p>
 <p>Compare the probability of success under each experimental arm compared to control, i.e., Pr (<span class="math inline">\(p_t &gt; p_0\)</span>).</p>
 <p>Here, we’ll use a bayesian framework to estimate the distribution of <span class="math inline">\(p_t\)</span> under each arm. With Bernoulli outcomes and a Beta(<span class="math inline">\(\alpha_t = 0.35, \beta_t = 0.65\)</span>) prior distribution on the success rate, the posterior distribution is Pr(<span class="math inline">\(p_t\)</span> | <span class="math inline">\(y_t\)</span>) <span class="math inline">\(\sim\)</span> Beta(<span class="math inline">\(\alpha_t + y_t, \beta_t + n_t - y_t\)</span>).</p>
-<!-- Using a Beta-Binomial conjugate prior^[In the Bayesian framework, the success rate is random. The posterior distribution is the estimated distribution of the success rate. Here we are assuming the observed outcomes are Bernoulli distributed and the prior is distributed Beta($\alpha = 0.35, \beta = 0.65$)], estimate the distribution of the success rate under each arm. -->
-<!-- The resulting posterior distribution is Pr($p_t$ | $y_t$) $\sim$ Beta($\alpha_t + \sum y_i, \beta_t + n_t - \sum y_t$) ], estimate the probability that at least one experimental treatment arm has a higher success rate than the control arm. -->
-<!-- Do this using a Bayesian posterior probability as follow: -->
 <p>To estimate Pr (<span class="math inline">\(p_t &gt; p_0\)</span>), use vectors take many [such as 1000] random draws from each arm’s posterior distribution: <code>rbeta(n=1000, 0.35 + y_t, 0.65 + n_t - y_t)</code>. Use vectorization to compare how often a randomly generated experimental success rate is greater than a randomly generated control success rate.</p>
 <p>Declare the trial a “success” if the maximum of Pr (<span class="math inline">\(p_t &gt; p_0\)</span>) &gt; <span class="math inline">\(\delta\)</span> = 0.025.</p>
 <p>Throughout the work, use labels wherever appropriate. Submit this as your lab assignment.</p>
@@ -3036,47 +3033,6 @@ vertical-align: -.125em;
 <section id="next-steps" class="level1">
 <h1>Next steps</h1>
 <p>With minor modifications, this is the set-up for the first of two trial designs of HW 1. If you have extra time, begin working on HW 1.</p>
-<!-- For context  -->
-<!-- Today’s lab is the first steps toward designing a response-adaptive randomization (RAR) trial.  RAR designs are used in precision medicine trials, such as the [BATTLE trial](https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG), to gather early evidence of treatment arms that work best for a given biomarker.  Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising.  We will focus on the initial steps of coding this design. -->
-<!-- The lab is motivated by the paper by Kurt Viele: [Comparison of methods for control allocation in multiple arm studies using response adaptive randomization](https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836).  It practices: -->
-<!-- * Pre-allocating vectors -->
-<!-- * Using a loop -->
-<!-- * Writing a function -->
-<!-- # Notation  -->
-<!-- Notation and criteria for study to successfully declare a treatment as efficacious: -->
-<!-- * $i = 1, \dots, N$ participants -->
-<!-- * $t = 0, 1, 2, 3$ study arms ($t = 0$ is control) -->
-<!-- * $Y_i \mid t \sim$ Bern($p_t$) and $y_t$ is a vector of $n_t$ observed outcomes on arm $t$ -->
-<!-- * The prior on $p_t \sim$ Beta($\alpha_t, \beta_t$) -->
-<!-- Posterior Distribution Pr($p_t$ | $y_t$) $\sim$ Beta($\alpha_t + \sum y_t, \beta_t + n_t - \sum y_t$) -->
-<!-- Quoting from the paper: The trial is considered successful at the final analysis if there is a high posterior probability that at least one arm has a higher rate than control. -->
-<!-- max$_t$ Pr( $p_t > p_0$ ) > $\delta$ -->
-<!-- where $\delta$ is a threshold chosen to maintain familywise type I error for the study at one-sided 2.5\%. -->
-<!-- # Consider 2 different designs: -->
-<!-- 1. Equal allocation to four arms throughout design. -->
-<!-- 2. RAR where the allocation probability is updated at an interim analysis as follows: -->
-<!-- * $V_t = P_t$ (Max) -->
-<!-- * $V_0 = min\{\sum V_t \frac{(n_t + 1)}{(n_0 + 1)}, max(V_1, V_2, V_3) \}$ -->
-<!-- $V_0, V_1, V_2,$ and $V_3$ are renormalized to sum to 1 and are allocation probabilities. -->
-<!-- Note: A way to estimate $P_t$(Max) is to `cbind` K = [1000] draws from the posterior distribution of each arm and to see how frequently (across the K draws from each arm) each arm is drawn to be the largest. -->
-<!-- # Lab task: -->
-<!-- Write a function for each study design to simulate one trial.   -->
-<!-- * N = 228 with interim analyses after every 40th participant starting at 40. -->
-<!-- * Use equal allocation for first 40 patients for both designs. -->
-<!-- * Assume a setting where treatment effect is 0.35 for each study arm (the null scenario).  (But allow flexibility in function for other treatment effects). -->
-<!-- * $\alpha_t = 0.35$ for all $t$ and $\beta_t = 0.65$ for all arms. -->
-<!-- * Use the following $\delta$ thresholds to determine a successful trial: -->
-<!--   * Design 1, $\delta = 0.9912$ -->
-<!--   * Design 2, $\delta = 0.9892$ -->
-<!-- For simplicity, have your function return a list of at least the following output: -->
-<!-- 1. The probability that the best treatment arm is better than control. -->
-<!-- 2. The number of patients assigned to each treatment arm. -->
-<!-- # If you have more time -->
-<!-- * Replicate the design many (10K) times.  Calculate the Type I error. -->
-<!-- * Find $\delta$ for each design (supposing you didn't already know it). -->
-<!-- * Replicate the study design assuming treatment effects of  -->
-<!--   * $p_0 = p_1 = p_2 = 0.35$ -->
-<!--   * $p_3 = 0.65$ -->
 </section>
 
 </main>
