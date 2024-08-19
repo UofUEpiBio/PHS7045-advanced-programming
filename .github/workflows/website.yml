@@ -16,8 +16,8 @@ jobs:
 
       - name: Commit results
         run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add docs/* || echo Nothing to be added
           git commit -a -m 'Re-build examples' || echo Nothing has changed
           git push origin || echo "No changes to commit"
