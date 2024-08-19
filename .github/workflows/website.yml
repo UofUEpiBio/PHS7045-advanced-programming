@@ -3,28 +3,25 @@ name: Render website
 on: [push, pull_request]
 
 jobs:
-  quarto-ubuntu:
+  upload:
     runs-on: Ubuntu-latest
     container: ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Render
+      - name: index
         run: |
-          make -B README.md
+          quarto render README.qmd --to=html
+          mv README.html index.html
 
-      - name: Commit results
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git add docs/* || echo Nothing to be added
-          git commit -a -m 'Re-build examples' || echo Nothing has changed
-          git push origin || echo "No changes to commit"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./"
 
   website:
     if: ${{ github.event_name != 'pull_request' }}
+    needs: upload
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -36,10 +33,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: "./"
 
       - name: Deploy to GitHub pages
         uses: actions/deploy-pages@v4
