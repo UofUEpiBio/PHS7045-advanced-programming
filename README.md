@@ -30,9 +30,9 @@ issues associated with them.
 
 ## Assignment workflow
 
-The course instructors will distribute the materials in a single
-compressed file (usually zip) for each assignment. Once the assignment
-materials are available, the students are required to do the following:
+Assignment materials will be distributed in a single compressed file
+(usually zip) for each assignment. Once the assignment materials are
+available, the students are required to do the following:
 
 1.  Download the compressed file and extract its contents into an empty
     folder.
