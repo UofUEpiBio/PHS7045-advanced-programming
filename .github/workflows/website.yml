@@ -8,7 +8,7 @@ jobs:
     container: ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Render
         run: |

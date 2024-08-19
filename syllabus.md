@@ -20,7 +20,7 @@ Email: george.vegayon@utah.edu
 ## Locations and Times
 
 Lectures: T/Th 11:30 AM - 1:00 pm  
-In-person: TBD
+In-person: 295 CH 3C650
 Office hours: TBD
 
 ## Grading and evaluation

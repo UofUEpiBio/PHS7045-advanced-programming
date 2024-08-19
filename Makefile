@@ -1,8 +1,9 @@
-docker:
-	docker build -t gvegayon/phs7045:latest .
+build:
+	podman build -t uofuepibio/phs7045-advanced-programming:fall2024 .
 
 push:
-	docker push gvegayon/phs7045:latest
+	podman tag uofuepibio/phs7045-advanced-programming:fall2024 ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
+	podman push ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
 
 README.md: README.qmd
 	quarto render README.qmd
