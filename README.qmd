@@ -1,5 +1,6 @@
 ---
 format: gfm
+embed-resources: true
 ---
 
 # PHS 7045: Advanced Programming

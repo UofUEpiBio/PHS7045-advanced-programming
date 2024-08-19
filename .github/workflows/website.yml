@@ -10,14 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: index
+      - name: preping
         run: |
+          mkdir _site
+          mv -r 0*/ _site
           quarto render README.qmd --to=html
-          mv README.html index.html
+          mv README.html _site/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "./"
+          path: "_site"
 
   website:
     if: ${{ github.event_name != 'pull_request' }}
