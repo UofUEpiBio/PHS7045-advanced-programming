@@ -5,9 +5,10 @@ on: [push, pull_request]
 jobs:
   test-ubuntu:
     runs-on: Ubuntu-latest
+    container: ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Execute
         run: |
@@ -16,7 +17,6 @@ jobs:
 
       - name: Commit results
         run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git commit -a -m 'Re-build examples' || echo Nothing has changed
           git push origin || echo "No changes to commit"
