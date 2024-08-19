@@ -16,9 +16,11 @@ RUN install.r \
     renv \
     knitr \
     rmarkdown \
-    quarto
+    quarto \
+    data.table
 
 RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
 RUN gdebi --non-interactive quarto-linux-amd64.deb
+RUN apt-get install --no-install-recommends -y git
 
 CMD ["bash"]

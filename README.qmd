@@ -4,7 +4,7 @@ format: gfm
 
 # PHS 7045: Advanced Programming
 
-Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](syllabus.md).
+Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](syllabus.md). Readings for the week can be found in the GitHub issues associated with them.
 
 ## Contents
 
@@ -12,6 +12,7 @@ Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](s
 #| echo: false
 #| warning: false
 dat <- read.csv("pages.csv")
+library(data.table)
 
 urlpath <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming"
 urlraw  <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
@@ -25,13 +26,17 @@ for (i in 1:nrow(dat)) {
   tab <- rbind(
     tab,
     with(dat[i,,drop=FALSE], data.frame(
-      Week  = week,
+      Week  = date,
 
       # Title of the week
-      Title = sprintf(
-        "%s (Issue [%i](%s/issues/%i))",
-        name, issue, urlpath, issue
-        ),
+      Title = fifelse(
+        !is.na(issue),
+        sprintf(
+          "%s (Issue [%i](%s/issues/%i))",
+          name, issue, urlpath, issue
+          ),
+        sprintf("%s", name)
+      ),
 
       # Lecture links
       Lecture = if (lecture_source != "") {
@@ -83,7 +88,7 @@ knitr::kable(tab, row.names = FALSE)
 
 ## Assignment workflow
 
-The course instructors will distribute the materials in a single compressed file (usually zip) for each assignment. Once the assignment materials are
+Assignment materials will be distributed in a single compressed file (usually zip) for each assignment. Once the assignment materials are
 available, the students are required to do the following: 
 
 1. Download the compressed file and extract its contents into an empty folder.
@@ -91,7 +96,7 @@ available, the students are required to do the following:
 2. Initialize the folder as a git repository, add its contents, and make
    the first commit.
 
-3. Create a new repository in Github.com (under your account), and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
+3. Create a new repository in Github.com (under your account) and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
 
 You can start working on your assignment! We recommend pushing your changes as much as possible (it is good practice). As soon as you finish your assignment, you will have to ping one of the instructors in your commit message, for example:
 
