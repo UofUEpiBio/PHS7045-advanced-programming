@@ -16,8 +16,8 @@ jobs:
 
       - name: Commit results
         run: |
-          git config --global user.name "$GITHUB_ACTOR"
-          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git add docs/* || echo Nothing to be added
           git commit -a -m 'Re-build examples' || echo Nothing has changed
