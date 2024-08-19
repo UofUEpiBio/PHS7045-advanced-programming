@@ -7,3 +7,8 @@ push:
 
 README.md: README.qmd
 	quarto render README.qmd
+
+all:
+	for i in $$(find . -regex './[0-9].*\.qmd'); do \
+		quarto render $$i; \
+	done ;

@@ -11,11 +11,17 @@ Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](s
 ```{r}
 #| echo: false
 #| warning: false
-dat <- read.csv("pages.csv")
 library(data.table)
+dat <- fread("pages.csv")
 
-urlpath <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming"
+urlgit <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming/"
 urlraw  <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
+
+dat[, has_lecture := file.exists(sprintf("%s/slides.html", id))]
+dat[, has_lecture_source := file.exists(sprintf("%s/slides.qmd", id))]
+dat[, has_lab := file.exists(sprintf("%s/lab.html", id))]
+dat[, has_lab_source := file.exists(sprintf("%s/lab.qmd", id))]
+
 
 # Iterating through the weeks
 weeks <- sort(unique(dat$week))
@@ -33,24 +39,24 @@ for (i in 1:nrow(dat)) {
         !is.na(issue),
         sprintf(
           "%s (Issue [%i](%s/issues/%i))",
-          name, issue, urlpath, issue
+          name, issue, urlgit, issue
           ),
         sprintf("%s", name)
       ),
 
       # Lecture links
-      Lecture = if (lecture_source != "") {
+      Lecture = if (has_lecture & has_lecture_source) {
         sprintf(
-          "[slides](%s/week-%02i-slides.html) ([source](%s))",
-          urlraw, week, lecture_source 
+          "[slides](%s/%s/slides.html) ([source](%s/tree/main/%s/slides.qmd))",
+          urlraw, id, urlgit, id 
         )
         } else {""},
 
       # Lab links
-      Lab = if (lab_source != "") {
+      Lab = if (has_lab & has_lab_source) {
         sprintf(
-          "[lab](%s/week-%02i-lab.html) ([source](%s))",
-          urlraw, week, lab_source 
+          "[lab](%s/%s/lab.html) ([source](%s/tree/main/%s/lab.qmd))",
+          urlraw, id, urlgit, id 
         )
       } else {""}
       )
@@ -61,25 +67,6 @@ for (i in 1:nrow(dat)) {
       tab[nrow(tab),]$Title,
       dat[i,,drop=FALSE]$extra
     )
-
-  # Copy the files
-  if (file.exists(dat[i,,drop=FALSE]$lecture)) {
-    invisible(file.copy(
-      from      = dat[i,,drop=FALSE]$lecture,
-      to        = sprintf("docs/week-%02i-slides.html", dat[i,,drop=FALSE]$week), 
-      overwrite = TRUE
-    ))
-  }
-
-  if (file.exists(dat[i,,drop=FALSE]$lab)) {
-    
-    invisible(file.copy(
-      from      = dat[i,,drop=FALSE]$lab,
-      to        = sprintf("docs/week-%02i-lab.html", dat[i,,drop=FALSE]$week), 
-      overwrite = TRUE
-    ))
-    
-  }
 
 }
 

@@ -16,10 +16,16 @@ RUN install.r \
     renv \
     knitr \
     rmarkdown \
+    pander \
     quarto \
     data.table \
     rcpp \
-    microbenchmark
+    microbenchmark \
+    reticulate \
+    bench \
+    igraph \
+    igraphdata \
+    netplot 
 
 
 RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb

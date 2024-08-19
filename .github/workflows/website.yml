@@ -22,3 +22,4 @@ jobs:
           git add docs/* || echo Nothing to be added
           git commit -a -m 'Re-build examples' || echo Nothing has changed
           git push origin || echo "No changes to commit"
+

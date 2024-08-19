@@ -1,0 +1,318 @@
+---
+title: 'Debugging and Profiling'
+author: 'Jonathan Chipman, Ph.D.'
+format: 
+  html:
+    toc: TRUE
+    toc-depth: 2
+    toc-location: left
+    highlight: pygments
+    font_adjustment: -1
+    css: styles.css
+    # code-fold: true
+    code-tools: true
+    smooth-scroll: true
+    embed-resources: true
+---
+
+# Introduction
+
+## Readings
+
+In the RStudio (aka Posit) menu bar, notice the `Debug` and `Profile` drop-down menus.  These are quick starting points for finding code bugs/bottlenecks.  Studying the below chapters will give insight into finding where and how to improve code efficiency.
+
+Primary reading: 
+
+Norman Matloof's [Ch. 13.1-13.3.5: Debugging](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=311) and Hadley Wickham's [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) and [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html).
+
+Supplemental reading: 
+
+Matloof [Ch. 14: Performance Enhancement: Speed and Memory](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331) is slightly outdated by recommending `RProf` to measure performance (as compared to `profvis` used in RStudio) but has good content on speed and memory allocation.
+
+
+
+## Warm-up problem
+
+
+
+
+[Urn problem](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331)
+
+"Urn 1 contains ten blue marbles and eight yellow ones. In urn 2, the mixture is six blue and six yellow. We draw a marble at random from
+urn 1, transfer it to urn 2, and then draw a marble at random from urn 2. What is the probability that that second marble is blue? This is easy to find analytically, but we’ll use simulation."  Create a function that generates 100K replicates and returns the estimated probability.
+
+
+<!-- How can you "modularize" design 1 and 2 of [lab 2](https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html)? -->
+
+<!-- * What are common tasks of design 1 and 2 that can be performed using the same user-defined function? -->
+
+
+Post your solution [here](https://docs.google.com/document/d/1NDNEbi4HA074DaS6sta9UKbXouS8r0FCwMP6o9fRE3Y/edit?usp=sharing)
+
+
+```{r, eval=FALSE}
+library(bench)
+bench::mark( <solutions>, relative==TRUE, check = FALSE)
+```
+
+
+## This week's lesson
+
+### Key concepts
+
+1. Debugging strategies
+  * Modular programming
+  * traceback
+  * `debug` functions
+  * set break points
+2. Profiling code
+  * `system.time` and `bench::mark`
+  * `profvis::provis`
+3. Improving efficiency
+  * [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
+  * Use vectorization
+  * Beware of copy-on-change (example: continual `rbind`'ing)
+  * Use `data.table` as appropriate
+  * Use parallel computing
+  * Compile code in C (`rcpp`)
+
+
+
+# Debugging
+
+## Debug in a Modular, Top-Down Manner
+
+How do you organize files on your computer?
+
+A friend of mine stored _all_ documents in the downloads folder!  When it came time to find a file, it was like finding a needle in a haystack (there also wasn't a uniform naming convention).
+
+
+[Quoting from Matloff](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=312)
+
+"Most good software developers agree that code should be written in a modular manner. Your first-level code should not be longer than, say, a dozen lines, with much of it consisting of function calls. And those functions should not be too lengthy and should call other functions if necessary. This makes the code easier to organize during the writing stage and easier for others to understand when it comes time for the code to be extended."
+
+Question: What can be "modularized" in homework 1?
+
+Top-down modular level: 
+
+1. Analysis / Summary
+2. Design functions
+3. Function to draw posterior distributions
+
+With debugging start top-down.  Assume lower-level functions are correct until finishing debugging / checking top-level modules.
+
+An example from collaboration.
+
+
+## Antibugging
+
+Pro-actively stop a function (or provide a warning or message) if a condition is not met:
+
+```{r, error=TRUE}
+x <- 1
+stopifnot(is.character(x))
+```
+
+Here, is an equivalent stop command using if-logic.  `deparse(subsitute([var]))` prints the name of the object:
+
+```{r, error=TRUE}
+x <- 1
+if(!is.character(x)){
+  stop(paste0(deparse(substitute(x)), " is not a character"))
+}
+```
+
+```{r}
+x <- 1
+if(!is.character(x)){
+  warning(paste0(deparse(substitute(x)), " is not a character"))
+}
+```
+
+
+## Example
+
+An R package example of modular programming and anti-bugging: [seqSGPV](https://github.com/chipmanj/SeqSGPV).
+
+
+## Interactive debugging
+
+When an error occurs, use the `traceback` function to get a sense of where the error occurred.
+
+Options to debug a function from top-to-bottom:
+
+* `debug (undebug)`
+* `debugonce`
+
+This will interactively walk you through the function call with the following commands:
+
+* `n`: next line of code
+* `s`: step into the next function
+* `f`: continue forward through the current `{}` code block (example, a loop or the rest of the function)
+* `c`: continue the rest of the function to see if it'll complete as anticipated
+* `Q`: quit interactive 
+* `where`: shows the trace stack (the possibly multiple layers of a function call)
+* `any r command` may be run when in debugger mode
+
+Some examples ...
+
+```{r, eval=FALSE}
+
+f <- function(a) g(a)
+g <- function(b) h(b)
+h <- function(c) i(c)
+i <- function(d) {
+  if (!is.numeric(d)) {
+    stop("`d` must be numeric", call. = FALSE)
+  }
+  d + 10
+}
+
+# Traceback and debug using Rstudio 'Rerun with Debug'
+f("a")
+
+# Enter debugging mode for a function until deactivating debugging mode
+debug(f)
+f("a")
+f("a")
+undebug(f)
+
+# Enter debug mode for a single call
+debugonce(f)
+f("a")
+f("a")
+```
+
+
+`View` and `debug` are good ways to learn the underlying code to a function.
+
+```{r,eval=FALSE}
+View(lm)
+debugonce(lm)
+lm(1:10~1,method = "model.frame")
+```
+
+
+You can use the `browser` function to enter debugging mode partially through a function
+
+```{r, eval=FALSE}
+f <- function(x, remainder){
+  
+  # Step 1, add 1 to even elements
+  x[x%%2] <- x[x%%2] + 1
+  
+  # Step 2, see if each value in sequence is even or odd
+  out <- x %% remainder
+  
+  if(length(unique(out))!= 2) browser()
+  
+  # Step 2, for elements with 0 remainder, add 1
+  x[out == 0] <- x[out == 0] + 1
+  
+  # Step 3, report number of unique elements
+  length(unique(x))
+
+}
+f(x=1:10,remainder=3)
+```
+
+
+The browser function can be helpful if you want to debug a loop mid-way through iterations.
+
+```{r, eval=FALSE}
+f <- function(){
+  for (i in 1:10^5){
+    print(i)
+    if(i == 100) browser()
+  }
+}
+f()
+```
+
+
+While embedding `browser` into code can be helpful, you must remember to remove the browser calls when done.  Rstudio also provides a feature to set breakpoints by clicking on the line-number where you'd want to start debugging.  See also [breakpoints](https://adv-r.hadley.nz/debugging.html#breakpoints).
+
+Using your warm up problem, set breakpoints.
+
+
+
+## Practice
+
+Find a set of code you've written and know well to share with a classmate.  
+
+As the classmate, 
+
+* Do you have any feedback on how to make the code more readable? More efficient?
+* Insert a bug(s) into the code
+
+When you get your code back, can you find and fix the bug?
+
+
+
+# Profiling
+
+## system.time
+
+For a quick profiling of code, use `system.time()`.  
+
+```{r}
+x <- runif(10000000)
+y <- runif(10000000)
+t1 <- system.time(z <- x + y)
+
+z <- numeric(10000000)
+t2 <- system.time({
+  for (i in 1:length(x)) {
+    z[i] <- x[i] + y[i]
+  }
+})
+
+# Time duration
+t1
+t2
+
+# The loop is longer by a factor of:
+t2["elapsed"] / t1["elapsed"]
+```
+
+Why is `t2` `r round(t2["elapsed"] / t1["elapsed"],2)`? times longer?
+
+* Seemingly hidden functions are `:` and `[` (subsetting) which add to the collective set of functions called (i.e. the "stack frame").
+
+
+`system.time` is not as precise for quick calls and can require many iterations to get a meaningful timing (example: 10e6 in above example). `bench::mark` can provide more precise timings (see warm up problem).
+
+
+* ns (nanoseconds) < $\mu$s (microseconds) < ms (milliseconds) < s (seconds) < m (minutes) < h (hours) < d (days) < w (weeks)
+* `relative` option in `mark` does not report in raw time but in comparing different calls
+* `check=FALSE` allows for running different code which may return different results (example: due to sampling)
+
+
+## profvis
+
+`profvis::profvis` is a good go-to for evaluating performance of multiple calls.
+
+We'll work through the [tutorial](http://rstudio.github.io/profvis/) together.
+
+Walk through profiling SeqSGPV.
+
+Profile the code you earlier shared with your classmate.
+
+
+## Improving efficiency
+
+[Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
+
+Parts to highlight:
+
+* [introduction](https://adv-r.hadley.nz/perf-improve.html#introduction-23)
+* [vectorize](https://adv-r.hadley.nz/perf-improve.html#vectorise)
+* [do as little as possible](https://adv-r.hadley.nz/perf-improve.html#be-lazy)
+* [avoid copies](https://adv-r.hadley.nz/perf-improve.html#avoid-copies)
+
+
+
+# Session info
+```{r}
+devtools::session_info()
+```
