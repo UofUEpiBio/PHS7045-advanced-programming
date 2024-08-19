@@ -13,7 +13,7 @@ jobs:
       - name: preping
         run: |
           mkdir _site
-          mv -r 0*/ _site
+          cp -R 0* _site
           quarto render README.qmd --to=html
           mv README.html _site/index.html
 
