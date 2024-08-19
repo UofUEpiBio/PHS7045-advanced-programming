@@ -96,7 +96,7 @@ available, the students are required to do the following:
 2. Initialize the folder as a git repository, add its contents, and make
    the first commit.
 
-3. Create a new repository in Github.com (under your account), and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
+3. Create a new repository in Github.com (under your account) and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
 
 You can start working on your assignment! We recommend pushing your changes as much as possible (it is good practice). As soon as you finish your assignment, you will have to ping one of the instructors in your commit message, for example:
 

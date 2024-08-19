@@ -2,6 +2,7 @@
 title: "Version control and reproducible research"
 subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
+date: August 20, 2024
 format:
   revealjs:
     embed-resources: true
@@ -9,7 +10,7 @@ format:
 
 # Preamble
 
-## Welcome to **PHS 7045: Advanced Programming**
+## Welcome to "PHS 7045: Advanced Programming"
 
 ::: {.r-fit-text}
 
@@ -75,6 +76,9 @@ Throughout the course, we will be using the following tools:
 - Some R GUI, e.g., [RStudio](https://posit.co/products/open-source/rstudio/) or [Visual Studio Code](https://code.visualstudio.com/).
 :::
 
+::: {.fragment .fade-right}
+- [GitHub co-pilot](https://github.com/features/copilot): An AI-powered pair programmer (when OK; more on this later). 
+:::
 :::
 
 ## What is 'version control.'
@@ -202,8 +206,9 @@ More alternatives [here](https://git-scm.com/download/gui).
 
 ![](fig/git.svg){fig-alt="Git workflow" fig-align="center" width="auto"}
 
+::: {style="font-size: 80%"}
 Git has a ton of features, but the daily workflow only features a handful of commands: `git pull`, `git add`, `git commit`, and `git push`:
-
+:::
 
 
 ---
@@ -270,7 +275,7 @@ you can keep things local and skip Github. For this exercise, you need to
 
 ::: {.fragment .fade-in}
 a.  Create a new folder with the name of your project (you can try
-   `PM566-first-project`)
+   `PHS7045-first-project`)
 :::
    
 ::: {.fragment .fade-in}

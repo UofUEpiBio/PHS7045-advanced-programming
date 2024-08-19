@@ -3,7 +3,8 @@
 # PHS 7045: Advanced Programming
 
 Welcome to Advanced Programming in R and HPC! You can find the syllabus
-[here](syllabus.md).
+[here](syllabus.md). Readings for the week can be found in the GitHub
+issues associated with them.
 
 ## Contents
 
@@ -39,7 +40,7 @@ materials are available, the students are required to do the following:
 2.  Initialize the folder as a git repository, add its contents, and
     make the first commit.
 
-3.  Create a new repository in Github.com (under your account), and push
+3.  Create a new repository in Github.com (under your account) and push
     your local repo into it. The name of the repository should be \[name
     of the compressed file\]-\[your GitHub username\]
 
