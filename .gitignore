@@ -8,7 +8,4 @@ libs
 *.gz
 *.docx
 *.xlsx
-lectures/*/*.html
-labs/*/*.html
-lectures/*/*.pdf
-labs/*/*.pdf
+_site

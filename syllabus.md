@@ -1,4 +1,6 @@
-# Syllabus Advanced Programming<br>(Spring 2023)
+# Syllabus Advanced Programming<br>(Spring 2024)
+
+ALERT: This syllabus is a draft and is subject to change.
 
 ## Description
 
