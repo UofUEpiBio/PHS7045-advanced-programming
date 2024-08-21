@@ -23,8 +23,8 @@ Email: george.vegayon@utah.edu
 
 Lectures: T/Th 11:30 AM - 1:00 pm  
 In-person: 295 CH 3C650
-Office hours:
-JC, WB 1N452 - Th 2:30 PM - 3:30 PM
+JC Office hours (WB 1N452) - Th 10:15 AM - 11:15 AM
+GVY Office hours
 
 ## Grading and evaluation
 
