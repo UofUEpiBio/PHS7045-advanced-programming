@@ -117,12 +117,12 @@ In compliance with ADA requirements, some students may need to record course con
 
 If you will need accommodations in this class, or for more information about what support they provide, contact:
 
-> **Center for Disability & Access**
->   801-581-5020
->   [<span class="underline">disability.utah.edu</span>](disability.utah.edu)
->   65 Student Services Building
->   201 S 1460 E
->   Salt Lake City, UT 84112
+> **Center for Disability & Access**  
+>   801-581-5020  
+>   [<span class="underline">disability.utah.edu</span>](disability.utah.edu)  
+>   65 Student Services Building  
+>   201 S 1460 E  
+>   Salt Lake City, UT 84112  
 
 ## Safety at the U
 
@@ -130,8 +130,7 @@ The University of Utah values the safety of all campus community members. You wi
 
 To report suspicious activity or to request a courtesy escort, contact:
 
-> **Campus Police & Department of Public Safety**
-> 
+> **Campus Police & Department of Public Safety**  
 > 801-585-COPS (801-585-2677)  
 > [<span class="underline">Dps.utah.edu</span>](https://dps.utah.edu/)  
 > 1735 E. S. Campus Dr.  
@@ -143,38 +142,38 @@ Title IX makes it clear that violence and harassment based on sex and gender (wh
 
 If you or someone you know has been harassed or assaulted, you are encouraged to report it to university officials: 
 
-> **Title IX Coordinator & Office of Equal Opportunity and Affirmative Action**
->   801-581-8365
->   [<span class="underline">oeo.utah.edu</span>](oeo.utah.edu)
->   135 Park Building
->   201 Presidents' Cir.
->   Salt Lake City, UT 84112
+> **Title IX Coordinator & Office of Equal Opportunity and Affirmative Action**  
+>   801-581-8365  
+>   [<span class="underline">oeo.utah.edu</span>](oeo.utah.edu)  
+>   135 Park Building  
+>   201 Presidents' Cir.  
+>   Salt Lake City, UT 84112  
 
-> **Office of the Dean of Students**
->   801-581-7066
->   [<span class="underline">deanofstudents.utah.edu</span>](deanofstudents.utah.edu)
->   270 Union Building
->   200 S. Central Campus Dr.
->   Salt Lake City, UT 84112
+> **Office of the Dean of Students**  
+>   801-581-7066  
+>   [<span class="underline">deanofstudents.utah.edu</span>](deanofstudents.utah.edu)  
+>   270 Union Building  
+>   200 S. Central Campus Dr.  
+>   Salt Lake City, UT 84112  
 
 To file a police report, contact:
 
-> **Campus Police & Department of Public Safety**
->   801-585-COPS (801-585-2677)
->   [<span class="underline">dps.utah.edu</span>](dps.utah.edu)
->   1735 E. S. Campus Dr.
->   Salt Lake City, UT 84112
+> **Campus Police & Department of Public Safety**  
+>   801-585-COPS (801-585-2677)  
+>   [<span class="underline">dps.utah.edu</span>](dps.utah.edu)  
+>   1735 E. S. Campus Dr.  
+>   Salt Lake City, UT 84112  
 
 If you do not feel comfortable reporting to authorities, the U's Victim-Survivor Advocates provide free, confidential, and trauma-informed support services to students, faculty, and staff who have experienced interpersonal violence.
 
 To privately explore options and resources available to you with an advocate, contact:
 
-> **Center for Student Wellness**
->   801-581-7776
-> [<span class="underline">wellness.utah.edu</span>](wellness.utah.edu)
->   328 Student Services Building
->   201 S. 1460 E.
->   Salt Lake City, UT 84112
+> **Center for Student Wellness**  
+>   801-581-7776  
+>   [<span class="underline">wellness.utah.edu</span>](wellness.utah.edu)  
+>   328 Student Services Building  
+>   201 S. 1460 E.  
+>   Salt Lake City, UT 84112  
 
 ## Academic Misconduct
 
