@@ -23,7 +23,7 @@ Email: george.vegayon@utah.edu
 
 Lectures: T/Th 11:30 AM - 1:00 PM  
 In-person: 295 CH 3C650  
-JC Office hours (WB 1N452) - Th 10:15 AM - 11:15 AM  
+JC Office hours (WB 1N452): Th 10:15 AM - 11:15 AM  
 GVY Office hours
 
 ## Grading and evaluation
@@ -199,8 +199,3 @@ The grade “W” is not used in calculating the student’s GPA.
 For deadlines to withdraw from full-term, first, and second-session
 classes, see the U's [<span class="underline">Academic
 Calendar</span>](https://registrar.utah.edu/academic-calendars/index.php).
-
-
-## Further policies
-
-For additional University policies, please refer to: [<span class="underline">https://cte.utah.edu/instructor-education/syllabus/optional-additions.php</span>](https://cte.utah.edu/instructor-education/syllabus/optional-additions.php)
