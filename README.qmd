@@ -12,6 +12,7 @@ Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](h
 ```{r}
 #| echo: false
 #| warning: false
+#| results: "asis"
 library(data.table)
 dat <- fread("pages.csv")
 
@@ -22,7 +23,6 @@ dat[, has_lecture := file.exists(sprintf("%s/slides.html", id))]
 dat[, has_lecture_source := file.exists(sprintf("%s/slides.qmd", id))]
 dat[, has_lab := file.exists(sprintf("%s/lab.html", id))]
 dat[, has_lab_source := file.exists(sprintf("%s/lab.qmd", id))]
-
 
 # Iterating through the weeks
 weeks <- sort(unique(dat$week))
@@ -39,7 +39,7 @@ for (i in 1:nrow(dat)) {
       Title = fifelse(
         !is.na(issue),
         sprintf(
-          "%s (Issue [%i](%s/issues/%i){target=\"_blank\"})",
+          "%s (Issue [%i](%s/issues/%i))",
           name, issue, urlgit, issue
           ),
         sprintf("%s", name)
@@ -48,7 +48,7 @@ for (i in 1:nrow(dat)) {
       # Lecture links
       Lecture = if (has_lecture & has_lecture_source) {
         sprintf(
-          "[slides](%s/%s/slides.html){target=\"_blank\"} ([source](%s/tree/main/%s/slides.qmd){target=\"_blank\"})",
+          "[slides](%s/%s/slides.html) ([source](%s/tree/main/%s/slides.qmd))",
           urlraw, id, urlgit, id 
         )
         } else {""},
@@ -56,7 +56,7 @@ for (i in 1:nrow(dat)) {
       # Lab links
       Lab = if (has_lab & has_lab_source) {
         sprintf(
-          "[lab](%s/%s/lab.html){target=\"_blank\"} ([source](%s/tree/main/%s/lab.qmd){target=\"_blank\"})",
+          "[lab](%s/%s/lab.html) ([source](%s/tree/main/%s/lab.qmd))",
           urlraw, id, urlgit, id 
         )
       } else {""}

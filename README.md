@@ -3,15 +3,16 @@
 # PHS 7045: Advanced Programming
 
 Welcome to Advanced Programming in R and HPC! You can find the syllabus
-[here](syllabus.md). Readings for the week can be found in the GitHub
-issues associated with them.
+[here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/syllabus.md).
+Readings for the week can be found in the GitHub issues associated with
+them.
 
 ## Contents
 
 | Week | Title | Lecture | Lab |
 |:---|:---|:---|:---|
-| 8/20 and 8/22 | Intro to Git + Intro to classes + [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/quarto.html) ([source](lectures/01-git/quarto.qmd)) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/01-git/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/01-git/lab.qmd)) |
-| 8/27 and 8/29 | R Essentials + [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/homeworks/hw-01-essentialsSimulations.html) ([source](https://UofUEpiBio.github.io/PHS7045-advanced-programming/homeworks/hw-01-essentialsSimulations.qmd)) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/02-essentials/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/02-essentials/lab.qmd)) |
+| 8/20 and 8/22 | Intro to Git + Intro to classes + [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd)) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/01-git/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/01-git/lab.qmd)) |
+| 8/27 and 8/29 | R Essentials + [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/01-essentialsSimulations.html) ([source](02-essentials/01-essentialsSimulations.qmd)) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/02-essentials/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/02-essentials/lab.qmd)) |
 | 9/03 and 9/5 | Debugging and profiling | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-debugging-and-profiling/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/04-debugging-and-profiling/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-debugging-and-profiling/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/04-debugging-and-profiling/lab.qmd)) |
 | 9/10 and 9/12 | Functions and data.table + [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/hw-01b-datatable.html) ([source](https://UofUEpiBio.github.io/PHS7045-advanced-programming/hw-01b-datatable.qmd)) |  | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-more-functions-and-datatable/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/03-more-functions-and-datatable/lab.qmd)) |
 | 9/17 and 9/19 | Introduction to C++ + Homework 3 (C++), Deliver a paragraph in abstract mode describing their projects for the midterm. |  |  |
