@@ -204,23 +204,23 @@ attributes(HairEyeColor)
 
 * An Integrated Development Environment (IDE) to organize and facilitate common tasks coding in R
 
-<img src="../fig/RStudio_0.png" style="width:400px;">
+<img src="./fig/RStudio_0.png" style="width:400px;">
 
-<img src="../fig/RStudio_1.png" style="width:400px;">
+<img src="./fig/RStudio_1.png" style="width:400px;">
 
-<img src="../fig/RStudio_2.png" style="width:400px;">
+<img src="./fig/RStudio_2.png" style="width:400px;">
 
-<img src="../fig/RStudio_3.png" style="width:400px;">
+<img src="./fig/RStudio_3.png" style="width:400px;">
 
-<img src="../fig/RStudio_4.png" style="width:400px;">
+<img src="./fig/RStudio_4.png" style="width:400px;">
 
-<img src="../fig/RStudio_5.png" style="width:400px;">
+<img src="./fig/RStudio_5.png" style="width:400px;">
 
-<img src="../fig/RStudio_6.png" style="width:400px;">
+<img src="./fig/RStudio_6.png" style="width:400px;">
 
-<img src="../fig/RStudio_7.png" style="width:400px;">
+<img src="./fig/RStudio_7.png" style="width:400px;">
 
-<img src="../fig/RStudio_8.png" style="width:400px;">
+<img src="./fig/RStudio_8.png" style="width:400px;">
 
 ---
 
