@@ -294,7 +294,7 @@ Data are stored in any of the following structures (starting from most primitive
 | **Usage**                   | Simple collections like numerical data        | Mathematical computations, matrices             | Grouping mixed-type data, complex structures    | Tabular data, similar to Excel spreadsheets     |
 
 
-## Questions 1
+## Questions 1: Structures
 
 1. What structure would you want to perform a computationally-heavy task?
 
@@ -459,7 +459,7 @@ dim(x["2010",c("SLC","Milcreek")])
 In the last example, why is the dimension `NULL`?  (Hint, what is the class of the last two examples?)
 
 
-## Questions 2
+## Questions 2: Naming objects
 
 1. What is the number of the alphabet for each letter of your name?  Use a vector with names (try the `LETTERS' object).  For example, if the letters to the name JONATHAN were mapped to integers, the result would be: 10, 15, 14, 1, 20, 8, 1, 14.
 
@@ -601,7 +601,7 @@ all(tx==1)
 ```
 
 
-## Questions 3
+## Questions 3: Filtering objects
 
 Suppose `x` is the number of vacations in the years 2010 - 2019
 ```{r, collapse=TRUE, comment=">"}
@@ -761,7 +761,7 @@ i
 The `next` statement allows the loop to stop current iteration and continue to next iteration.
 
 
-## Questions 4
+## Questions 4: Creating a loop
 
 From Jan 1 - Jan 9, 2023, it snowed 6 days atop Snowbasin.  Snow days can be represented each day in a vector as 1 (snow) and 0 (no snow).
 
@@ -850,7 +850,7 @@ runs
     prop.table(table(tosses))
     ```
 
-## Questions 5
+## Questions 5: Creating a function
 
 Generalize your code to Question 4 as a function so that for any string of days you can find the first day it consecutively snowed a given number of days.  Return `NA` if no day meets this criteria.
 
