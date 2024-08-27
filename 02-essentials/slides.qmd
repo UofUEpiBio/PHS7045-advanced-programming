@@ -188,10 +188,10 @@ attributes(HairEyeColor)
   
   ```
 
-* Scripting language
-  * R Manual: [Scripting-with-R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Scripting-with-R)
-  * A script is run top-to-bottom.  It is reproducible and transparent.
-  * Can be run in 'interactive' (ex: RStudio) and 'batch' modes (ex: command-line call)
+### Scripting language
+* R Manual: [Scripting-with-R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Scripting-with-R)
+* A script is run top-to-bottom.  It is reproducible and transparent.
+* Can be run in 'interactive' (ex: RStudio) and 'batch' modes (ex: command-line call)
   
   ```r
   % Rscript file.R > output.out
@@ -285,7 +285,7 @@ Data are stored in any of the following structures (starting from most primitive
 | **Memory Usage**            | Low                                           | Low to Moderate                                 | Moderate                                        | Moderate to High                                |
 | **Dimensionality**          | 1D (vector)                                   | 2D (rows and columns)                           | 1D (but can contain elements of varying dimensions) | 2D (rows and columns)                           |
 | **Homogeneity**             | Homogeneous (all elements of the same mode)   | Homogeneous (all elements of the same mode)     | Heterogeneous (elements can be of different modes and structures) | Heterogeneous (different columns can be different modes) |
-| **Creation**                | `c()`, `seq()`, `rep()`                       | `matrix()`, `cbind()`, `rbind()`                | `list()`                                        | `data.frame()`                                  |
+| **Creation**                | `c()`, `seq()`, `rep()`, `:`                  | `matrix()`, `cbind()`, `rbind()`                | `list()`                                        | `data.frame()`                                  |
 | **Combining Elements**      | `c()`                                         | `cbind()`, `rbind()`                            | `c()`, `append()`                               | `cbind()`, `rbind()`                            |
 | **Indexing**                | Single bracket `[]`                           | Double bracket `[ , ]`                          | Double bracket `[[ ]]`, Single bracket `[ ]`    | `$`, `[[ ]]`, or `[ ]`                          |
 | **Arithmetic Operations**   | Yes                                           | Yes                                             | No (operations on elements)                     | Not directly (need to extract columns first)    |
@@ -367,7 +367,7 @@ Get into a habit of using vectors and matrices / arrays as much as possible.
 ### Creating vectors
 
 * To initialize an empty vector, use `vector`, `rep(NA,<length>)`, `numeric(<length>)`, or `character(<length>)`.  
-  * JC aside) I commonly use `rep(NA,<length>)` to 'pre-allocate' a vector to future results.
+  * (JC aside) When I use loops (later below) to iteratively calculate results, I use `rep(NA,<length>)` to 'pre-allocate' a vector to store results.
   * A question to keep in back of mind (we will revisit when talking about loops) ... Why would you want to initialize an empty vector?
 
 
@@ -949,6 +949,23 @@ x < y
 **Key point**: Loops carry out one-at-a-time operations.  Usually, a vectorized alternative to loops is to use *apply functions.
 
 The `replicate()` function in R is not strictly vectorized in the same way that functions like `+` or `mean()` are, as it involves iterating over a specified number of replications. However, it is a convenient function for repeating an expression or function multiple times and collecting the results.
+
+## Question 6: [Urn problem](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331)
+
+"Urn 1 contains ten blue marbles and eight yellow ones. In urn 2, the mixture is six blue and six yellow. We draw a marble at random from
+urn 1, transfer it to urn 2, and then draw a marble at random from urn 2. What is the probability that that second marble is blue? This is easy to find analytically, but we’ll use simulation."  Create a function that generates 100K replicates and returns the estimated probability.
+
+Post your solution [here](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit?usp=sharing)
+
+
+```{r, eval=FALSE}
+library(bench)
+bench::mark( <solutions>, relative==TRUE, check = FALSE)
+```
+
+<!-- How can you "modularize" design 1 and 2 of [lab 2](https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html)? -->
+
+<!-- * What are common tasks of design 1 and 2 that can be performed using the same user-defined function? -->
 
 
 # Session info
