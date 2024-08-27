@@ -3,24 +3,41 @@ name: Render website
 on: [push, pull_request]
 
 jobs:
-  quarto-ubuntu:
+  upload:
     runs-on: Ubuntu-latest
+    container: ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Getting the docker
+      - name: preping
         run: |
-          docker pull gvegayon/phs7045:latest
+          mkdir _site
+          cp -R 0* _site
+          quarto render README.qmd --to=html
+          mv README.html _site/index.html
 
-      - name: Render
-        run: |
-          docker run -i --rm -v$(pwd):/home/docs -w/home/docs gvegayon/phs7045:latest make -B README.md
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
 
-      - name: Commit results
-        run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add docs/* || echo Nothing to be added
-          git commit -a -m 'Re-build examples' || echo Nothing has changed
-          git push origin || echo "No changes to commit"
+  website:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: upload
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to GitHub pages
+        uses: actions/deploy-pages@v4
+
+      
+

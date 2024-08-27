@@ -1,0 +1,957 @@
+---
+title: 'R Essentials for advanced computing'
+author: 'Jonathan Chipman, Ph.D.'
+format: 
+  html:
+    toc: TRUE
+    toc-depth: 2
+    toc-location: left
+    highlight: pygments
+    font_adjustment: -1
+    css: styles.css
+    # code-fold: true
+    code-tools: true
+    smooth-scroll: true
+    embed-resources: true
+  revealjs: default
+  pdf: default
+---
+
+# Introduction
+
+## Collaborative learning
+
+[Google Doc for sharing code/notes](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit?usp=sharing)
+
+
+## Preparation
+
+Read/Watch: Selections from [R Programming for Data Science](https://bookdown.org/rdpeng/rprogdatascience/)
+
+* Light read: Chapters 1-3
+* Careful read: Chapters 4, 9-10, and 13
+* Video: [Subsetting objects](https://www.youtube.com/watch?v=VfZUZGUgHqg)
+* Video: [Vectorized Operations](https://www.youtube.com/watch?v=YH3qtw7mTyA)
+
+
+Read: Selections from [The Art of R Programming](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=1)
+
+* [Contents through Chapter 1](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=9) (Light read for familiarity)
+* [Chapter 2: Vectors](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=51) (Careful read)
+* [Chapter 3, sections 5 - end: Matrixes and Arrays](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=104)
+* [Chapter 4, sections 1 - 3 and 5: Lists](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=104)
+* [Chapter 7, sections 3-4](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=165)
+
+Note: Big-picture principles in chapter 2, on vectors, have relevance to matrixes, lists, and data frames.
+
+
+Aside: [A reference for good coding practices](https://www.r-bloggers.com/2018/09/r-code-best-practices/)
+
+
+## Warm-up problem
+
+Install the package `beepr` and run the command `beepr::beep()`.  `beepr::beep(k)` can play k=1-11 sounds.  (See `?beep` for a list of sounds).  
+
+A. Write loops and functions.
+
+  1. Write a loop to listen to each sound.  Use `Sys.sleep()` to pause 2 seconds between each call to `beep`.
+  
+  2. Modify the loop to pause a random duration of time.  You can set your own parameters for 'what a random duration of time' means.
+  
+B. How can the `beepr::beep()` function be helpful?  What does this say about R being a scripting language?
+
+C. After calling `library(beepr)`, the beep function can be directly called as `beep()`.  Why can it be helpful to call `beepr::beep()`?
+
+D. (If time allows) Create a function that takes two inputs: a numeric vector and `sound`.  Write a loop that one-at-a-time calculates the cumulative sum each element of the vector (don't use the `cumsum` function).  Play a beep at the end of calculation using the `sound` input.  The output should be a two-column matrix with the original vector (column 1) and the cumsum (column 2). Check you answer using the `cumsum` function.
+  
+  Note: Question D is designed to practice working with loops and building up the output result.  One-at-a-time calculations discouraged whenever avoidable.  In practice, it would be better to use the `cumsum` function.
+
+
+## This week's lesson
+
+### Focus on foundations
+
+Many of the this week's topics will be familiar, and it may be tempting to gloss over.  However, there are important foundational concepts which can strengthen understanding and efficient coding.
+
+### Key concepts
+
+In addition to general concepts, the below concepts are the essentials:
+
+1. Creating and naming objects
+    * Learn when each data structure is most useful
+    * Develop habit to always use naming conventions to extract elements from objects
+2. Creating loops
+    * How-to create loops though use only as needed
+3. Creating functions
+    * How-to create functions
+    * Use to reduce redundancy and increase clarity
+4. Vectorized programming
+    * Develop habit to vectorize whenever possible
+
+
+# R and RStudio
+
+
+## What is R?
+
+R is an object oriented-, functional-, and scripting-programming language.
+
+### Object-oriented programming language 
+
+
+* R Manual: [Objects](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Objects)
+* Everything in R is an object.
+* Data are stored in objects (vectors, matrixes, lists, data.frames) and manipulated using objects (functions).  
+* Objects:
+  * Are assigned a value via `<-` (preferred), `=`, or `->`.
+  * Have basic, intrinsic properties (aka `attributes`): `mode` (data type) and `length`
+  * May have additional `attributes` such as (list from [link](https://renenyffenegger.ch/notes/development/languages/R/object/attributes#:~:text=A%20variable%20can%20have%20zero,elements%20(rows%20and%20columns).))
+    * class (a character vector with the classes that an object inherits from).
+    * comment
+    * dim (which is used to implement arrays)
+    * dimnames
+    * names (to label the elements of a vector or a list).
+    * row.names
+    * levels (for factors)
+  * Have a `class` which may behave differently for generic functions (such as `plot` and `summary`) ... we'll discuss classes later.
+
+The attributes of an object can be seen through `str()` and `attributes()`:
+
+```{r}
+data("HairEyeColor")
+HairEyeColor
+str(HairEyeColor)
+attributes(HairEyeColor)
+```
+
+
+### Functional programming language
+* Perform operations on object(s) (ex: `sum`, `'+'`, `rnorm`)
+* Functions come pre-intalled (base), installed, and custom-defined
+* Using functions is a major theme of good R programming.  Avoid explicit iteration (loops and copy-paste) as much as possible.  [Matloff [(pg xxii)](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=23)]:
+  * Clearer, more compact code
+  * Potentially must faster execution speed
+  * Less debugging, because the code is simpler
+  * Easier transition to parallel programming
+* R Manual: [Writing-your-own-functions](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Writing-your-own-functions)
+
+  ```r
+  # Example of base function (with R installation)
+  1+1
+  
+  # Example of installed function from a package
+  install.packages("beepr")
+  beepr::beep(0)
+  
+  # General structure of custom function
+  < name of your function > <- function(
+      < argument 1>,
+      < argument 2> = < default value >,
+      ...,
+      < argument n>
+  ) {
+  
+    < some R code here >
+    
+    return(< a single object of result(s) >)
+  
+  }
+  ```
+
+  
+  ```{r}
+  # Examples of custom function
+  fun1 <- function(v1,v2) {v1+v2}
+  fun1(1,2)
+  
+  fun2 <- function(v1,v2){
+  sum_v1v2 <- v1+v2
+  return(sum_v1v2)
+  }
+  fun2(1,2)
+  
+  fun3 <- function(v1,v2){
+  sum_v1v2 <- v1+v2
+  ave_v1v2 <- sum_v1v2 / 2
+  out      <- c(sum=sum_v1v2, ave=ave_v1v2)
+  return(out)
+  }
+  fun3(1,2)
+  
+  fun4 <- function(v1,v2){
+  sum_v1v2 <- v1+v2
+  ave_v1v2 <- sum_v1v2 / 2
+  out      <- list(sum=sum_v1v2, ave=ave_v1v2, text="fun4")
+  return(out)
+  }
+  fun4(1,2)
+  
+  ```
+
+* Scripting language
+  * R Manual: [Scripting-with-R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Scripting-with-R)
+  * A script is run top-to-bottom.  It is reproducible and transparent.
+  * Can be run in 'interactive' (ex: RStudio) and 'batch' modes (ex: command-line call)
+  
+  ```r
+  % Rscript file.R > output.out
+  ```  
+  
+  * [A reference for good coding practices](https://www.r-bloggers.com/2018/09/r-code-best-practices/)
+
+
+## What is RStudio?
+
+* An Integrated Development Environment (IDE) to organize and facilitate common tasks coding in R
+
+<img src="../fig/RStudio_0.png" style="width:400px;">
+
+<img src="../fig/RStudio_1.png" style="width:400px;">
+
+<img src="../fig/RStudio_2.png" style="width:400px;">
+
+<img src="../fig/RStudio_3.png" style="width:400px;">
+
+<img src="../fig/RStudio_4.png" style="width:400px;">
+
+<img src="../fig/RStudio_5.png" style="width:400px;">
+
+<img src="../fig/RStudio_6.png" style="width:400px;">
+
+<img src="../fig/RStudio_7.png" style="width:400px;">
+
+<img src="../fig/RStudio_8.png" style="width:400px;">
+
+---
+
+
+# Data modes and structures
+
+<!-- In R, data are stored in 'objects' (vectors, matrixes, lists, data.frames) and can be manipulated through 'objects' (functions). -->
+
+<!-- Objects have values, a class (or type of data), structure, names, and attributes. -->
+
+<!-- Objects are created using the `<-` assignment -->
+
+<!-- A simplistic example -->
+
+<!-- ```{r,collapse=TRUE,comment=">"} -->
+<!-- # Create and 'print' a new object x with the numeric value of 3 -->
+<!-- x <- 3 -->
+<!-- x -->
+
+<!-- # Look at class of x -->
+<!-- class(x) -->
+
+<!-- # Look at structure length of x -->
+<!-- length(x) -->
+
+<!-- # Look at names of x -->
+<!-- names(x) -->
+
+<!-- # Look at attributes of x -->
+<!-- attributes(x) -->
+<!-- ``` -->
+
+<!-- Note: `NULL` means no value provided -->
+
+## Modes
+
+Six primitive modes (data types) of R:
+
+2 Modes less-commonly (for me never) created in practice:
+
+  * Raw (raw byte) `x <- raw(2)`
+  * Complex `x <- 0i`
+    
+1 Mode moderately created (often indirectly through R) in practice:
+
+  * Integer `x <- 1L`
+    
+3 Modes commonly created in practice:
+
+  * Logical (TRUE/FALSE) `x <- TRUE`
+  * Numeric (real number) `x <- 0`
+  * Character / String `x <- "hello world`
+
+
+
+## Structures
+
+Data are stored in any of the following structures (starting from most primitive):
+
+| **Feature**                | **Vectors**                                    | **Matrices**                                    | **Lists**                                       | **Data Frames**                                 |
+|----------------------------|-----------------------------------------------|-------------------------------------------------|-------------------------------------------------|------------------------------------------------|
+| **Memory Usage**            | Low                                           | Low to Moderate                                 | Moderate                                        | Moderate to High                                |
+| **Dimensionality**          | 1D (vector)                                   | 2D (rows and columns)                           | 1D (but can contain elements of varying dimensions) | 2D (rows and columns)                           |
+| **Homogeneity**             | Homogeneous (all elements of the same mode)   | Homogeneous (all elements of the same mode)     | Heterogeneous (elements can be of different modes and structures) | Heterogeneous (different columns can be different modes) |
+| **Creation**                | `c()`, `seq()`, `rep()`                       | `matrix()`, `cbind()`, `rbind()`                | `list()`                                        | `data.frame()`                                  |
+| **Combining Elements**      | `c()`                                         | `cbind()`, `rbind()`                            | `c()`, `append()`                               | `cbind()`, `rbind()`                            |
+| **Indexing**                | Single bracket `[]`                           | Double bracket `[ , ]`                          | Double bracket `[[ ]]`, Single bracket `[ ]`    | `$`, `[[ ]]`, or `[ ]`                          |
+| **Arithmetic Operations**   | Yes                                           | Yes                                             | No (operations on elements)                     | Not directly (need to extract columns first)    |
+| **Advantages**              | Memory-efficient, fast for operations         | Efficient for mathematical and matrix operations | Highly flexible, can store complex structures  | Optimized for tabular data, handles mixed types |
+| **Disadvantages**           | Limited to a single data type                 | Limited to a single data type                   | Higher memory usage for large/complex elements | Slightly higher memory overhead due to attributes |
+| **Usage**                   | Simple collections like numerical data        | Mathematical computations, matrices             | Grouping mixed-type data, complex structures    | Tabular data, similar to Excel spreadsheets     |
+
+
+## Questions 1
+
+1. What structure would you want to perform a computationally-heavy task?
+
+2. What structure would you want to read in data from a colleague?
+
+3. What kind of object does the following return?
+
+```{r}
+y <- 1:10 
+x <- 1:10
+f <- lm(y~x)
+
+```
+
+```{r, eval=FALSE}
+mode(f)
+```
+
+```{r}
+names(f)
+```
+
+
+### Examples
+
+```{r}
+# Numeric vector
+x <- 1:10
+x
+
+# Matrix of numerics with rownames 1, 2, and 3
+rbind("1"=x,"2"=x,"3"=x)
+
+# List with element names 1, 2, and 3
+x <- list("1"=1, "2"=2, "3"="A")
+x
+
+# data.frame
+as.data.frame(x)
+```
+
+### Atomic modes
+
+Back to modes ... The 6 primitive modes are also called 'atomic' modes.  This means that when data are stored together in a vector, they must be of the same mode.
+
+When modes are mixed (ex: `x <- c("A",0,1L,TRUE)`), R will force all elements to be of the same mode.
+
+Question: What is your guess for which modes receive greatest priority?
+
+
+## Missing values
+
+R has different types of missing values (in order of most primitive):
+
+* `NULL`: which has length 0,
+* `NaN`: Not a Number
+* `NA`: no information, has length 1,
+* `Inf`: Infinite, and
+
+*   These have companion functions `is.na()`, `is.null`, `is.infinite` (or `is.finite()`, which covers NA, Inf, and NaN), and `is.nan`.
+
+
+## Vectors and matrixes
+
+Why to use vectors and matrices: they use less memory than lists and data.frame.
+
+Get into a habit of using vectors and matrices / arrays as much as possible.
+
+
+### Creating vectors
+
+* To initialize an empty vector, use `vector`, `rep(NA,<length>)`, `numeric(<length>)`, or `character(<length>)`.  
+  * JC aside) I commonly use `rep(NA,<length>)` to 'pre-allocate' a vector to future results.
+  * A question to keep in back of mind (we will revisit when talking about loops) ... Why would you want to initialize an empty vector?
+
+
+```{r}
+# vector(< mode >, < length >)
+vector("character",2)
+vector("numeric",2)
+vector("logical",2)
+rep(NA,2)
+numeric(2)
+character(2)
+```
+
+* Other common methods to create numeric vectors include **combine** function, `c()`, `:`, `seq`, and `rep`:
+
+```{r, collapse=TRUE, comment=">"}
+# Combine 3 numeric vectors each with length 1
+c(1,2,3,4)
+
+# Vector of sequential numerics
+x <- 1:10
+x
+
+# Vector of sequential numerics from 1 to length(x)
+seq(x)
+
+# Vector of sequential numerics from 1 to 10 by 2
+seq(1,10,by=2)
+
+# Vector of sequential numerics from 1 to 10 divided equally into 3 elements
+seq(1,10,length.out=3)
+
+# Vector of repeated numerics
+rep(1:2,each=5)
+
+# Vector of repeated numerics
+rep(1:2,times=5)
+
+# Initialize an empty vector to 'pre-allocate' memory for future results
+out <- rep(NA,10)
+```
+
+### Creating matrices
+
+* Three common ways to create matrices: `matrix`, `cbind`, `rbind`.
+
+```{r}
+x <- 1:10
+rbind(x,x,x)
+cbind(x,x,x)
+
+matrix(x,nrow=2)
+```
+
+
+### Naming and indexing vectors and matrices
+
+Elements of vectors and matrices can be extracted through `[<position(s)>]` or `[<name(s)>]`.
+
+```{r}
+# Vector[k] pulls out the element(s) indexed by k
+x <- 1:10
+x[3]
+x[c(5:3)]
+
+names(x) <- 2011:2020
+x
+x[c("2015","2017")]
+```
+
+
+```{r}
+# Matrix[r,c] pulls out the element(s) indexed by row(s) r and columns (c)
+x <- matrix(1:10,nrow=2)
+x
+x[1,c(2,5)]
+
+rownames(x) <- 2010:2011
+colnames(x) <- c("SLC","Murray","Bountiful","Milcreek","Sandy")
+x
+x[,c("SLC","Milcreek")]
+
+# Beware of dimension reduction
+dim(x[,c("SLC","Milcreek")])
+dim(x["2010",c("SLC","Milcreek")])
+
+
+```
+In the last example, why is the dimension `NULL`?  (Hint, what is the class of the last two examples?)
+
+
+## Questions 2
+
+1. What is the number of the alphabet for each letter of your name?  Use a vector with names (try the `LETTERS' object).  For example, if the letters to the name JONATHAN were mapped to integers, the result would be: 10, 15, 14, 1, 20, 8, 1, 14.
+
+2. Why is it important extract elements through naming conventions?
+
+
+## Lists
+
+Why to use lists?
+
+* Lists are useful for returning output from functions.  For example, the output of `lm` is a list.  (Aside, it is also of the `class` lm which has a specific behavior when calling "generic" functions such as `print` and `summary`).
+
+```{r}
+mode(f)
+names(f)
+
+# Two equivalent summary statements
+# summary(f)          
+# summary.lm(f)
+
+# Two equivalent statements to get predicted values
+# predict(f)
+# predict.lm(f)
+```
+
+### Creating lists
+
+```{r}
+x <- list(1:2,"A",NULL,c(TRUE,FALSE),list(1:10,"B"))
+x
+
+x <- list("2010"=1,"2011"="A","2012"=NULL,"2013"=TRUE)
+x
+```
+
+### Naming and indexing lists
+
+Names can be set as in the example above, or through the `names` argument.
+
+```{r}
+x <- list(1,2,3)
+names(x) <- c("A","B","C")
+x
+```
+
+List elements can be extracted using `[]`, `[[]]`, or `$`.  See [Subsetting Lists](https://bookdown.org/rdpeng/rprogdatascience/subsetting-r-objects.html#subsetting-lists).
+
+```{r}
+x <- list("2010"=1:2,
+          "2011"="A",
+          "2012"=NULL,
+          "2013"=c(TRUE,FALSE),
+          "2014"=list("H1"=1:10,"H2"="B"))
+x
+
+# Extract multiple elements
+x[as.character(2010:2012)]
+
+# Extract single elements
+x[["2010"]]
+
+# Another option to extract by name
+x$"2010"
+```
+
+
+## data.frames
+
+Why to use data.frames?
+
+* data.frames are useful in data analysis.  
+* However, a data.frame of all one mode uses more memory than a matrix.  When performing heavy computations, avoid data.frames unless needed.
+* A helpful data.frame comes from `expand.grid`.  How can this be helpful in simulations?
+
+```{r}
+expand.grid("Param 1"=1:2,"Param 2"=letters[1:3])
+```
+
+
+data.frames can be named and indexed similarly as above for lists.  (A data.frame is a list.)
+
+
+
+# Naming, indexing, and filtering
+
+Rule of thumb: When you want to extract information from a data structure, use names (rather than position indexes).
+
+* Transparent in code and output
+* Easier to read
+* Reproducible
+
+Borrowing from [Blog on R code best practices (one user's opinion)](https://www.r-bloggers.com/2018/09/r-code-best-practices/): There are 5 naming conventions to choose from:
+
+* alllowercase: e.g. adjustcolor
+* period.separated: e.g. plot.new
+* underscore_separated: e.g. numeric_version
+* lowerCamelCase: e.g. addTaskCallback
+* UpperCamelCase: e.g. SignatureMethod
+
+Strive for names that are concise and meaningful
+
+* Avoid naming an object that would overwrite an existing object.  (Example, `c <- 0` overwrites the `c()` function).
+* Clarity is better than brevity unless well-documented.  (Example, `s` in `s <- 0` could stand for a method name, simulation, etc.).
+
+Naming conventions are personal preference.  JC and GVY use underscore_separated.
+
+
+# Filtering vectors
+
+Elements of a vector can be filtered through:
+
+* The vector position (aka index), 
+* The element's name, or 
+* Boolean logic (TRUE/FALSE)
+  * `==` Test for equality
+  * `>`, `>=` Test for greater than and greater than or equal to
+  * `<`, `<=` Test for less than and less or equal to
+
+Example, 10 patients were randomly assigned to control (0) or treatment (1).  Suppose `tx` is the treatment assignment.
+```{r}
+tx <- rep(0:1,times=5)
+names(tx) <- 1:10
+
+tx[tx==1]
+tx[c(1,3,7)]
+tx["3"]
+```
+
+* Boolean logic can be used with
+  * `which`: which vector positions meet a testing criteria
+  * `any` and `all`: Boolean test (yes/no) for whether any or all elements meet criteria
+
+```{r}
+which(tx==1)
+tx[which(tx==1)]
+
+any(tx==1)
+all(tx==1)
+```
+
+
+## Questions 3
+
+Suppose `x` is the number of vacations in the years 2010 - 2019
+```{r, collapse=TRUE, comment=">"}
+set.seed(1)
+x <- sample.int(n=7,size=10,replace=TRUE)
+names(x) <- 2010:2019
+```
+
+1. How many vacations were taken on the first and ninth year?
+
+2. How many total vacations were taken on odd years?  Use element names for solution.
+
+3. How many total vacations were taken on even years?  Use the `seq` function for solution. (`seq(2010,2020,by=2)`)
+
+4. Why would you want to use element names whenever possible?
+
+<!-- ## A solution -->
+
+<!-- Suppose `x` is the number of vacations in the years 2010 - 2019 -->
+<!-- ```{r, collapse=TRUE, comment=">"} -->
+<!-- set.seed(1) -->
+<!-- x <- sample.int(n=7,size=10,replace=TRUE) -->
+<!-- names(x) <- 2010:2019 -->
+<!-- ``` -->
+
+<!-- 1. How many vacations were taken on the first and ninth year? -->
+
+<!-- ```{r,collapse=TRUE, comment=">", class.source="fold-hide"} -->
+<!-- x[c(1,9)] -->
+<!-- ``` -->
+
+<!-- 2. How many total vacations were taken on odd years?  Use `seq` for solution. -->
+
+<!-- ```{r,collapse=TRUE, comment=">", class.source="fold-hide"} -->
+<!-- x[seq(1,10,by=2)] -->
+<!-- ``` -->
+
+<!-- A more general solution would be to use the modular `%%` command (which means remainder after dividing by a number).  (Example  5 %% 2: 2 goes into 5 two times and there is a remainder of 1). -->
+
+<!-- [Basic R Operators](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=171) -->
+
+<!-- What are the sequential steps how R evaluates the following code?  What are strengths and weaknesses of this code? -->
+
+<!-- ```{r,collapse=TRUE, comment=">", class.source="fold-hide"} -->
+<!-- x[as.numeric(names(x)) %% 2] -->
+<!-- ``` -->
+
+<!-- Strength: Generalization -->
+<!-- Weakness: Slightly harder to read -->
+
+<!-- 3. How many total vacations were taken on even years?  Use element names for solution. -->
+
+<!-- ```{r,collapse=TRUE, comment=">"} -->
+<!-- x[as.character(seq(2010,2020,by=2))] -->
+
+<!-- x[(as.numeric(names(x)) +1) %% 2] -->
+<!-- ``` -->
+
+
+<!-- 4. Why would you want to use element names whenever possible? -->
+
+<!-- * Filtering by index names is transparent, easy-to-read, and less error prone -->
+<!-- * For example, what is an example where position indexing could go wrong if I were interested in 2010 data? -->
+<!-- * Using names is one of the most important concepts to implement for reproducible coding_ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+# If/Then Statements, Loops, and Functions (Control Statements)
+
+"R is a block-structured language ... delineated by braces, though braces are optional if the block consists of just a 
+single statement.  Statements are separated by newline characters or, optionally, by semicolons." (Matlooff, [page 139](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=165))
+
+## If-then statements
+
+Conditional logic evaluates
+
+```{r,collapse=TRUE, comment=">"}
+x <- "yes"
+if(x=="yes") {
+  print("I'll take on the project") 
+} else {
+  print("Sorry, I can't take on the project")
+}
+```
+
+
+The above `if-else` statement requires a single TRUE/FALSE evaluation.  `ifelse` "vectorizes" conditional logic.
+
+```{r,collapse=TRUE, comment=">"}
+x <- seq(1:10)
+ifelse(test = x>5, yes = 1, no = 0)
+```
+
+
+## Loops
+
+Loops iterate operations through a parameter saved in a vector.  Possible loops include:
+
+* `for`: iterate through each value/element of a vector
+* `while`: continue loop while TRUE until FALSE
+* `repeat`: continue loop until a `return` or `break` statement
+
+```{r,collapse=TRUE, comment=">", class.source="fold-hide"}
+x <- 1:10
+for (n in x){
+  print(n)
+}
+
+for(n in 1:length(x)){
+  print(x[n])
+}
+
+```
+
+What will the following return:
+
+```{r,collapse=TRUE, comment=">", class.source="fold-hide",eval=FALSE}
+x <- seq(1,10,by=3)
+for(i in x){
+  print(i)
+}
+```
+
+```{r,collapse=TRUE, comment=">", class.source="fold-hide"}
+i <- 1
+while (i <= 10){
+  i <- i + 4
+}
+i
+
+i <- 1
+while(TRUE){
+i <- i + 4
+if(i > 10) break
+}
+i
+
+i <- 1
+repeat{
+  i <- i + 4
+  if (i > 10) break
+}
+i
+
+```
+
+The `next` statement allows the loop to stop current iteration and continue to next iteration.
+
+
+## Questions 4
+
+From Jan 1 - Jan 9, 2023, it snowed 6 days atop Snowbasin.  Snow days can be represented each day in a vector as 1 (snow) and 0 (no snow).
+
+```{r}
+snow <- c(1,1,1,1,0,1,1,0,0)
+names(snow) <- 1:9
+```
+
+Suppose you are interested in the first day it consecutively snowed three days (i.e. snowed the given day and two previous days).  What is this day?  Solve using a loop with conditional logic.
+
+```{r,eval=FALSE,echo=FALSE}
+# JC note to self: include example using break function and pre-initializing a vector of set length
+# Comment solution
+runs <- NULL
+for(i in 1:length(snow)){
+  if(i < 3) next
+  if(sum(snow[(i-2):i]) == 3){
+    runs <- c(runs, i)
+  }
+}
+min(runs)
+```
+
+
+```{r,eval=FALSE,echo=FALSE}
+runs <- vector()
+i <- 1
+for(s in 3:length(snow)){
+  if(sum(snow[(s-2):s]) == 3){
+    runs[i] <- s
+    i <- i + 1
+  }
+}
+runs
+```
+
+
+## Functions
+
+* Repeating the strengths of functions ... Using functions is a major theme of good R programming.  Avoid explicit iteration (loops and copy-paste) as much as possible.  [Matloff [(pg xxii)](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=23)]:
+  * Clearer, more compact code
+  * Potentially must faster execution speed
+  * Less debugging, because the code is simpler
+  * Easier transition to parallel programming
+
+*   In general terms, R functions are structured as follow:
+
+    ```r
+    < name of your function > <- function(
+        < argument 1>,
+        < argument 2> = < default value >,
+        ...,
+        < argument n>
+    ) {
+    
+      < some R code here >
+      
+      return(< some result >)
+    
+    }
+    ```
+
+*   For example, if we want to create a function to run the "unfair coin experiment"
+    we could do it in the following way:
+        
+    ```{r}
+    # Function definition
+    
+    # unfairCoin
+    # n: number of tosses
+    # p: biased coin (default = 0.7)
+    unfairCoin <- function(n, p = 0.7) {
+    
+      # Sampling from the coin dist
+      ans <- sample(c("H", "T"), n, replace = TRUE, prob = c(p, 1-p))
+      
+      # Returning
+      ans
+    
+    }
+    
+    # Testing it
+    set.seed(1)
+    tosses <- unfairCoin(20)
+    table(tosses)
+    prop.table(table(tosses))
+    ```
+
+## Questions 5
+
+Generalize your code to Question 4 as a function so that for any string of days you can find the first day it consecutively snowed a given number of days.  Return `NA` if no day meets this criteria.
+
+```{r, eval=FALSE, echo=FALSE}
+
+firstRun <- function(days, x){
+  
+  runs <- vector()
+  i <- 1
+  
+  for(s in x:length(days)){
+    if(sum(days[(s-x+1):s]) == x){
+      days[i] <- s
+      i <- i + 1
+    }
+  }
+  
+  min(runs)
+}
+
+firstRun(c(1,0,1,0,1,0),3)
+
+
+```
+
+
+# Vectorizing and replicate
+
+R Simultaneously performs the same operation across vector elements.
+
+  * Behind the scenes R calls C code to do one-at-a-time calculation, but this is faster than doing one-at-a-time calculation in R.
+
+Common vectorized operations and functions:
+
+| Category           | Function       | Description                            | Example Code                                    | Result           |
+|--------------------|-----------------|----------------------------------------|-------------------------------------------------|------------------|
+| Arithmetic         | `+`, `-`, `*`, `/`, `^` | Basic arithmetic operations            | `c(1, 2, 3) + 1`                              | `2 3 4`         |
+| Mathematical       | `abs()`         | Absolute value                          | `abs(c(-1, -2, 3))`                           | `1 2 3`         |
+|                    | `sqrt()`        | Square root                             | `sqrt(c(1, 4, 9))`                           | `1 2 3`         |
+|                    | `log()`         | Natural logarithm                       | `log(c(1, exp(1), exp(2)))`                   | `0 1 2`         |
+|                    | `exp()`         | Exponential function                    | `exp(c(0, 1, 2))`                            | `1 2.718 7.389` |
+|                    | `sin()`, `cos()`, `tan()` | Trigonometric functions            | `sin(c(0, pi/2, pi))`                         | `0 1 0`         |
+|                    | `log10()`, `log2()` | Base-10 and base-2 logarithms         | `log10(c(1, 10, 100))`                        | `0 1 2`         |
+| Statistical        | `mean()`        | Mean of a vector                        | `mean(c(1, 2, 3, 4, 5))`                     | `3`             |
+|                    | `median()`      | Median of a vector                      | `median(c(1, 2, 3, 4, 5))`                   | `3`             |
+|                    | `sd()`          | Standard deviation                      | `sd(c(1, 2, 3, 4, 5))`                       | `1.581`         |
+|                    | `var()`         | Variance                                | `var(c(1, 2, 3, 4, 5))`                      | `2.5`           |
+|                    | `sum()`         | Sum of elements                         | `sum(c(1, 2, 3, 4, 5))`                      | `15`            |
+|                    | `prod()`        | Product of elements                     | `prod(c(1, 2, 3, 4, 5))`                     | `120`           |
+|                    | `range()`       | Range (minimum and maximum)            | `range(c(1, 2, 3, 4, 5))`                    | `1 5`           |
+| Cumulative Functions | `cumsum()`    | Cumulative sum of elements              | `cumsum(c(1, 2, 3, 4))`                    | `1 3 6 10`     |
+|                    | `cumprod()`     | Cumulative product of elements          | `cumprod(c(1, 2, 3, 4))`                    | `1 2 6 24`     |
+|                    | `cummin()`      | Cumulative minimum                      | `cummin(c(5, 2, 8, 1))`                    | `5 2 2 1`      |
+|                    | `cummax()`      | Cumulative maximum                      | `cummax(c(1, 3, 2, 4))`                    | `1 3 3 4`      |
+| Comparison         | `==`, `!=`, `<`, `>`, `<=`, `>=` | Comparison operators           | `c(1, 2, 3) > 2`                            | `FALSE FALSE TRUE` |
+|                    | `which()`       | Indices of true values                  | `which(c(FALSE, TRUE, TRUE))`                | `2 3`           |
+| Logical            | `any()`         | Check if any elements are true          | `any(c(FALSE, TRUE, FALSE))`                 | `TRUE`          |
+|                    | `all()`         | Check if all elements are true          | `all(c(TRUE, TRUE, TRUE))`                   | `TRUE`          |
+|                    | `is.na()`       | Check for `NA` values                   | `is.na(c(1, NA, 3))`                        | `FALSE TRUE FALSE` |
+|                    | `is.finite()`   | Check for finite values                 | `is.finite(c(1, Inf, NA))`                  | `TRUE FALSE FALSE` |
+| String             | `str_length()`  | Length of strings                       | `str_length(c("a", "ab", "abc"))`            | `1 2 3`         |
+|                    | `str_sub()`     | Substrings                              | `str_sub(c("apple", "banana"), 1, 3)`        | `app ban`       |
+|                    | `str_detect()`  | Detect patterns                         | `str_detect(c("apple", "banana"), "a")`      | `TRUE TRUE`    |
+| Data Manipulation  | `ifelse()`      | Vectorized conditional statements       | `ifelse(c(1, 2, 3) > 2, "yes", "no")`        | `"no" "no" "yes"`|
+| Apply Functions    | `sapply()`      | Apply function over a list or vector    | `sapply(c(1, 2, 3), function(x) x^2)`        | `1 4 9`        |
+|                    | `lapply()`      | Apply function over a list               | `lapply(list(c(1, 2), c(3, 4)), sum)`       | `3 7`          |
+|                    | `vapply()`      | Apply function with a specified output type | `vapply(c(1, 2, 3), function(x) x^2, numeric(1))` | `1 4 9` |
+|                    | `mapply()`      | Apply function to multiple arguments    | `mapply(function(x, y) x + y, c(1, 2), c(3, 4))` | `4 6` |
+|                    | `apply()`       | Apply function to rows or columns of a matrix | `apply(matrix(c(1, 2, 3, 4), nrow=2), 1, sum)` | `3 7` |
+
+
+
+
+Element-wise addition in one call
+
+```{r}
+x1 <- 1:10
+x2 <- 101:110
+x1 + x2
+```
+
+Element-wise logic assessments in one call
+
+```{r}
+x1 > 5
+```
+The above is an example of R 're-cycling' 5 to have the same length as x1.  It is a strength and a caution.
+
+```{r}
+x <- 1:10
+y <- 2:4
+cbind(x,y)
+x < y
+```
+
+**Key point**: Loops carry out one-at-a-time operations.  Usually, a vectorized alternative to loops is to use *apply functions.
+
+The `replicate()` function in R is not strictly vectorized in the same way that functions like `+` or `mean()` are, as it involves iterating over a specified number of replications. However, it is a convenient function for repeating an expression or function multiple times and collecting the results.
+
+
+# Session info
+```{r}
+devtools::session_info()
+```

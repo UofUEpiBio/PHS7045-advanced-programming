@@ -1,0 +1,53 @@
+---
+format: html
+---
+
+<div id="quarto-content"
+class="page-columns page-rows-contents page-layout-article">
+
+<div id="quarto-document-content" class="content" role="main">
+
+<div id="title-block-header" class="quarto-title-block default">
+
+<div class="quarto-title">
+
+# Lab 04 - Debugging and Profiling
+
+</div>
+
+<div class="quarto-title-meta">
+
+</div>
+
+</div>
+
+<div id="learning-goals" class="section level1">
+
+# Learning goals
+
+- Functions, loops, and vectorized programming
+- Writing and simulation a function from a statistical paper
+- Debugging, profiling, and improving efficiency
+
+</div>
+
+<div id="lab-task" class="section level1">
+
+# Lab task
+
+We did not have enough time for most to finish [lab
+2](https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html),
+and today’s lab time is dedicating to finishing the lab.
+
+If you complete the lab, profiling your functions and see if there are
+rooms to improve efficiency.
+
+Devote any extra time to working on [homework
+1](https://uofuepibio.github.io/PHS7045-advanced-programming/hw-01-essentialsSimulations.html)
+which is a continuation of the lab.
+
+</div>
+
+</div>
+
+</div>

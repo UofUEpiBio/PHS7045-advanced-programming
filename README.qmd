@@ -1,20 +1,28 @@
 ---
 format: gfm
+embed-resources: true
 ---
 
 # PHS 7045: Advanced Programming
 
-Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](syllabus.md).
+Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/syllabus.md). Readings for the week can be found in the GitHub issues associated with them.
 
 ## Contents
 
 ```{r}
 #| echo: false
 #| warning: false
-dat <- read.csv("pages.csv")
+library(data.table)
+dat <- fread("pages.csv")
 
-urlpath <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming"
+urlgit <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming/"
 urlraw  <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
+
+dat[, has_lecture := file.exists(sprintf("%s/slides.html", id))]
+dat[, has_lecture_source := file.exists(sprintf("%s/slides.qmd", id))]
+dat[, has_lab := file.exists(sprintf("%s/lab.html", id))]
+dat[, has_lab_source := file.exists(sprintf("%s/lab.qmd", id))]
+
 
 # Iterating through the weeks
 weeks <- sort(unique(dat$week))
@@ -25,27 +33,31 @@ for (i in 1:nrow(dat)) {
   tab <- rbind(
     tab,
     with(dat[i,,drop=FALSE], data.frame(
-      Week  = week,
+      Week  = date,
 
       # Title of the week
-      Title = sprintf(
-        "%s (Issue [%i](%s/issues/%i))",
-        name, issue, urlpath, issue
-        ),
+      Title = fifelse(
+        !is.na(issue),
+        sprintf(
+          "%s (Issue [%i](%s/issues/%i){target=\"_blank\"})",
+          name, issue, urlgit, issue
+          ),
+        sprintf("%s", name)
+      ),
 
       # Lecture links
-      Lecture = if (lecture_source != "") {
+      Lecture = if (has_lecture & has_lecture_source) {
         sprintf(
-          "[slides](%s/week-%02i-slides.html) ([source](%s))",
-          urlraw, week, lecture_source 
+          "[slides](%s/%s/slides.html){target=\"_blank\"} ([source](%s/tree/main/%s/slides.qmd){target=\"_blank\"})",
+          urlraw, id, urlgit, id 
         )
         } else {""},
 
       # Lab links
-      Lab = if (lab_source != "") {
+      Lab = if (has_lab & has_lab_source) {
         sprintf(
-          "[lab](%s/week-%02i-lab.html) ([source](%s))",
-          urlraw, week, lab_source 
+          "[lab](%s/%s/lab.html){target=\"_blank\"} ([source](%s/tree/main/%s/lab.qmd){target=\"_blank\"})",
+          urlraw, id, urlgit, id 
         )
       } else {""}
       )
@@ -57,25 +69,6 @@ for (i in 1:nrow(dat)) {
       dat[i,,drop=FALSE]$extra
     )
 
-  # Copy the files
-  if (file.exists(dat[i,,drop=FALSE]$lecture)) {
-    invisible(file.copy(
-      from      = dat[i,,drop=FALSE]$lecture,
-      to        = sprintf("docs/week-%02i-slides.html", dat[i,,drop=FALSE]$week), 
-      overwrite = TRUE
-    ))
-  }
-
-  if (file.exists(dat[i,,drop=FALSE]$lab)) {
-    
-    invisible(file.copy(
-      from      = dat[i,,drop=FALSE]$lab,
-      to        = sprintf("docs/week-%02i-lab.html", dat[i,,drop=FALSE]$week), 
-      overwrite = TRUE
-    ))
-    
-  }
-
 }
 
 knitr::kable(tab, row.names = FALSE)
@@ -83,7 +76,7 @@ knitr::kable(tab, row.names = FALSE)
 
 ## Assignment workflow
 
-The course instructors will distribute the materials in a single compressed file (usually zip) for each assignment. Once the assignment materials are
+Assignment materials will be distributed in a single compressed file (usually zip) for each assignment. Once the assignment materials are
 available, the students are required to do the following: 
 
 1. Download the compressed file and extract its contents into an empty folder.
@@ -91,7 +84,7 @@ available, the students are required to do the following:
 2. Initialize the folder as a git repository, add its contents, and make
    the first commit.
 
-3. Create a new repository in Github.com (under your account), and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
+3. Create a new repository in Github.com (under your account) and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
 
 You can start working on your assignment! We recommend pushing your changes as much as possible (it is good practice). As soon as you finish your assignment, you will have to ping one of the instructors in your commit message, for example:
 
