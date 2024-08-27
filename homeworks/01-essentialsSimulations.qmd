@@ -7,11 +7,8 @@ format:
 
 # Due date
 
-Tuesday, February 7
+Tuesday, September 10
 
-# Update
-
-Deliverables for this assignment have been updated to creating a function for Design 1 and 2.  Your code should be vectorized and modularized to redundancy. 
 
 # Background
 
@@ -25,15 +22,17 @@ It's not always bad for a method to be criticized -- it means there are open que
 
 # Assignment
 
-Replicate the results in Table 2 of [Comparison of methods for control allocation in multiple arm studies using response adaptive randomization](https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836) for the designs RMatch and F25.  Use only `base` R functions and use functions to avoid duplicating multiple lines of code (i.e., this is called modularizing your code).
+Replicate the results in Table 2 of [Comparison of methods for control allocation in multiple arm studies using response adaptive randomization](https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836) for the designs RMatch and F40.  Use only `base` R functions and use functions to avoid duplicating multiple lines of code (i.e., this is called modularizing your code).
 
 In this assignment, you will practice writing functions, loops, and using the *apply functions.  
 
 # Guidance
 
+0. Although this paper draws upon Bayesian statistics, the purpose of this assignment is to develop the code to implement the method. We have talked about the algorithm in lab; however, please talk to us (in particular, Jonathan) if there are any questions about the mathematics/algorithm.
+
 1. The manuscript uses a minimally informative, normal prior for the log-odds.  Rather than this prior, use a Beta(0.35, 0.65) prior on the response rate for each arm.  This is minimally informative favoring the null hypothesis and allows you to use the Beta-Binomial conjugacy to obtain a Beta posterior distribution.  (Refer to [lab 2](https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html) for notation of the posterior distribution).
 
-2. A way to estimate $P_t$(Max) is to `cbind` K = [1000+] draws from the posterior distribution of each arm and to see how frequently (across the K draws from each arm) each arm is drawn to be the largest.
+2. A way to estimate $P_t$(Max) is to `cbind` K = [1000+] draws from the posterior distribution of each arm and to see how frequently (across the K draws from each arm) each arm is drawn to be the largest. Consider `cbind`ing a vector of draws from each arm and using the `apply` function to see how often treatment K is the max when comparing across rows.
 
 3. The value of $\delta$ was found through simulation under the null scenario such that an efficacious trial was declared to be found only 2.5\% of the time.  The manuscript provides values for $\delta$ though verify and modify as needed (there could be slight differences by using a different prior).
 
