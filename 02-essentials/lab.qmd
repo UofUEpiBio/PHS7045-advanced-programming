@@ -7,11 +7,31 @@ format:
 
 # Learning goals
 
-Today's lab practices vectorization and labeling objects. Although it entails Bayesian statistics, the emphasis is on coding. We will walk through what is needed for the Bayesian estimation. 
+Today's lab practices vectorization and labeling objects. Although the second half entails Bayesian statistics, the emphasis is on coding. We will walk through what is needed for the Bayesian estimation. 
 
-This lab is also a first step toward completing HW 1.
+The second half of the lab is also a first step toward completing HW 1.
 
 # Lab
+
+## Urn problem revisited (see problem [here](https://uofuepibio.github.io/PHS7045-advanced-programming/02-essentials/slides.html#question-6-urn-problem))
+
+
+1. Take your solution to urn problem and turn it into a function. The function should take inputs with defaults: nreps=100000, b1=10, y1=8, b2=6, y2=6 which has default values.
+
+2. Post function [here](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit).
+
+3. We will evaluate the performance of each function and then discuss how to speed up the function.
+
+```{r, eval=FALSE}
+library(bench)
+bench::mark( <solutions>, relative = TRUE, check = FALSE)
+```
+
+
+4. For the submission, provide your original function, a version that is updated for more efficiency (if applicable), and a brief summary of what you learned for future coding.
+
+
+## Estimating the probability one treatment arm is better than another
 
 Create a simulated dataset that enrolls 40 participants ($i = 1, \dots, 40$) equally randomized to 4 arms ($t=0, 1, 2, 3, 4$).  Generate outcomes supposing the probability of success under each arm, $p_t$, is 0.35. 
 
