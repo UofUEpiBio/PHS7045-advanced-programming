@@ -21,13 +21,14 @@ format:
 
 In the RStudio (aka Posit) menu bar, notice the `Debug` and `Profile` drop-down menus.  These are quick starting points for finding code bugs/bottlenecks.  Studying the below chapters will give insight into finding where and how to improve code efficiency.
 
-Primary reading: 
+Required reading: 
 
-Norman Matloof's [Ch. 13.1-13.3.5: Debugging](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=311) and Hadley Wickham's [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) and [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html).
+1. Hadley Wickham's [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) 
+2. Hadley Wickham's [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
 
 Supplemental reading: 
 
-Matloof [Ch. 14: Performance Enhancement: Speed and Memory](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331) is slightly outdated by recommending `RProf` to measure performance (as compared to `profvis` used in RStudio) but has good content on speed and memory allocation.
+Norman Matloof's [Ch. 13.1-13.3.5: Debugging](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=311) and [Ch. 14: Performance Enhancement: Speed and Memory](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331) is slightly outdated by recommending `RProf` to measure performance (as compared to `profvis` used in RStudio) but has good content on speed and memory allocation.
 
 
 
@@ -52,7 +53,7 @@ Post your solution [here](https://docs.google.com/document/d/1NDNEbi4HA074DaS6st
 
 ```{r, eval=FALSE}
 library(bench)
-bench::mark( <solutions>, relative==TRUE, check = FALSE)
+bench::mark( <solutions>, relative = TRUE, check = FALSE)
 ```
 
 
@@ -91,8 +92,6 @@ A friend of mine stored _all_ documents in the downloads folder!  When it came t
 
 "Most good software developers agree that code should be written in a modular manner. Your first-level code should not be longer than, say, a dozen lines, with much of it consisting of function calls. And those functions should not be too lengthy and should call other functions if necessary. This makes the code easier to organize during the writing stage and easier for others to understand when it comes time for the code to be extended."
 
-Question: What can be "modularized" in homework 1?
-
 Top-down modular level: 
 
 1. Analysis / Summary
@@ -101,8 +100,19 @@ Top-down modular level:
 
 With debugging start top-down.  Assume lower-level functions are correct until finishing debugging / checking top-level modules.
 
-An example from collaboration.
+An example from collaboration:
 
+<img src="./fig/modular_collaboration.png" style="width:1000px;">
+
+
+An example from an R package: [SeqSGPV](https://github.com/chipmanj/SeqSGPV/blob/master/R/SeqSGPV.R)
+
+* Step 0: Provides initial checks on inputs
+* Steps 1-4: Call lower-level functions
+* Step 5: Aggregates results
+* Step 6: Returns output object
+
+**Question for HW 1: What can be "modularized"?**
 
 ## Antibugging
 
@@ -113,7 +123,7 @@ x <- 1
 stopifnot(is.character(x))
 ```
 
-Here, is an equivalent stop command using if-logic.  `deparse(subsitute([var]))` prints the name of the object:
+Here, is an equivalent stop command using if-logic. `deparse(subsitute([var]))` prints the name of the object:
 
 ```{r, error=TRUE}
 x <- 1
@@ -130,18 +140,22 @@ if(!is.character(x)){
 ```
 
 
-## Example
+## Interactive debugging 
 
-An R package example of modular programming and anti-bugging: [seqSGPV](https://github.com/chipmanj/SeqSGPV).
+For a more in-depth consideration of debugging, see [https://adv-r.hadley.nz/debugging.html](https://adv-r.hadley.nz/debugging.html). The examples below are from this book.
 
 
-## Interactive debugging
+In R-Studio, notice the "Debug" drop-down menu.  Under "on error" it has three options:
 
-When an error occurs, use the `traceback` function to get a sense of where the error occurred.
+1. Message only: Provides the error
+2. Error Inspector: Provides the error + `traceback` and `debugonce` options
+3. Break in Code: Provides the error + enters `debugonce`
+
+The `traceback` function lists call that provided the error and any sub-calls prior to it.
 
 Options to debug a function from top-to-bottom:
 
-* `debug (undebug)`
+* `debug` and `(undebug)`
 * `debugonce`
 
 This will interactively walk you through the function call with the following commands:
@@ -154,7 +168,7 @@ This will interactively walk you through the function call with the following co
 * `where`: shows the trace stack (the possibly multiple layers of a function call)
 * `any r command` may be run when in debugger mode
 
-Some examples ...
+An example ...
 
 ```{r, eval=FALSE}
 
@@ -292,14 +306,78 @@ Why is `t2` `r round(t2["elapsed"] / t1["elapsed"],2)`? times longer?
 
 `profvis::profvis` is a good go-to for evaluating performance of multiple calls.
 
-We'll work through the [tutorial](http://rstudio.github.io/profvis/) together.
+We'll work through [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) together. Begin by the below script as a file called "profiling-example.R": 
 
-Walk through profiling SeqSGPV.
+```{r,eval=FALSE}
+f <- function() {
+  profvis::pause(0.1)
+  g()
+  h()
+}
+g <- function() {
+  profvis::pause(0.1)
+  h()
+}
+h <- function() {
+  profvis::pause(0.1)
+}
+```
 
-Profile the code you earlier shared with your classmate.
+Install the `profvis` package if needed, and call:
+
+```{r, eval=FALSE}
+source("profiling-example.R")
+profvis::profvis(f())
+```
+
+Alternatively, call
+
+```{r}
+f <- function() {
+  profvis::pause(0.1)
+  g()
+  h()
+}
+g <- function() {
+  profvis::pause(0.1)
+  h()
+}
+h <- function() {
+  profvis::pause(0.1)
+}
+profvis::profvis(f())
+```
 
 
-## Improving efficiency
+Now, we'll turn to the notes [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) as we walk through the:
+
+1. stack call: the set of routines called in a function and subfunctions
+2. time allocation: the time spent on each call within function
+3. memory allocation: the amount of memory used with each call
+
+Notice in the example below (and even better as seen in [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html)) how much time is spent in <GC>. <GC> stands for 'garbage collector' and points to a place of possible ineffeciences.
+
+```{r}
+profvis::profvis({
+  x <- integer()
+  for (i in 1:1e4) {
+    x <- c(x, i)
+  }
+})
+```
+
+## Benchmarking
+
+The `bench::mark` function provides more accurate time of functions and allows for checking whether two functions return the same results (`check=TRUE`).  We've seen this [here](https://uofuepibio.github.io/PHS7045-advanced-programming/02-essentials/lab.html).
+
+```{r, eval=FALSE}
+library(bench)
+bench::mark( <solutions>, relative = TRUE, check = FALSE)
+```
+
+
+
+# Improving efficiency
 
 [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
 
