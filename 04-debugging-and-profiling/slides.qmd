@@ -21,10 +21,11 @@ format:
 
 In the RStudio (aka Posit) menu bar, notice the `Debug` and `Profile` drop-down menus.  These are quick starting points for finding code bugs/bottlenecks.  Studying the below chapters will give insight into finding where and how to improve code efficiency.
 
-Required reading: 
+Required reading from [Advanced R](https://adv-r.hadley.nz/index.html) by Hadley Wickham: 
 
-1. Hadley Wickham's [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) 
-2. Hadley Wickham's [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
+1. [Ch. 22: Debugging](https://adv-r.hadley.nz/debugging.html)
+1. [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) 
+2. [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
 
 Supplemental reading: 
 
@@ -32,29 +33,29 @@ Norman Matloof's [Ch. 13.1-13.3.5: Debugging](https://diytranscriptomics.com/Rea
 
 
 
-## Warm-up problem
+## Warm-up 
+
+[Vectorization](https://uofuepibio.github.io/PHS7045-advanced-programming/02-essentials/slides.html)
+
+Review the table of vectorization commands
+
+Perform calculations one-at-a-time ONLY if necessary. Pause to think if you're performing the same operation over and over again.
 
 
-
-
-[Urn problem](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331)
+[Urn problem revisited!](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331)
 
 "Urn 1 contains ten blue marbles and eight yellow ones. In urn 2, the mixture is six blue and six yellow. We draw a marble at random from
 urn 1, transfer it to urn 2, and then draw a marble at random from urn 2. What is the probability that that second marble is blue? This is easy to find analytically, but we’ll use simulation."  Create a function that generates 100K replicates and returns the estimated probability.
 
 
+[When are loops faster than *apply (and vice-versa)](https://chatgpt.com/share/49e6f08b-f940-4def-84f6-353964ef5aad)
+
+We saw some [solutions](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit) to the urn problem that were more time consuming despite using an apply statement.  What is happening here?
+
+
 <!-- How can you "modularize" design 1 and 2 of [lab 2](https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html)? -->
 
 <!-- * What are common tasks of design 1 and 2 that can be performed using the same user-defined function? -->
-
-
-Post your solution [here](https://docs.google.com/document/d/1NDNEbi4HA074DaS6sta9UKbXouS8r0FCwMP6o9fRE3Y/edit?usp=sharing)
-
-
-```{r, eval=FALSE}
-library(bench)
-bench::mark( <solutions>, relative = TRUE, check = FALSE)
-```
 
 
 ## This week's lesson
@@ -116,7 +117,7 @@ An example from an R package: [SeqSGPV](https://github.com/chipmanj/SeqSGPV/blob
 
 ## Antibugging
 
-Pro-actively stop a function (or provide a warning or message) if a condition is not met:
+Pro-actively stop a function (or provide a warning or message) if a condition is not met (example similar to [here](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=313)):
 
 ```{r, error=TRUE}
 x <- 1
@@ -168,7 +169,7 @@ This will interactively walk you through the function call with the following co
 * `where`: shows the trace stack (the possibly multiple layers of a function call)
 * `any r command` may be run when in debugger mode
 
-An example ...
+An example where `f()` calls `g()` which calls `h()` which calls `i()` which is a function with conditional logic ...
 
 ```{r, eval=FALSE}
 
@@ -246,7 +247,7 @@ f()
 
 While embedding `browser` into code can be helpful, you must remember to remove the browser calls when done.  Rstudio also provides a feature to set breakpoints by clicking on the line-number where you'd want to start debugging.  See also [breakpoints](https://adv-r.hadley.nz/debugging.html#breakpoints).
 
-Using your warm up problem, set breakpoints.
+Using the urn problem, set breakpoints and run through `debugonce()`.
 
 
 
@@ -302,7 +303,7 @@ Why is `t2` `r round(t2["elapsed"] / t1["elapsed"],2)`? times longer?
 * `check=FALSE` allows for running different code which may return different results (example: due to sampling)
 
 
-## profvis
+## profvis (profiling visualization)
 
 `profvis::profvis` is a good go-to for evaluating performance of multiple calls.
 
@@ -366,6 +367,12 @@ profvis::profvis({
 })
 ```
 
+
+### Practice
+
+Run your urn solution (or another posted [here](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit)) through ``profvis::profvis()``.
+
+
 ## Benchmarking
 
 The `bench::mark` function provides more accurate time of functions and allows for checking whether two functions return the same results (`check=TRUE`).  We've seen this [here](https://uofuepibio.github.io/PHS7045-advanced-programming/02-essentials/lab.html).
@@ -384,10 +391,34 @@ bench::mark( <solutions>, relative = TRUE, check = FALSE)
 Parts to highlight:
 
 * [introduction](https://adv-r.hadley.nz/perf-improve.html#introduction-23)
+
+"It’s easy to get caught up in trying to remove all bottlenecks. Don’t! Your time is valuable and is better spent analysing your data, not eliminating possible inefficiencies in your code. Be pragmatic: don’t spend hours of your time to save seconds of computer time. To enforce this advice, you should set a goal time for your code and optimise only up to that goal. This means you will not eliminate all bottlenecks."
+
 * [vectorize](https://adv-r.hadley.nz/perf-improve.html#vectorise)
 * [do as little as possible](https://adv-r.hadley.nz/perf-improve.html#be-lazy)
+
+Be aware of all the steps required for a function.  If it requires additional steps, see if there are alternative strategies that provide equivalent solutions
+
 * [avoid copies](https://adv-r.hadley.nz/perf-improve.html#avoid-copies)
 
+Avoiding copies is when you iteratively build up an object that includes previous values.  For example:
+
+```{r}
+# NOTE: an example of what to AVOID
+out <- 1
+for (i in 1:10){
+  out <- c(out,i)
+}
+
+# BETTER: Pre-allocate space
+out <- rep(NA,11)
+out[1] <- 1
+for (i in 1:10){
+  out[i+1] <- i
+}
+```
+
+*[check for existing solutions; also, appreciate the value of cpp](https://adv-r.hadley.nz/perf-improve.html#already-solved)
 
 
 # Session info
