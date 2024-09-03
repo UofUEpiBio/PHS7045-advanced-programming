@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.53">
+<meta name="generator" content="quarto-1.4.555">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -34,6 +34,35 @@ ul.task-list li input[type="checkbox"] {
 <link href="lab_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="lab_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -65,10 +94,54 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 </section>
 <section id="lab-task" class="level1">
+<section id="lab-task" class="level1">
 <h1>Lab task</h1>
-<p>We did not have enough time for most to finish <a href="https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html">lab 2</a>, and today’s lab time is dedicating to finishing the lab.</p>
-<p>If you complete the lab, profiling your functions and see if there are rooms to improve efficiency.</p>
-<p>Devote any extra time to working on <a href="https://uofuepibio.github.io/PHS7045-advanced-programming/hw-01-essentialsSimulations.html">homework 1</a> which is a continuation of the lab.</p>
+<p>In Lab 1, we developed a function that enrolls 40 participants equally across four arms (one control and three different treatment arms). Using a Beta-Binomial posterior distribution for each arm (with a <span class="math inline">\(Beta(\alpha_t=0.35,\beta_t=0.65)\)</span>), we estimated <span class="math inline">\(Pr(p_t &gt; p_0)\)</span>.</p>
+<p>Today, we will build upon this.</p>
+<p>Imagine a trial that will enroll <span class="math inline">\(N=228\)</span> participants with a control arm and three treatment arms. The trial will be considered a success if at least one treatment is better than control. That is, if <span class="math inline">\(\max{Pr(p_t&gt;p_0)} &gt; \delta_d\)</span>, where <span class="math inline">\(\delta_d\)</span> depends upon the design.</p>
+<p>Consider a trial that uses Equal Randomization (ER) and another that uses Response Adaptive Randomization (RAR) that updates every 40 participants.</p>
+<p>The RAR updates the treatment allocation using the following rules:</p>
+<ul>
+<li>For <span class="math inline">\(t \in 1, 2, 3\)</span>: <span class="math inline">\(V_t = Pr(p_t \text{ is best across all arms})\)</span></li>
+<li>For <span class="math inline">\(t = 0\)</span>: <span class="math inline">\(V_0 = min\{\sum V_t \frac{(n_t + 1)}{(n_0 + 1)}, max(V_1, V_2, V_3) \}\)</span></li>
+</ul>
+<p><span class="math inline">\(V_0, V_1, V_2,\)</span> and <span class="math inline">\(V_3\)</span> are renormalized to sum to 1 and are allocation probabilities.</p>
+</section>
+<section id="for-lab" class="level1">
+<h1>For lab:</h1>
+<ol type="1">
+<li><p>How will you “modularize” and “vectorize” your solution?</p></li>
+<li><p>Write a function for each study design to simulate one trial.</p></li>
+</ol>
+<ul>
+<li>N = 228 with interim analyses after every 40th participant starting at 40.</li>
+<li>Use equal allocation for first 40 patients for both designs.</li>
+<li>Assume a setting where treatment effect is 0.35 for each study arm (the null scenario). (But allow flexibility in function for other treatment effects).</li>
+<li><span class="math inline">\(\alpha_t = 0.35\)</span> for all <span class="math inline">\(t\)</span> and <span class="math inline">\(\beta_t = 0.65\)</span> for all arms.</li>
+<li>Use the following <span class="math inline">\(\delta\)</span> thresholds to determine a successful trial:
+<ul>
+<li>Design ER, <span class="math inline">\(\delta_{ER} = 0.9912\)</span></li>
+<li>Design RAR, <span class="math inline">\(\delta_{RAR} = 0.9892\)</span></li>
+</ul></li>
+</ul>
+<p>For simplicity, have your function return a list of at least the following output:</p>
+<ol type="1">
+<li>The probability that the best treatment arm is better than control.</li>
+<li>The number of patients assigned to each treatment arm.</li>
+</ol>
+</section>
+<section id="if-you-have-more-time" class="level1">
+<h1>If you have more time</h1>
+<ul>
+<li>Replicate the design many (10K) times. Calculate the Type I error.</li>
+<li>Find <span class="math inline">\(\delta\)</span> for each design (supposing you didn’t already know it).</li>
+<li>Replicate the study design assuming treatment effects of
+<ul>
+<li><span class="math inline">\(p_0 = p_1 = p_2 = 0.35\)</span></li>
+<li><span class="math inline">\(p_3 = 0.65\)</span></li>
+</ul></li>
+</ul>
+</section>
 </section>
 </div>
 </div>
@@ -110,7 +183,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -142,29 +226,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -172,7 +234,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
