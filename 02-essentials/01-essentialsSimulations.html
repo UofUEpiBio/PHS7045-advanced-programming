@@ -3019,6 +3019,14 @@ vertical-align: -.125em;
 <h1>Due date</h1>
 <p>Tuesday, September 10</p>
 </section>
+<section id="updates" class="level1">
+<h1>Updates</h1>
+<ol type="1">
+<li><p>Values for <span class="math inline">\(\delta\)</span> provided, though these can be found as a bonus.</p></li>
+<li><p>FYI, you might get slightly different values than presented in Table 2. This could be because we have changed the problem slightly from using a prior for the log-odds. Also, there can be rounding error based upon the number of replicates used in the paper.</p></li>
+<li><p>Removed the requirement to only use <code>base R</code> functions.</p></li>
+</ol>
+</section>
 <section id="background" class="level1">
 <h1>Background</h1>
 <p>Response-adaptive randomization (RAR) has been used in precision medicine trials, such as the trials <a href="https://www.nejm.org/doi/pdf/10.1056/NEJMoa1513750?articleTools=true">I-SPY-2</a>, <a href="https://aacrjournals.org/cancerdiscovery/article/1/1/44/2198?casa_token=pK1gZcX-FgkAAAAA:KmsD6qnoaOMxqHJlg0VGlmqr2nqIl49Xupuh0FX7nnJXNjtdBwVWsdmVtUIXKdEWQ_e5i9pG">BATTLE-1</a>, and <a href="https://cdn.amegroups.cn/journals/amepc/files/journals/12/articles/6846/public/6846-PB2-R2.pdf">BATTLE-2</a> to gather early evidence of treatment arms that work best for a given biomarker. Throughout RAR, the treatment allocation adjusts depending on which treatment arm looks most promising. RAR is criticized for the following reasons <a href="https://watermark.silverchair.com/djx013.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAAvswggL3BgkqhkiG9w0BBwagggLoMIIC5AIBADCCAt0GCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMUKqYjuX4J38OrUAJAgEQgIICrkuWgqA03alHxi4xfUz3ybPTepY21z2PaOZFRSmRgKhEf4ROr5tIP8MoeLwYxIexRpjXLTjKQ_Yn6s2oYBYUTJEG_gVqeevFGwvxyi8zas8R1GyiQWDyjnhBsjKcAsKCl6M63_K-LXEPLj7nyw4FZEefXgMSO91jz_bKseNLmhDEmZ7oPvO_xlBzWptEW4gE8I7mrv8h3NbFrM0BrbDIeOkIr36F3X-F3ip5a8lEDirZwrKyLCb598ivER1JVlr7iCzNV9OYHv6P79E6YxKGxJPDNk1WJ-ClcUb6aA87-Gae81SVipvqhu2npbLCFtWVikZKliWQ5lPE9CieOB9hnd93HLsp7Da9U3D0jodTMbk9RE28I7kzuoWHO8BEoPK8p1_1nTWw6pV5CbS02RFxtTr4-aCMm364vJAHrgP3rNmvi-KEGB4rxufA_hebdi2yS20nll2HdAVT81m_cm87x3YvVP7Ut9H-0zTCAVYACBJJUjKS7w7QKkIN-FqdQ7N7u_YJ83bl69sMF0fddIVTA6WFAJWpVmiij5ou34auXuzDtEKLN5nmQ-467HZtpMAkoyFxcyCdtI_ieuyCp1jlP3IC07JZAWvA_8A2W8hEFaRBimq0STpclvxEgt2OCDtE9kTXvS8v6ArS4U6ZkuM7Uw3PSG1ISoYAWPPvWzGMKWU4W4nCS0rT-TPWPJkPf8TGkUK9Q1cDemuYlWZBrYN-RUJ8X204vbqa-p9jsRKIfsQ0QDrW97qHYxf-659kKav288WZ8d5wmESsLKyHEc8JatY2dvmsIMIdeK3mKA68qDUqS3C1yO7X0T4BJZpJPGjjPzFrrqaLAmLdhdqITE5AcT_Eiy3upRuYw3TdqbznbDog3k2K2yIgQUZwu2HC9q_fJhqmxh0WkHQDyYeiXyqb">(Korn)</a>:</p>
@@ -3031,18 +3039,18 @@ vertical-align: -.125em;
 </section>
 <section id="assignment" class="level1">
 <h1>Assignment</h1>
-<p>Replicate the results in Table 2 of <a href="https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836">Comparison of methods for control allocation in multiple arm studies using response adaptive randomization</a> for the designs RMatch and F40. Use only <code>base</code> R functions and use functions to avoid duplicating multiple lines of code (i.e., this is called modularizing your code).</p>
+<p>Replicate the results in Table 2 of <a href="https://journals.sagepub.com/doi/pdf/10.1177/1740774519877836">Comparison of methods for control allocation in multiple arm studies using response adaptive randomization</a> for the designs RMatch and F40. Use functions to avoid duplicating multiple lines of code (i.e., this is called modularizing your code).</p>
 <p>In this assignment, you will practice writing functions, loops, and using the *apply functions.</p>
 </section>
 <section id="guidance" class="level1">
 <h1>Guidance</h1>
 <ol start="0" type="1">
 <li><p>Although this paper draws upon Bayesian statistics, the purpose of this assignment is to develop the code to implement the method. We have talked about the algorithm in lab; however, please talk to us (in particular, Jonathan) if there are any questions about the mathematics/algorithm.</p></li>
-<li><p>The manuscript uses a minimally informative, normal prior for the log-odds. Rather than this prior, use a Beta(0.35, 0.65) prior on the response rate for each arm. This is minimally informative favoring the null hypothesis and allows you to use the Beta-Binomial conjugacy to obtain a Beta posterior distribution. (Refer to <a href="https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html">lab 2</a> for notation of the posterior distribution).</p></li>
+<li><p>The manuscript uses a minimally informative, normal prior for the log-odds. Rather than this prior, use a Beta(0.35, 0.65) prior on the response rate for each arm. This is minimally informative favoring the null hypothesis and allows you to use the Beta-Binomial conjugacy to obtain a Beta posterior distribution.</p></li>
 <li><p>A way to estimate <span class="math inline">\(P_t\)</span>(Max) is to <code>cbind</code> K = [1000+] draws from the posterior distribution of each arm and to see how frequently (across the K draws from each arm) each arm is drawn to be the largest. Consider <code>cbind</code>ing a vector of draws from each arm and using the <code>apply</code> function to see how often treatment K is the max when comparing across rows.</p></li>
-<li><p>The value of <span class="math inline">\(\delta\)</span> was found through simulation under the null scenario such that an efficacious trial was declared to be found only 2.5% of the time. The manuscript provides values for <span class="math inline">\(\delta\)</span> though verify and modify as needed (there could be slight differences by using a different prior).</p></li>
+<li><p>The value of <span class="math inline">\(\delta\)</span> was found through simulation under the null scenario such that an efficacious trial was declared to be found only 2.5% of the time. The manuscript provides values for <span class="math inline">\(\delta\)</span> though, for a bonus, verify and modify as needed (there could be slight differences by using a different prior). Alternatively, use the values of <span class="math inline">\(\delta\)</span> provided (here)[https://uofuepibio.github.io/PHS7045-advanced-programming/04-debugging-and-profiling/lab.html].</p></li>
 <li><p>The manuscript uses 100K replicates to determine <span class="math inline">\(\delta\)</span> and estimate the values in Table 2. Start with a small number of replicates (1K or 10K) to make sure the code is running correctly and your results are in the ball park of being similar to the manuscript. Ramp up the number of replicates as feasible (for this assignment feasible is a run time of no longer than 20 minutes).</p></li>
-<li><p>Please talk to us if you are having difficulties with this assignment. We realize it is in a space that may be new to you, and it is not the intent for this assignment to take more than 7-10 hours over the course of 2 weeks.</p></li>
+<li><p>Please email/talk to us if you are having difficulties with this assignment. We realize it is in a space that may be new to you, and it is not the intent for this assignment to take more than 7-10 hours over the course of 2 weeks.</p></li>
 </ol>
 </section>
 
