@@ -1,4 +1,4 @@
-FROM eddelbuettel/r2u:20.04
+FROM rocker/tidyverse:4.4.1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     pandoc \
@@ -7,26 +7,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gdebi-core \
     && rm -rf /var/lib/apt/lists/*
 
-RUN install.r \
-    shiny \
-    jsonlite \
-    ggplot2 \
-    htmltools \
-    remotes \
+RUN install2.r -n4 \
     renv \
-    knitr \
-    rmarkdown \
     pander \
-    quarto \
-    data.table \
-    rcpp \
-    microbenchmark \
-    reticulate \
-    bench \
     igraph \
     igraphdata \
-    netplot 
+    netplot \
+    reticulate \
+    microbenchmark \
+    bench \
+    R.utils \
+    maps
 
+RUN install2.r -n languageserver
+
+RUN \
+    Rscript --vanilla -e 'reticulate::install_python()' && \
+    Rscript --vanilla -e 'reticulate::virtualenv_create("r-reticulate")' && \
+    Rscript --vanilla -e 'reticulate::py_install("datatable")'
+
+RUN \
+    Rscript --vanilla -e 'reticulate::py_install("pandas")'
 
 RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
 RUN gdebi --non-interactive quarto-linux-amd64.deb

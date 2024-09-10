@@ -222,7 +222,6 @@ The data that we will be using is an already processed version of the [MET datas
 
 ```{r}
 #| label: downloading-data
-#| cache: !expr slides_eval
 #| echo: true
 # Where are we getting the data from
 met_url <- "https://github.com/USCbiostats/data-science-data/raw/master/02_met/met_all.gz"
@@ -253,7 +252,6 @@ Now we can load the data using the `fread()` function. In R
 #| label: reading-data
 #| eval: true
 #| echo: true
-#| results: 'hide'
 # Reading the data
 dat <- fread(tmp)
 head(dat)
@@ -345,6 +343,10 @@ dat_ldt <- lazy_dt(dat, immutable = FALSE)
 # We can use the address() function from data.table
 address(dat)
 address(dat_ldt$parent)
+
+# To ensure we are not modifying it
+# SEEMS THERES A BUG HERE!
+dat_ldt <- lazy_dt(dat, immutable = TRUE) 
 ```
 
 ![](pointer-paths.svg){width="800px"}
@@ -380,7 +382,7 @@ Using the **dplyr::select** verb:
 #| label: select1-tv
 #| eval: !expr slides_eval
 #| echo: true
-dat_ldt %>% select(USAFID, lat, lon)
+dat_ldt |>  select(USAFID, lat, lon)
 ```
 
 ## Selecting columns (cont. 2) {.small}
@@ -409,6 +411,7 @@ For the rest of the session, we will use these variables: USAFID, WBAN, year, mo
 #| label: actual-selection
 #| echo: true
 # Data.table
+cat(dat[1,] |> colnames(), file="tmp.tmp")
 dat <- dat[,
   .(USAFID, WBAN, year, month, day, hour, min, lat, lon, elev,
     wind.sp, temp, atm.press)]
@@ -644,7 +647,6 @@ The [`f.` is a symbol](https://datatable.readthedocs.io/en/latest/manual/f-expre
 ```{r}
 #| echo: false
 #| eval: true
-#| cache: true
 # Question 1
 message("Question 1: ", nrow(dat[(temp < 25) & (temp > 18)]))
 # dat[temp %between% c(18, 25), .N] 
@@ -830,7 +832,6 @@ A key thing here: This approach has no direct translation to `data.table`, which
 
 ```{r}
 #| label: stations-data
-#| cache: true
 #| warning: false
 #| echo: true
 stations <- fread("ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv")
@@ -861,7 +862,6 @@ Notice the function `fifelse()`. Now, let's try to merge the data!
 
 ```{r}
 #| label: merge-try1
-#| cache: true
 merge(
   # Data
   x     = dat,      
