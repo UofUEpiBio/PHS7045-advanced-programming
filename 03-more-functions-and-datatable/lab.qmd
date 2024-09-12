@@ -53,7 +53,7 @@ mkdir PHS7045-labs
 cd PHS7045-labs
 
 # Step 2
-wget https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-functions-and-datatable/lab.qmd
+wget https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-more-functions-and-datatable/lab.qmd
 mv 03-functions-and-datatable.qmd README.qmd
 
 # Step 3
@@ -81,7 +81,7 @@ setwd("PHS7045-labs")
 
 # Step 2
 download.file(
-  "https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-functions-and-datatable/lab.qmd",
+  "https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-more-functions-and-datatable/lab.qmd",
   destfile = "README.qmd"
   )
 

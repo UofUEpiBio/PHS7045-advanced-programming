@@ -862,6 +862,7 @@ Notice the function `fifelse()`. Now, let's try to merge the data!
 
 ```{r}
 #| label: merge-try1
+#| echo: true
 merge(
   # Data
   x     = dat,      
@@ -871,7 +872,7 @@ merge(
   by.y  = "USAF", 
   # Which obs to keep?
   all.x = TRUE,      
-  all.y = FALSE
+  all.y = FALSE, 
   ) %>% nrow()
 ```
 
@@ -881,8 +882,10 @@ that the `stations` dataset has duplicated IDs. We can fix this:
 ```{r}
 #| label: drop-dpl
 #| results: 'hide'
+#| echo: true
 stations[, n := 1:.N, by = .(USAF)]
 stations <- stations[n == 1,][, n := NULL]
+
 ```
 
 :::
