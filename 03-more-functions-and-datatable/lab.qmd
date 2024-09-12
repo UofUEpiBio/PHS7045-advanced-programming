@@ -1,29 +1,13 @@
 ---
-format: html
+title: Lab 03 - Functions and data.table
+author: George G. Vega Yon, Ph.D.
+date-modified: 2024-09-12
+format:
+  html:
+    embed-resources: true
 ---
 
-<div id="quarto-content"
-class="page-columns page-rows-contents page-layout-article">
-
-<div id="quarto-document-content" class="content" role="main">
-
-<div id="title-block-header" class="quarto-title-block default">
-
-<div class="quarto-title">
-
-# Lab 03 - Functions and data.table
-
-</div>
-
-<div class="quarto-title-meta">
-
-</div>
-
-</div>
-
-<div id="learning-goals" class="section level1">
-
-# Learning goals
+## Learning goals
 
 - Used advanced features of functions in R.
 - Use the `merge()` function to join two datasets.
@@ -31,11 +15,7 @@ class="page-columns page-rows-contents page-layout-article">
 - Identify relevant observations using `quantile()`.
 - Practice your GitHub skills.
 
-</div>
-
-<div id="lab-description" class="section level1">
-
-# Lab description
+## Lab description
 
 For this lab, we will deal with the meteorological dataset downloaded
 from the NOAA, the `met`. We will use `data.table` to answer some
@@ -44,12 +24,7 @@ skills.
 
 This markdown document should be rendered using `gfm` document.
 
-</div>
-
-<div id="part-1-setup-the-git-project-and-the-github-repository"
-class="section level1">
-
-# Part 1: Setup the Git project and the GitHub repository
+## Part 1: Setup the Git project and the GitHub repository
 
 1.  Go to your documents (or wherever you are planning to store the
     data) in your computer, and create a folder for this project, for
@@ -71,16 +46,14 @@ class="section level1">
 
 Most of the steps can be done using the command line:
 
-<div id="cb1" class="sourceCode">
-
-``` sourceCode
+```bash
 # Step 1
 cd ~/Documents
 mkdir PHS7045-labs
 cd PHS7045-labs
 
 # Step 2
-wget https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/labs/03-functions-and-datatable/03-functions-and-datatable.qmd
+wget https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-functions-and-datatable/lab.qmd
 mv 03-functions-and-datatable.qmd README.qmd
 
 # Step 3
@@ -96,14 +69,11 @@ git remote add origin git@github.com:[username]/PHS7045
 git push -u origin master
 ```
 
-</div>
 
 You can also complete the steps in R (replace with your paths/username
 when needed)
 
-<div id="cb2" class="sourceCode">
-
-``` sourceCode
+```bash
 # Step 1
 setwd("~/Documents")
 dir.create("PHS7045-labs")
@@ -111,7 +81,7 @@ setwd("PHS7045-labs")
 
 # Step 2
 download.file(
-  "https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/labs/03-functions-and-datatable/03-functions-and-datatable.qmd",
+  "https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-functions-and-datatable/lab.qmd",
   destfile = "README.qmd"
   )
 
@@ -126,20 +96,12 @@ system("git remote add origin git@github.com:[username]/PHS7045-labs")
 system("git push -u origin master")
 ```
 
-</div>
-
 Once you are done setting up the project, you can now start working on
 the lab.
 
-</div>
+## Part 2: Advanced functions
 
-<div id="part-2-advanced-functions" class="section level1">
-
-# Part 2: Advanced functions
-
-<div id="question-1-ellipsis" class="section level2">
-
-## Question 1: **Ellipsis**
+### Question 1: **Ellipsis**
 
 Write a function using the ellipsis argument (`...`) with the goal of
 (i) retrieving the list of arguments passed to it, (ii) printing
@@ -149,11 +111,7 @@ where they belong and the address of the object in memory using
 
 Knit the document, commit your changes, and push them to GitHub.
 
-</div>
-
-<div id="question-2-lazy-evaluation" class="section level2">
-
-## Question 2: **Lazy evaluation**
+### Question 2: **Lazy evaluation**
 
 A concept we did not review was lazy evaluation. Write a function with
 two arguments (`a` and `b`) that only uses one of them as an integer,
@@ -162,11 +120,7 @@ and then call the function passing the following arguments
 
 Knit the document, commit your changes, and push them to GitHub.
 
-</div>
-
-<div id="question-3-putting-all-together" class="section level2">
-
-## Question 3: **Putting all together**
+### Question 3: **Putting all together**
 
 Write a function that fits a linear regression model and saves the
 result to the global environment using the `assign()` function. The name
@@ -174,17 +128,9 @@ of the output must be passed as a symbol using lazy evaluation.
 
 Knit the document, commit your changes, and push them to GitHub.
 
-</div>
+## Part 3: Data.table
 
-</div>
-
-<div id="part-3-data.table" class="section level1">
-
-# Part 3: Data.table
-
-<div id="setup-in-r" class="section level2">
-
-## Setup in R
+### Setup in R
 
 1.  Load the `data.table` (and the `dtplyr` and `dplyr` packages if you
     plan to work with those).
@@ -194,11 +140,8 @@ Knit the document, commit your changes, and push them to GitHub.
     and the station data. For the latter, you can use the code we used
     during the lecture to pre-process the stations’ data:
 
-<div class="cell">
-
-<div id="cb3" class="sourceCode cell-code">
-
-``` sourceCode
+```{r}
+#| eval: false
 # Download the data
 stations <- fread("ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv")
 stations[, USAF := as.integer(USAF)]
@@ -219,18 +162,9 @@ stations[, n := 1:.N, by = .(USAF)]
 stations <- stations[n == 1,][, n := NULL]
 ```
 
-</div>
-
-</div>
-
 3.  Merge the data as we did during the lecture.
 
-</div>
-
-<div id="question-1-representative-station-for-the-us"
-class="section level2">
-
-## Question 1: Representative station for the US
+### Question 1: Representative station for the US
 
 What is the median station in terms of temperature, wind speed, and
 atmospheric pressure? Look for the three weather stations that best
@@ -240,12 +174,7 @@ three coincide?
 Knit the document, commit your changes, and Save it on GitHub. Don’t
 forget to add `README.md` to the tree, the first time you render it.
 
-</div>
-
-<div id="question-2-representative-station-per-state"
-class="section level2">
-
-## Question 2: Representative station per state
+### Question 2: Representative station per state
 
 Identify what the most representative (the median) station per state is.
 Instead of looking at one variable at a time, look at the euclidean
@@ -254,11 +183,7 @@ lowest latitude.
 
 Knit the doc and save it on GitHub.
 
-</div>
-
-<div id="optional-question-3-in-the-middle" class="section level2">
-
-## (optional) Question 3: In the middle?
+### (optional) Question 3: In the middle?
 
 For each state, identify the closest station to the mid-point of the
 state. Combining these with the stations you identified in the previous
@@ -267,11 +192,7 @@ figure, applying different colors for those identified in this question.
 
 Knit the doc and save it on GitHub.
 
-</div>
-
-<div id="optional-question-4-means-of-means" class="section level2">
-
-## (optional) Question 4: Means of means
+### (optional) Question 4: Means of means
 
 Using the `quantile()` function, generate a summary table that shows the
 number of states included, average temperature, wind speed, and
@@ -301,18 +222,7 @@ the
 week](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/5)
 so that you let us know when you are done, e.g.,
 
-<div id="cb4" class="sourceCode">
 
-``` sourceCode
+```bash
 git commit -a -m "Finalizing lab 3 https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/5"
 ```
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
