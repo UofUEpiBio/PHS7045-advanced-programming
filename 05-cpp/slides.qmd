@@ -176,7 +176,7 @@ int main() {
 
 ::: {.fragment data-code-focus="1-22"}
 To compile it, run the following command:
-```{bash}
+```{.bash}
 #| eval: true
 #| echo: true
 g++ -std=c++14 means2.cpp -o means2
@@ -308,37 +308,63 @@ double fun(int * x)       // <6>
 6. `*`: passing by pointer. The value can be modified. **NOT RECOMENDED FOR C++**
 :::
 
-## Important keywords: Example with pointers
+## Important keywords: Example with pointers {style="font-size: 90%"}
 
 The following code ([pointers.cpp](pointers.cpp)) illustrates how these keywords work:
 
+::: {.columns}
+::: {.column width="50%"}
 ```cpp
 #include <cstdio> // For the std version of printf
 
-void set_x_copy(int x, int y) {x = y;};
-void set_x(int * x, int y) {*x = y;};
+void set_x_copy(int x, int y) {x = y;}; 
+void set_x(int * x, int y) {*x = y;};   
 void set_x_ref(int & x, int y) {x = y;};
 
 int main() {
 
     int x = 0;
 
-    set_x_copy(x, 3); std::printf("x = %d\n", x);
-    set_x(&x, 2); std::printf("x = %d\n", x);
-    set_x_ref(x, 1); std::printf("x = %d\n", x);
+    set_x_copy(x, 3);
+    std::printf("x = %d\n", x);
+    set_x(&x, 2);
+    std::printf("x = %d\n", x);
+    set_x_ref(x, 1);
+    std::printf("x = %d\n", x);
 
     return 0;
 
 }
 ```
+:::
+::: {.column width="50%"}
+::: {.fragment data-code-focus="3,11-12"}
+- `set_x_copy`: `x` is passed by copy, and thus the value is not modified.
+:::
+
+::: {.fragment data-code-focus="4,13-14"}
+- `set_x`: `x` is passed by pointer, and thus the value is modified. `*x` access the value at `x`, and `&x` is it's memory address.
+:::
+
+::: {.fragment data-code-focus="5,15-16"}
+- `set_x_ref`: `x` is passed by reference, and thus the value is modified. Passed by reference is the preferred way in C++.
+:::
+:::
+:::
+
+::: {.fragment data-code-focus="1-20"}
+
+To compile and run the code:
 
 ```{bash}
 #| eval: true
 #| echo: true
 #| label: pointers
+#| color: dark
 g++ -std=c++14 pointers.cpp -o pointers
 ./pointers
 ```
+:::
 
 ## Classes in C++
 
@@ -546,6 +572,8 @@ float add(float x, float y) {
 
 Classes can also be templated (defined in [template_class.cpp](template_class.cpp)):
 
+::: {.columns}
+::: {.column width="50%"}
 ```cpp
 #include<iostream>
 
@@ -572,7 +600,25 @@ int main() {
   return 0;
 }
 ```
+:::
+::: {.column width="50%"}
 
+::: {.fragment data-code-focus="3"}
+- The class is templated. The value `T` can be any type.
+:::
+
+::: {.fragment data-code-focus="6-7,9,11"}
+- The template can be used any time we specify the type.
+:::
+
+::: {.fragment data-code-focus="17-18"}
+- The class is instantiated with `int` and `double`. The compiler with generate two classes during compilation.
+:::
+
+:::
+:::
+
+::: {.fragment data-code-focus="1-24"}
 ```{bash}
 #| eval: true
 #| echo: true
@@ -580,10 +626,15 @@ int main() {
 g++ -std=c++14 template_class.cpp -o template_class
 ./template_class
 ```
+:::
 
 # Compared with R {background-color="black"}
 
 ## Simulating pi
+
+- One way to estimate $\pi$ is to simulate points in a square and count how many are inside a circle.
+
+- The following is an optimized R function to do this:
 
 $A = \pi r^2$, thus $\pi = \frac{A}{r^2}$.
 
@@ -605,6 +656,8 @@ my_pi_sim <- function(n) {
 set.seed(331)
 my_pi_sim(1e6)
 ```
+
+Let's see how we can do this in C++.
 
 ## Simulating pi in C++
 
@@ -680,6 +733,65 @@ cat("```cpp\n")
 cat(readLines("summary.hpp"), sep = "\n")
 cat("```\n")
 ```
+
+## Details: Declaration of the class
+
+```cpp
+template<typename T>
+class Summarizer {
+private:
+    const std::vector<T>* dat = nullptr;
+    double n;
+
+public:
+    // Constructors
+    Summarizer(const std::vector<T> & dat_);
+
+    // Calculators
+    double mean() const;
+    double sd() const;
+    T min() const;
+    T max() const;
+
+    // Printer
+    void print() const;
+    
+};
+```
+
+## Details: The constructor
+
+```cpp
+template<typename T>
+inline Summarizer<T>::Summarizer(const std::vector<T> & dat_) {
+    dat = &dat_;
+    n = dat->size();
+};
+```
+
+- The implementation of the constructor is done outside of the function.
+
+- The `inline` keyword is used to tell the compiler to insert the code in the place where the function is called (more efficient).
+
+- Here, data is passed by reference and then the pointer is stored.
+
+## Details: The mean function
+
+```cpp
+template<typename T>
+inline double Summarizer<T>::mean() const {
+    return std::accumulate(
+        dat->begin(), dat->end(), 0.0
+        ) / n;
+};
+```
+
+- The function is declared as `const` to tell the compiler that the function does not modify the object (the class itself).
+
+- The mean function uses the `std::accumulate` function.
+
+- Since `dat` is a **pointer to a vector**, we can access the members of `dat` via the `->` operator (otherwise it would be using a `.` operator).
+
 
 ## Running the example
 
