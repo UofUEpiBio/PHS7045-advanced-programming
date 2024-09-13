@@ -1,0 +1,712 @@
+---
+title: "Intro to C++"
+subtitle: "PHS 7045: Advanced Programming"
+author: "George G. Vega Yon, Ph.D."
+date-modified: 2024-09-12
+date: "Fall 2024"
+institute: "The University of Utah"
+format:
+  revealjs:
+    embed-resources: true
+    theme: ["default", "style.scss"]
+    code-annotations: true
+    slide-number: c
+revealjs-plugins:
+  - codefocus
+engine: knitr
+---
+
+## Introduction
+
+::: {.incremental}
+Learning objectives:
+
+- Understand the **basics of C++** programming: syntax, types, and classes.
+- Learn how to **write a simple C++ program**, compile it, and run it.
+- Understand the **differences between C++ and R**.
+
+We will need a compiler:
+
+-  Windows: You can download Rtools [from here](https://cran.r-project.org/bin/windows/Rtools/).
+    
+-  MacOS: It is a bit complicated... Here are some options:
+    
+    *  CRAN's manual to get the clang, clang++, and gfortran compilers
+    [here](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#macOS).
+    
+    *  A great guide by the coatless professor
+    [here](https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/)
+
+- If you don't have compiler installed, you can join the class via posit.cloud.
+:::
+
+# Start! {background-color="black"}
+
+## Hello world
+
+The program
+
+::: {layout-ncol="2" .incremental}
+
+```cpp
+#include<iostream> // <1>
+
+int main() { // <2>
+  std::cout << "Hello world" << std::endl; // <3>
+  return 0; // <4>
+}
+```
+1. The equivalent to `library()` in R. This is part of the standard library.
+2. C++ is type-explicit, so we **always** declare what are the data types.
+3. Like in R, we have namespaces. We access the `cout` function from `std` (standard library). Also, the code ends with semicolon (`;`).
+4. Explicit return.
+:::
+
+We can use `g++` to compile the code (`-std=c++14` is the C++14 standard):
+
+```{bash}
+#| echo: true
+#| label: hello-compile
+g++ -std=c++14 hello-world.cpp -o hello-world
+./hello-world
+```
+
+
+## Example: Computing the mean
+
+Download the program [here](means.cpp).
+
+::: {.columns}
+::: {.column width="60%"} 
+```cpp
+#include<iostream> // To print
+#include<vector>   // To use vectors
+
+int main() {
+
+  // Defining the data
+  std::vector< double > dat = {1.0, 2.5, 4.4};
+  
+  // Making room for the output
+  double ans = 0.0;
+
+  // Looping through the data
+  for (int i = 0; i < dat.size(); ++i)
+    ans = ans + dat[i];
+
+  ans = ans/dat.size();
+
+  // Print out the value to the screen
+  std::cout << "The mean of dat is " << ans << std::endl;
+
+  // Returning
+  return 0;
+
+}
+```
+:::
+::: {.column width="40%"}
+::: {.fragment data-code-focus="1-2"}
+- Loading the libraries
+:::
+
+::: {.fragment data-code-focus="7"}
+- Creating a vector double with three values.
+:::
+
+::: {.fragment data-code-focus="12-14"}
+- A for-loop that starts from zero and goes to the size of the vector,
+incrementing by one (`++i`).
+:::
+
+::: {.fragment data-code-focus="1-24"}
+To compile it, run the following command:
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 means.cpp -o means
+./means
+```
+:::
+
+:::
+:::
+
+## Example: Computing the mean (take 2)
+
+We can leverage modern C++ to make the code shorter with `std::accumulate()`
+
+::: {.columns}
+::: {.column width="60%"}
+```cpp
+#include<iostream> // To print
+#include<vector>   // To use vectors
+#include<numeric>  // To use the accumulate function
+
+int main() {
+
+  // Defining the data
+  std::vector< double > dat = {1.0, 2.5, 4.4};
+  
+  // Making room for the output
+  double ans = std::accumulate(
+    dat.begin(), dat.end(), 0.0
+    );
+  ans /= dat.size();
+
+  // Print out the value to the screen
+  printf("The mean of dat is %.2f\n", ans);
+
+  // Returning
+  return 0;
+
+}
+```
+:::
+::: {.column width="40%"}
+
+::: {.fragment data-code-focus="3"}
+- Using the `numeric` library that has the accumulate function
+:::
+
+::: {.fragment data-code-focus="11-13"}
+- The `std::accumulate` function summs the elements of the vector.
+:::
+
+::: {.fragment data-code-focus="1-22"}
+To compile it, run the following command:
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 means2.cpp -o means2
+./means2
+```
+:::
+:::
+:::
+
+
+# Language fundamentals {background-color="black"}
+
+## Differences with R
+
+Here are some differences between C++ and R:
+
+Feature | C++ | R
+--- | --- | ---
+Type | Compiled | Interpreted
+Type explicit? | Yes | No
+Index starts at | 0 | 1
+`for` loop | `for (int i = 0; i < n; ++i)` | `for (i in 1:n)`
+Line ending | "`;`" | "`\n`" (implicit)
+
+- *Compiled*: the code is translated to machine code before running, allowing for **faster execution**. *Interpreted*: the code is executed, allowing **interactive programming**.
+
+- *Type explicit*: in C++, we always declare the type of the variables. In R, we don't need to.
+
+## Fundamental types
+
+Adapted from [W3 Schools](https://www.w3schools.com/cpp/cpp_data_types.asp):
+
+```cpp
+int my_num           = 5;       // Integer (whole number)
+float my_float_num   = 5.99;    // Floating point number
+double my_double_num = 9.98;    // Floating point number
+char my_letter       = 'D';     // Character
+bool my_boolean      = true;    // Boolean
+std::string my_text  = "Hello"; // String
+```
+
+Vectors in C++ are similar to lists in R:
+
+```cpp
+std::vector< int > my_vector = {1, 2, 3, 4, 5};
+std::vector< std::string > my_str_vector = {"a", "b", "c"};
+std::vector< std::vector< int > > my_matrix = {{1, 2}, {3, 4}};
+```
+
+## Vectors in C++
+
+- Vectors make life easier, avoiding the need to manage memory.
+
+- Vectors store contiguous memory, allowing for fast access.
+
+- Vectors have many methods to manipulate the data:
+
+
+```cpp
+my_vector.push_back(6); // Add an element
+my_vector.pop_back();   // Remove the last element
+my_vector.size();       // Number of elements
+my_vector[0];           // Access the first element
+my_vector.at(0)         // Access the first element (safer)
+```
+
+## Vectors in C++: Looping
+
+Looping through vectors can be done in different ways:
+
+::: {.columns}
+::: {.column width="60%"}
+```cpp
+// Suppose we have this:
+std::vector< int > my_vector = {1, 2, 3, 4, 5};`
+
+// Typical loop
+for (int i = 0; i < my_vector.size(); ++i) {
+  std::cout << my_vector[i] << std::endl;
+}
+
+// Using vector's iterators (begin and end)
+// and the auto keyword
+for (auto i = i.begin(); i != i.end(); ++i) {
+  std::cout << *i << std::endl;
+}
+
+// Using range-based for loop (with the auto keyword)
+for (auto i: my_vector) {
+  std::cout << i << std::endl;
+}
+```
+:::
+::: {.column width="40%"}
+::: {.fragment data-code-focus="4-7"}
+- The typical loop, access elements by index.
+:::
+
+::: {.fragment data-code-focus="9-13"}
+- Using iterators, a bit more complex, `i` becomes a pointer
+to the value.
+:::
+
+::: {.fragment data-code-focus="15-18"}
+- The range-based for loop, simpler and cleaner.
+:::
+
+:::
+:::
+
+## Important keywords
+
+Types can go accompained by keywords:
+
+::: {.incremental}
+```cpp
+const int x = 5;          // <1>
+double fun(int x)         // <2>
+double fun(const int x)   // <3>
+double fun(int & x)       // <4>
+double fun(const int & x) // <5>
+double fun(int * x)       // <6>
+```
+1. `const`: the value of `x` cannot be changed. Trying to modify it will result in a compilation error.
+2. `x` is passed by copy (not ideal for large objects). It can be modified inside the function.
+3. `x` is still a copy, but it cannot be modified.
+4. `&`: passing by reference. Ideal for large objects. It can be modified.
+5. `const &`: passing by reference, but cannot be modified.
+6. `*`: passing by pointer. The value can be modified. **NOT RECOMENDED FOR C++**
+:::
+
+## Important keywords: Example with pointers
+
+The following code ([pointers.cpp](pointers.cpp)) illustrates how these keywords work:
+
+```cpp
+#include <cstdio> // For the std version of printf
+
+void set_x_copy(int x, int y) {x = y;};
+void set_x(int * x, int y) {*x = y;};
+void set_x_ref(int & x, int y) {x = y;};
+
+int main() {
+
+    int x = 0;
+
+    set_x_copy(x, 3); std::printf("x = %d\n", x);
+    set_x(&x, 2); std::printf("x = %d\n", x);
+    set_x_ref(x, 1); std::printf("x = %d\n", x);
+
+    return 0;
+
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+#| label: pointers
+g++ -std=c++14 pointers.cpp -o pointers
+./pointers
+```
+
+## Classes in C++
+
+Example class (you can download the file [here](person.hpp)):
+
+::: {layout-ncol="2" .incremental}
+
+```cpp
+#ifndef PERSON_HPP // <1>
+#define PERSON_HPP // <1>
+
+#include<string>
+#include<iostream>
+
+class Person {
+private: // <2>
+    std::string name;
+    int age;
+    double height;
+
+public: // <3>
+  // Constructor
+  Person(std::string n, int a, double h) { // <4>
+    name = n;
+    age = a;
+    height = h;
+  };
+
+  // Default constructor
+  Person() : name("Unknown"), age(0), height(0.0) {}; // <4>
+
+  // Destructor
+  ~Person() { // <5>
+    std::cout <<
+      this->name + " destroyed" << // <6>
+      std::endl;
+  };
+
+  // Getters and setters
+  std::string get_name() { return name; };    // <7>
+  void set_name(std::string n) { name = n; }; // <7>
+};
+
+#endif
+```
+1. The `#ifndef` + `#define` + `#endif` is [the include guard](https://en.wikipedia.org/w/index.php?title=Include_guard&oldid=1224901186). Avoids multiple inclusions.
+2. Private members: only accessible within the class.
+3. Public members: accessible from outside the class.
+4. Constructor: initializes the object.
+5. Destructor: called when deleting the object.
+6. Internal elements can be accessed with `this->`.
+7. Access: methods to access and modify private members.
+
+:::
+
+## Classes in C++ (cont.)
+
+Using the class (you can download the file [here](person.cpp)):
+
+```cpp
+#include<string>
+#include<iostream>
+#include "person.hpp"
+
+int main() {
+  Person p1; // Default constructor
+  Person p2("John", 30, 1.80); // Other constructor
+
+  std::cout << p1.get_name() << std::endl;
+  std::cout << p2.get_name() << std::endl;
+
+  return 0;
+}
+```
+
+Compiling and executing the program:
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 person.cpp -o person
+./person
+```
+
+Notice that the destroyer is called when `p1` and `p2` go out of scope (in reverse order).
+
+## Classes in C++: Declaration and Implementation
+
+- A good practice is to separate the declaration (bones) from the implementation (meat).
+
+- Looking at an extract of the class `Person`:
+
+```cpp
+// ---------------------------------------
+// Declarations: Arguments and data types
+// ---------------------------------------
+class Person {
+private:
+    std::string name;
+    int age;
+    double height;
+
+public:
+  // Constructor
+  Person(std::string n, int a, double h);
+
+  // Getters and setters
+  std::string get_name();
+};
+
+// ---------------------------------------
+// Implementation: Body of the functions
+// ---------------------------------------
+inline Person::Person(std::string n, int a, double h) {
+  name = n;
+  age = a;
+  height = h;
+};
+
+inline std::string Person::get_name() {
+  return name;
+};
+```
+
+## Overloading
+
+- In C++, we can have multiple functions with the same name, but different arguments. This is called **overloading**.
+
+- The compiler will choose the correct function based on the arguments. Both of these functions are valid:
+
+::: {.columns}
+::: {.column width="50%"}
+```cpp
+int add_int(int x, int y) {
+  return x + y;
+}
+
+double add_double(double x, double y) {
+  return x + y;
+}
+
+float add_float(float x, float y) {
+  return x + y;
+}
+```
+:::
+::: {.column width="50%"}
+```cpp
+int add(int x, int y) {
+  return x + y;
+}
+
+double add(double x, double y) {
+  return x + y;
+}
+
+float add(float x, float y) {
+  return x + y;
+}
+```
+:::
+:::
+
+## Templates
+
+- In C++, we can use **templates** to create functions or classes that can work with any data type.
+
+- This is useful when we want to create a function that works with `int`, `double`, `float`, etc.
+
+::: {.columns}
+::: {.column width="50%"}
+```cpp
+int add(int x, int y) {
+  return x + y;
+}
+
+double add(double x, double y) {
+  return x + y;
+}
+
+float add(float x, float y) {
+  return x + y;
+}
+```
+:::
+::: {.column width="50%"}
+```cpp
+template<typename T> // <1>
+T add(T x, T y) {
+  return x + y;
+}
+
+template<> // <2>
+float add(float x, float y) {
+  std::cout<< "This is a float!" << std::endl;
+  return x + y;
+}
+```
+1. Template declaration (the generic type is `T`).
+2. Specialization for `float`. 
+:::
+:::
+
+## Templates (cont.)
+
+Classes can also be templated (defined in [template_class.cpp](template_class.cpp)):
+
+```cpp
+#include<iostream>
+
+template<typename T>
+class MyAdder {
+private:
+  T x;
+  T y;
+public:
+  MyAdder(T x, T y) : x(x), y(y) {};
+
+  T add() {
+    return x + y;
+  };
+};
+
+int main() {
+  MyAdder<int> a(1, 2);
+  MyAdder<double> b(1.0, 2.0);
+
+  std::cout << a.add() << std::endl;
+  std::cout << b.add() << std::endl;
+
+  return 0;
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+#| label: adder-compile
+g++ -std=c++14 template_class.cpp -o template_class
+./template_class
+```
+
+# Compared with R {background-color="black"}
+
+## Simulating pi
+
+$A = \pi r^2$, thus $\pi = \frac{A}{r^2}$.
+
+```{r}
+#| eval: true
+#| echo: true
+#| label: pi-sim-r
+#| message: true
+my_pi_sim <- function(n) {
+  xy <- matrix(runif(n*2, min=-1, max=1), ncol = 2)
+  message(
+    sprintf(
+      "pi approx to: %.4f",
+      mean(sqrt(rowSums(xy^2)) <= 1) * 4
+    )
+  )
+}
+
+set.seed(331)
+my_pi_sim(1e6)
+```
+
+## Simulating pi in C++
+
+::: {layout-ncol="2" style="font-size: 80%"}
+```cpp
+#include <vector>
+#include <random> // <1>
+int main() {
+  
+  // Setting the seed
+  std::mt19937 rng_engine; // <2>
+  rng_engine.seed(123); // <2>
+
+  std::uniform_real_distribution<double> dist(-1.0, 1.0); // <3>
+
+  // Number of simulations
+  size_t n_sims = 5e6;
+
+  // Defining the data
+  double pi_approx = 0.0;
+  for (size_t i = 0u; i < n_sims; ++i)
+  {
+
+    // Generating a point in the unit square
+    double x = dist(rng_engine);
+    double y = dist(rng_engine);
+
+    double dist = std::sqrt(
+        std::pow(x, 2.0) + std::pow(y, 2.0) // <4>
+        );
+
+    // Checking if the point is inside the unit circle 
+    if (dist <= 1.0)
+      pi_approx += 1.0;
+
+  }
+
+  printf("pi approx to %.4f\n", 4.0*pi_approx/n_sims);
+
+  return 0;
+
+}
+```
+1. Library for random rumbers and stats distributions.
+2. Random number engine (used in comb. with the distributions).
+3. Uniform distribution between -1 and 1.
+4. `std::pow` is the power function.
+:::
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 pi.cpp -o pi
+./pi
+```
+
+# Extended example: Writing a summary class {background-color="black"}
+
+## Writing a summary class
+
+- The task is to write a class that computes the mean, standard deviation, minimum and maximum of a vector. 
+
+- The class should be a template class so it can deal with `double` and `int`.
+
+## Full program
+
+You can download the full C++ code [here](summary.cpp) and the header file [here](summary.hpp):
+
+```{r}
+#| eval: true
+#| results: asis
+cat("```cpp\n")
+cat(readLines("summary.hpp"), sep = "\n")
+cat("```\n")
+```
+
+## Running the example
+
+
+```cpp
+#include "summary.hpp"
+
+int main() {
+    // Some data
+    std::vector< double > dat = {1.0, 2.5, 4.4};
+    std::vector< int > dat2 = {1, 2, 3, 4, 5};
+
+    // Summarize the data
+    Summarizer<double> s_double(dat);
+    s_double.print();
+
+    Summarizer<int> s_int(dat2);
+    s_int.print();
+
+    return 0;
+
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 summary.cpp -o summary
+./summary
+```
