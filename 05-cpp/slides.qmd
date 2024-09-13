@@ -232,3 +232,83 @@ g++ -std=c++14 person.cpp -o person
 ```
 
 Notice that the destroyer is called when `p1` and `p2` go out of scope (in reverse order).
+
+# Compared with R {background-color="black"}
+
+## Simulating pi
+
+$A = \pi r^2$, thus $\pi = \frac{A}{r^2}$.
+
+```{r}
+#| eval: true
+#| echo: true
+#| label: pi-sim-r
+#| message: true
+my_pi_sim <- function(n) {
+  xy <- matrix(runif(n*2, min=-1, max=1), ncol = 2)
+  message(
+    sprintf(
+      "pi approx to: %.4f",
+      mean(sqrt(rowSums(xy^2)) <= 1) * 4
+    )
+  )
+}
+
+set.seed(331)
+my_pi_sim(1e6)
+```
+
+## Simulating pi in C++
+
+::: {layout-ncol="2"}
+```cpp
+#include <vector>
+#include <random> // <1>
+int main() {
+  
+  // Setting the seed
+  std::mt19937 rng_engine; // <2>
+  rng_engine.seed(123); // <2>
+  
+  std::uniform_real_distribution<double> dist(-1.0, 1.0); // <3>
+
+  // Number of simulations
+  size_t n_sims = 5e6;
+
+  // Defining the data
+  double pi_approx = 0.0;
+  for (size_t i = 0u; i < n_sims; ++i)
+  {
+
+    // Generating a point in the unit square
+    double x = dist(rng_engine);
+    double y = dist(rng_engine);
+
+    double dist = std::sqrt(
+        std::pow(x, 2.0) + std::pow(y, 2.0) // <4>
+        );
+
+    // Checking if the point is inside the unit circle 
+    if (dist <= 1.0)
+      pi_approx += 1.0;
+
+  }
+
+  printf("pi approx to %.4f\n", 4.0*pi_approx/n_sims);
+
+  return 0;
+
+}
+```
+1. Library for random rumbers and stats distributions.
+2. Random number engine (used in comb. with the distributions).
+3. Uniform distribution between -1 and 1.
+4. `std::pow` is the power function.
+:::
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 pi.cpp -o pi
+./pi
+```
