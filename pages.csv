@@ -3,7 +3,7 @@ date,week,name,id,issue,extra
 8/27 and 8/29,2,R Essentials,02-essentials,,+ [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/01-essentialsSimulations.html) ([source](02-essentials/01-essentialsSimulations.qmd))
 9/03 and 9/5,3,Debugging and profiling,04-debugging-and-profiling,,
 9/10 and 9/12,4,Functions and data.table,03-more-functions-and-datatable,,+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-more-functions-and-datatable/homework.html) ([source](03-more-functions-and-datatable/homework.qmd))
-9/17 and 9/19,5,Introduction to C++,,,"+ Homework 3 (C++), Deliver a paragraph in abstract mode describing their projects for the midterm."
+9/17 and 9/19,5,Introduction to C++,05-cpp,,"+ Homework 3 (C++), Deliver a paragraph in abstract mode describing their projects for the midterm."
 9/24 and 9/26,6,C++ in R,05-rcpp,,
 10/01 and 10/03,7,Parallel Computing,06-parallel-computing,,
 10/08 and 10/10,8,Fall Break,,,

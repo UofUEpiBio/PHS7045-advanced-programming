@@ -11,6 +11,8 @@ format:
     theme: ["default", "style.scss"]
     code-annotations: true
     slide-number: c
+revealjs-plugins:
+  - codefocus
 engine: knitr
 ---
 
@@ -72,6 +74,10 @@ g++ -std=c++14 hello-world.cpp -o hello-world
 
 ## Example: Computing the mean
 
+Download the program [here](means.cpp).
+
+::: {.columns}
+::: {.column width="60%"} 
 ```cpp
 #include<iostream> // To print
 #include<vector>   // To use vectors
@@ -84,10 +90,7 @@ int main() {
   // Making room for the output
   double ans = 0.0;
 
-  // For-loops have three components:
-  // - Starts in i = 0
-  // - Until i reaches dat.size() (stops)
-  // - Increments i + 1
+  // Looping through the data
   for (int i = 0; i < dat.size(); ++i)
     ans = ans + dat[i];
 
@@ -101,8 +104,23 @@ int main() {
 
 }
 ```
+:::
+::: {.column width="40%"}
+::: {.fragment data-code-focus="1-2"}
+- Loading the libraries
+:::
 
-Download the program [here](means.cpp).
+::: {.fragment data-code-focus="7"}
+- Creating a vector double with three values.
+:::
+
+::: {.fragment data-code-focus="12-14"}
+- A for-loop that starts from zero and goes to the size of the vector,
+incrementing by one (`++i`).
+:::
+
+::: {.fragment data-code-focus="1-24"}
+To compile it, run the following command:
 
 ```{bash}
 #| eval: true
@@ -110,11 +128,17 @@ Download the program [here](means.cpp).
 g++ -std=c++14 means.cpp -o means
 ./means
 ```
+:::
+
+:::
+:::
 
 ## Example: Computing the mean (take 2)
 
 We can leverage modern C++ to make the code shorter with `std::accumulate()`
 
+::: {.columns}
+::: {.column width="60%"}
 ```cpp
 #include<iostream> // To print
 #include<vector>   // To use vectors
@@ -126,7 +150,9 @@ int main() {
   std::vector< double > dat = {1.0, 2.5, 4.4};
   
   // Making room for the output
-  double ans = std::accumulate(dat.begin(), dat.end(), 0.0);
+  double ans = std::accumulate(
+    dat.begin(), dat.end(), 0.0
+    );
   ans /= dat.size();
 
   // Print out the value to the screen
@@ -137,13 +163,29 @@ int main() {
 
 }
 ```
+:::
+::: {.column width="40%"}
 
+::: {.fragment data-code-focus="3"}
+- Using the `numeric` library that has the accumulate function
+:::
+
+::: {.fragment data-code-focus="11-13"}
+- The `std::accumulate` function summs the elements of the vector.
+:::
+
+::: {.fragment data-code-focus="1-22"}
+To compile it, run the following command:
 ```{bash}
 #| eval: true
 #| echo: true
 g++ -std=c++14 means2.cpp -o means2
 ./means2
 ```
+:::
+:::
+:::
+
 
 # Language fundamentals {background-color="black"}
 
@@ -201,9 +243,12 @@ my_vector[0];           // Access the first element
 my_vector.at(0)         // Access the first element (safer)
 ```
 
+## Vectors in C++: Looping
+
 Looping through vectors can be done in different ways:
 
-::: {}
+::: {.columns}
+::: {.column width="60%"}
 ```cpp
 // Suppose we have this:
 std::vector< int > my_vector = {1, 2, 3, 4, 5};`
@@ -224,6 +269,22 @@ for (auto i: my_vector) {
   std::cout << i << std::endl;
 }
 ```
+:::
+::: {.column width="40%"}
+::: {.fragment data-code-focus="4-7"}
+- The typical loop, access elements by index.
+:::
+
+::: {.fragment data-code-focus="9-13"}
+- Using iterators, a bit more complex, `i` becomes a pointer
+to the value.
+:::
+
+::: {.fragment data-code-focus="15-18"}
+- The range-based for loop, simpler and cleaner.
+:::
+
+:::
 :::
 
 ## Important keywords
