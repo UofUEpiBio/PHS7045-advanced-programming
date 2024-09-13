@@ -1,0 +1,234 @@
+---
+title: "Intro to C++"
+subtitle: "PHS 7045: Advanced Programming"
+author: "George G. Vega Yon, Ph.D."
+date-modified: 2024-09-12
+format:
+  revealjs:
+    embed-resources: true
+    theme: ["default", "style.scss"]
+    code-annotations: true
+    slide-number: c
+engine: knitr
+---
+
+## Hello world
+
+The program
+
+::: {layout-ncol="2"}
+
+```cpp
+#include<iostream> // <1>
+
+int main() { // <2>
+  std::cout << "Hello world" << std::endl; // <3>
+  return 0; // <4>
+}
+```
+1. The equivalent to `library()` in R. This is part of the standard library.
+2. C++ is type-explicit, so we **always** declare what are the data types.
+3. Like in R, we have namespaces. We access the `cout` function from `std` (standard library). Also, the code ends with semicolon (`;`).
+4. Explicit return.
+:::
+
+We can use `g++` to compile the code (`-std=c++14` is the C++14 standard):
+
+```{bash}
+#| echo: true
+#| label: hello-compile
+g++ -std=c++14 hello-world.cpp -o hello-world
+./hello-world
+```
+
+
+## Example: Computing the mean
+
+```cpp
+#include<iostream> // To print
+#include<vector>   // To use vectors
+
+int main() {
+
+  // Defining the data
+  std::vector< double > dat = {1.0, 2.5, 4.4};
+  
+  // Making room for the output
+  double ans = 0.0;
+
+  // For-loops have three components:
+  // - Starts in i = 0
+  // - Until i reaches dat.size() (stops)
+  // - Increments i + 1
+  for (int i = 0; i < dat.size(); ++i)
+    ans = ans + dat[i];
+
+  ans = ans/dat.size();
+
+  // Print out the value to the screen
+  std::cout << "The mean of dat is " << ans << std::endl;
+
+  // Returning
+  return 0;
+
+}
+```
+
+Download the program [here](means.cpp).
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 means.cpp -o means
+./means
+```
+
+## Example: Computing the mean (take 2)
+
+We can leverage modern C++ to make the code shorter with `std::accumulate()`
+
+```cpp
+#include<iostream> // To print
+#include<vector>   // To use vectors
+#include<numeric>  // To use the accumulate function
+
+int main() {
+
+  // Defining the data
+  std::vector< double > dat = {1.0, 2.5, 4.4};
+  
+  // Making room for the output
+  double ans = std::accumulate(dat.begin(), dat.end(), 0.0);
+  ans /= dat.size();
+
+  // Print out the value to the screen
+  printf("The mean of dat is %.2f\n", ans);
+
+  // Returning
+  return 0;
+
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 means2.cpp -o means2
+./means2
+```
+
+# Language fundamentals {background-color="black"}
+
+## Differences with R
+
+Here are some differences between C++ and R:
+
+Feature | C++ | R
+--- | --- | ---
+Type | Compiled | Interpreted
+Type explicit? | Yes | No
+Index starts at | 0 | 1
+`for` loop | `for (int i = 0; i < n; ++i)` | `for (i in 1:n)`
+Line ending | "`;`" | "`\n`" (implicit)
+
+- *Compiled*: the code is translated to machine code before running, allowing for **faster execution**. *Interpreted*: the code is executed, allowing **interactive programming**.
+
+- *Type explicit*: in C++, we always declare the type of the variables. In R, we don't need to.
+
+## Fundamental types
+
+Adapted from [W3 Schools](https://www.w3schools.com/cpp/cpp_data_types.asp):
+
+```cpp
+int my_num           = 5;       // Integer (whole number)
+float my_float_num   = 5.99;    // Floating point number
+double my_double_num = 9.98;    // Floating point number
+char my_letter       = 'D';     // Character
+bool my_boolean      = true;    // Boolean
+std::string my_text  = "Hello"; // String
+```
+
+Vectors in C++ are similar to lists in R:
+
+```cpp
+std::vector< int > my_vector = {1, 2, 3, 4, 5};
+std::vectpr< std::string > my_str_vector = {"a", "b", "c"};
+```
+
+## Classes in C++
+
+Example class (you can download the file [here](person.hpp)):
+
+::: {layout-ncol="2"}
+
+```cpp
+#include <string>
+
+class Person {
+private: // <1>
+    std::string name;
+    int age;
+    double height;
+
+public: // <2>
+  // Constructor
+  Person(std::string n, int a, double h) { // <3>
+    name = n;
+    age = a;
+    height = h;
+  };
+
+  // Default constructor
+  Person() : name("Unknown"), age(0), height(0.0) {}; // <3>
+
+  // Destructor
+  ~Person() { // <4>
+    std::cout <<
+      this->name + " destroyed" << // <5>
+      std::endl;
+  };
+
+  // Getters and setters
+  std::string get_name() { return name; };    // <6>
+  void set_name(std::string n) { name = n; }; // <6>
+};
+```
+1. Private members: only accessible within the class.
+2. Public members: accessible from outside the class.
+3. Constructor: initializes the object.
+4. Destructor: cleans up the object (mostly used with pointers).
+5. Internal elements can be accessed with `this->`.
+6. Getters and setters: methods to access and modify the private members.
+
+:::
+
+## Classes in C++ (cont.)
+
+Using the class (you can download the file [here](person.cpp)):
+
+```cpp
+#include<string>
+#include<iostream>
+#include "person.hpp"
+
+int main() {
+  Person p1; // Default constructor
+  Person p2("John", 30, 1.80); // Other constructor
+
+  std::cout << p1.get_name() << std::endl;
+  std::cout << p2.get_name() << std::endl;
+
+  return 0;
+}
+```
+
+Compiling and executing the program:
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 person.cpp -o person
+./person
+```
+
+Notice that the destroyer is called when `p1` and `p2` go out of scope (in reverse order).
