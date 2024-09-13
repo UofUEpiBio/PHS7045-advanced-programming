@@ -162,43 +162,50 @@ Example class (you can download the file [here](person.hpp)):
 ::: {layout-ncol="2"}
 
 ```cpp
-#include <string>
+#ifndef PERSON_HPP // <1>
+#define PERSON_HPP // <1>
+
+#include<string>
+#include<iostream>
 
 class Person {
-private: // <1>
+private: // <2>
     std::string name;
     int age;
     double height;
 
-public: // <2>
+public: // <3>
   // Constructor
-  Person(std::string n, int a, double h) { // <3>
+  Person(std::string n, int a, double h) { // <4>
     name = n;
     age = a;
     height = h;
   };
 
   // Default constructor
-  Person() : name("Unknown"), age(0), height(0.0) {}; // <3>
+  Person() : name("Unknown"), age(0), height(0.0) {}; // <4>
 
   // Destructor
-  ~Person() { // <4>
+  ~Person() { // <5>
     std::cout <<
-      this->name + " destroyed" << // <5>
+      this->name + " destroyed" << // <6>
       std::endl;
   };
 
   // Getters and setters
-  std::string get_name() { return name; };    // <6>
-  void set_name(std::string n) { name = n; }; // <6>
+  std::string get_name() { return name; };    // <7>
+  void set_name(std::string n) { name = n; }; // <7>
 };
+
+#endif
 ```
-1. Private members: only accessible within the class.
-2. Public members: accessible from outside the class.
-3. Constructor: initializes the object.
-4. Destructor: cleans up the object (mostly used with pointers).
-5. Internal elements can be accessed with `this->`.
-6. Getters and setters: methods to access and modify the private members.
+1. The `#ifndef` + `#define` + `#endif` is [the include guard](https://en.wikipedia.org/w/index.php?title=Include_guard&oldid=1224901186). Avoids multiple inclusions.
+2. Private members: only accessible within the class.
+3. Public members: accessible from outside the class.
+4. Constructor: initializes the object.
+5. Destructor: called when deleting the object.
+6. Internal elements can be accessed with `this->`.
+7. Access: methods to access and modify private members.
 
 :::
 
@@ -260,7 +267,7 @@ my_pi_sim(1e6)
 
 ## Simulating pi in C++
 
-::: {layout-ncol="2"}
+::: {layout-ncol="2" style="font-size: 0%"}
 ```cpp
 #include <vector>
 #include <random> // <1>
@@ -269,7 +276,7 @@ int main() {
   // Setting the seed
   std::mt19937 rng_engine; // <2>
   rng_engine.seed(123); // <2>
-  
+
   std::uniform_real_distribution<double> dist(-1.0, 1.0); // <3>
 
   // Number of simulations
@@ -311,4 +318,54 @@ int main() {
 #| echo: true
 g++ -std=c++14 pi.cpp -o pi
 ./pi
+```
+
+# Extended example: Writing a summary class {background-color="black"}
+
+## Writing a summary class
+
+- The task is to write a class that computes the mean, standard deviation, minimum and maximum of a vector. 
+
+- The class should be a template class so it can deal with `double` and `int`.
+
+## Full program
+
+You can download the full C++ code [here](summary.cpp) and the header file [here](summary.hpp):
+
+```{r}
+#| eval: true
+#| results: asis
+cat("```cpp\n")
+cat(readLines("summary.hpp"), sep = "\n")
+cat("```\n")
+```
+
+## Running the example
+
+
+```cpp
+#include "summary.hpp"
+
+int main() {
+    // Some data
+    std::vector< double > dat = {1.0, 2.5, 4.4};
+    std::vector< int > dat2 = {1, 2, 3, 4, 5};
+
+    // Summarize the data
+    Summarizer<double> s_double(dat);
+    s_double.print();
+
+    Summarizer<int> s_int(dat2);
+    s_int.print();
+
+    return 0;
+
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+g++ -std=c++14 summary.cpp -o summary
+./summary
 ```

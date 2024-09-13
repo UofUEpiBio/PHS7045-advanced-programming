@@ -1,4 +1,8 @@
+#ifndef PERSON_HPP
+#define PERSON_HPP
+
 #include<string>
+#include<iostream>
 
 class Person {
 private: // <1>
@@ -28,3 +32,5 @@ public: // <2>
   std::string get_name() { return name; };    // <5>
   void set_name(std::string n) { name = n; }; // <5>
 };
+
+#endif
