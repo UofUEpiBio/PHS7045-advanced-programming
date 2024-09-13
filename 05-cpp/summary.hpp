@@ -44,8 +44,8 @@ template<typename T>
 inline double Summarizer<T>::sd() const {
     double m = mean();
     double sum = 0.0;
-    for (std::size_t i = 0u; i < dat->size(); ++i)
-        sum += std::pow((*dat)[i] - m, 2.0);
+    for (auto & i: *dat)
+        sum += std::pow(i - m, 2.0);
     return std::sqrt(sum / (dat->size() - 1));
 };
 

@@ -3,6 +3,8 @@ title: "Intro to C++"
 subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
 date-modified: 2024-09-12
+date: "Fall 2024"
+institute: "The University of Utah"
 format:
   revealjs:
     embed-resources: true
@@ -12,11 +14,37 @@ format:
 engine: knitr
 ---
 
+## Introduction
+
+::: {.incremental}
+Learning objectives:
+
+- Understand the **basics of C++** programming: syntax, types, and classes.
+- Learn how to **write a simple C++ program**, compile it, and run it.
+- Understand the **differences between C++ and R**.
+
+We will need a compiler:
+
+-  Windows: You can download Rtools [from here](https://cran.r-project.org/bin/windows/Rtools/).
+    
+-  MacOS: It is a bit complicated... Here are some options:
+    
+    *  CRAN's manual to get the clang, clang++, and gfortran compilers
+    [here](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#macOS).
+    
+    *  A great guide by the coatless professor
+    [here](https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/)
+
+- If you don't have compiler installed, you can join the class via posit.cloud.
+:::
+
+# Start! {background-color="black"}
+
 ## Hello world
 
 The program
 
-::: {layout-ncol="2"}
+::: {layout-ncol="2" .incremental}
 
 ```cpp
 #include<iostream> // <1>
@@ -152,14 +180,110 @@ Vectors in C++ are similar to lists in R:
 
 ```cpp
 std::vector< int > my_vector = {1, 2, 3, 4, 5};
-std::vectpr< std::string > my_str_vector = {"a", "b", "c"};
+std::vector< std::string > my_str_vector = {"a", "b", "c"};
+std::vector< std::vector< int > > my_matrix = {{1, 2}, {3, 4}};
+```
+
+## Vectors in C++
+
+- Vectors make life easier, avoiding the need to manage memory.
+
+- Vectors store contiguous memory, allowing for fast access.
+
+- Vectors have many methods to manipulate the data:
+
+
+```cpp
+my_vector.push_back(6); // Add an element
+my_vector.pop_back();   // Remove the last element
+my_vector.size();       // Number of elements
+my_vector[0];           // Access the first element
+my_vector.at(0)         // Access the first element (safer)
+```
+
+Looping through vectors can be done in different ways:
+
+::: {}
+```cpp
+// Suppose we have this:
+std::vector< int > my_vector = {1, 2, 3, 4, 5};`
+
+// Typical loop
+for (int i = 0; i < my_vector.size(); ++i) {
+  std::cout << my_vector[i] << std::endl;
+}
+
+// Using vector's iterators (begin and end)
+// and the auto keyword
+for (auto i = i.begin(); i != i.end(); ++i) {
+  std::cout << *i << std::endl;
+}
+
+// Using range-based for loop (with the auto keyword)
+for (auto i: my_vector) {
+  std::cout << i << std::endl;
+}
+```
+:::
+
+## Important keywords
+
+Types can go accompained by keywords:
+
+::: {.incremental}
+```cpp
+const int x = 5;          // <1>
+double fun(int x)         // <2>
+double fun(const int x)   // <3>
+double fun(int & x)       // <4>
+double fun(const int & x) // <5>
+double fun(int * x)       // <6>
+```
+1. `const`: the value of `x` cannot be changed. Trying to modify it will result in a compilation error.
+2. `x` is passed by copy (not ideal for large objects). It can be modified inside the function.
+3. `x` is still a copy, but it cannot be modified.
+4. `&`: passing by reference. Ideal for large objects. It can be modified.
+5. `const &`: passing by reference, but cannot be modified.
+6. `*`: passing by pointer. The value can be modified. **NOT RECOMENDED FOR C++**
+:::
+
+## Important keywords: Example with pointers
+
+The following code ([pointers.cpp](pointers.cpp)) illustrates how these keywords work:
+
+```cpp
+#include <cstdio> // For the std version of printf
+
+void set_x_copy(int x, int y) {x = y;};
+void set_x(int * x, int y) {*x = y;};
+void set_x_ref(int & x, int y) {x = y;};
+
+int main() {
+
+    int x = 0;
+
+    set_x_copy(x, 3); std::printf("x = %d\n", x);
+    set_x(&x, 2); std::printf("x = %d\n", x);
+    set_x_ref(x, 1); std::printf("x = %d\n", x);
+
+    return 0;
+
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+#| label: pointers
+g++ -std=c++14 pointers.cpp -o pointers
+./pointers
 ```
 
 ## Classes in C++
 
 Example class (you can download the file [here](person.hpp)):
 
-::: {layout-ncol="2"}
+::: {layout-ncol="2" .incremental}
 
 ```cpp
 #ifndef PERSON_HPP // <1>
@@ -240,6 +364,162 @@ g++ -std=c++14 person.cpp -o person
 
 Notice that the destroyer is called when `p1` and `p2` go out of scope (in reverse order).
 
+## Classes in C++: Declaration and Implementation
+
+- A good practice is to separate the declaration (bones) from the implementation (meat).
+
+- Looking at an extract of the class `Person`:
+
+```cpp
+// ---------------------------------------
+// Declarations: Arguments and data types
+// ---------------------------------------
+class Person {
+private:
+    std::string name;
+    int age;
+    double height;
+
+public:
+  // Constructor
+  Person(std::string n, int a, double h);
+
+  // Getters and setters
+  std::string get_name();
+};
+
+// ---------------------------------------
+// Implementation: Body of the functions
+// ---------------------------------------
+inline Person::Person(std::string n, int a, double h) {
+  name = n;
+  age = a;
+  height = h;
+};
+
+inline std::string Person::get_name() {
+  return name;
+};
+```
+
+## Overloading
+
+- In C++, we can have multiple functions with the same name, but different arguments. This is called **overloading**.
+
+- The compiler will choose the correct function based on the arguments. Both of these functions are valid:
+
+::: {.columns}
+::: {.column width="50%"}
+```cpp
+int add_int(int x, int y) {
+  return x + y;
+}
+
+double add_double(double x, double y) {
+  return x + y;
+}
+
+float add_float(float x, float y) {
+  return x + y;
+}
+```
+:::
+::: {.column width="50%"}
+```cpp
+int add(int x, int y) {
+  return x + y;
+}
+
+double add(double x, double y) {
+  return x + y;
+}
+
+float add(float x, float y) {
+  return x + y;
+}
+```
+:::
+:::
+
+## Templates
+
+- In C++, we can use **templates** to create functions or classes that can work with any data type.
+
+- This is useful when we want to create a function that works with `int`, `double`, `float`, etc.
+
+::: {.columns}
+::: {.column width="50%"}
+```cpp
+int add(int x, int y) {
+  return x + y;
+}
+
+double add(double x, double y) {
+  return x + y;
+}
+
+float add(float x, float y) {
+  return x + y;
+}
+```
+:::
+::: {.column width="50%"}
+```cpp
+template<typename T> // <1>
+T add(T x, T y) {
+  return x + y;
+}
+
+template<> // <2>
+float add(float x, float y) {
+  std::cout<< "This is a float!" << std::endl;
+  return x + y;
+}
+```
+1. Template declaration (the generic type is `T`).
+2. Specialization for `float`. 
+:::
+:::
+
+## Templates (cont.)
+
+Classes can also be templated (defined in [template_class.cpp](template_class.cpp)):
+
+```cpp
+#include<iostream>
+
+template<typename T>
+class MyAdder {
+private:
+  T x;
+  T y;
+public:
+  MyAdder(T x, T y) : x(x), y(y) {};
+
+  T add() {
+    return x + y;
+  };
+};
+
+int main() {
+  MyAdder<int> a(1, 2);
+  MyAdder<double> b(1.0, 2.0);
+
+  std::cout << a.add() << std::endl;
+  std::cout << b.add() << std::endl;
+
+  return 0;
+}
+```
+
+```{bash}
+#| eval: true
+#| echo: true
+#| label: adder-compile
+g++ -std=c++14 template_class.cpp -o template_class
+./template_class
+```
+
 # Compared with R {background-color="black"}
 
 ## Simulating pi
@@ -267,7 +547,7 @@ my_pi_sim(1e6)
 
 ## Simulating pi in C++
 
-::: {layout-ncol="2" style="font-size: 0%"}
+::: {layout-ncol="2" style="font-size: 80%"}
 ```cpp
 #include <vector>
 #include <random> // <1>
