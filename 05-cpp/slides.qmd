@@ -3,7 +3,7 @@ title: "Intro to C++"
 subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
 date-modified: 2024-09-12
-date: "Fall 2024"
+date: 2024-09-17
 institute: "The University of Utah"
 format:
   revealjs:
@@ -260,7 +260,7 @@ for (int i = 0; i < my_vector.size(); ++i) {
 
 // Using vector's iterators (begin and end)
 // and the auto keyword
-for (auto i = i.begin(); i != i.end(); ++i) {
+for (auto i = my_vector.begin(); i != my_vector.end(); ++i) {
   std::cout << *i << std::endl;
 }
 
