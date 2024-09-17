@@ -1,115 +1,115 @@
 ---
-format: html
+title: Lab 05 - C++
+author: George G. Vega Yon, Ph.D.
+date-modified: 2024-09-16
+date: 2024-09-19
+format:
+  html:
+    embed-resources: true
 ---
 
+## Learning goals
 
-<div id="quarto-content"
-class="page-columns page-rows-contents page-layout-article">
-
-<div id="quarto-document-content" class="content" role="main">
-
-<div id="title-block-header" class="quarto-title-block default">
-
-<div class="quarto-title">
-
-# Lab 05 - Rcpp
-
-</div>
-
-<div class="quarto-title-meta">
-
-</div>
-
-</div>
-
-<div id="learning-goals" class="section level1">
-
-# Learning goals
-
-- Use the different data types in Rcpp.
-- Learn some fundamentals about C++ optimization.
+- Practice class programming in C++.
+- Be able to map R functions to C++.
 - Practice your GitHub skills.
 
-</div>
+## Lab description
 
-<div id="lab-description" class="section level1">
+For this lab, we will implement a class representing a binomial distribution:
 
-# Lab description
+$$
+\Pr{\left(Y=k; n, p\right)} = {y \choose  n}p^k(1-p)^{n-k}
+$$
 
-For this lab, we will create a function for propensity score matching.
-The goal is simple: write out a C++ function with Rcpp and measure how
-faster it is compared to the following R implementation:
+Implement the following class representing a binomial distribution:
 
-<div id="cb1" class="sourceCode">
+```cpp
+#include <iostream> // Needed for cout / printf
+#include <cmath>    // Needed for pow
 
-``` sourceCode
-ps_matchR <- function(x) {
-  
-  match_expected <- as.matrix(dist(x))
-  diag(match_expected) <- .Machine$integer.max
-  indices <- apply(match_expected, 1, which.min)
-  
-  list(
-    match_id = as.integer(unname(indices)),
-    match_x  = x[indices]
-  )
-  
+class Binom {
+private:
+    int n;
+    double p;
+
+public:
+    Binom(int n, double p) : n(n), p(p) {};
+    int factorial(int n) const;
+    double choose(int a, int b) const;
+    double dbinom(int k) const;
+    void print(int k) const;
+};
+```
+
+Remember that to implement the function, you have to use the following pattern:
+
+```cpp
+inline [return type] [class name]::[function name]([arguments]) {
+    // Your code here
 }
 ```
 
-</div>
+### Exercise 1: Factorial
 
-<div id="question-1-create-a-simple-function" class="section level2">
+Write a program that implements the `factorial` function. It should match the following results in R
 
-## Question 1: Create a simple function
+```{r}
+factorial(1:10)
+```
 
-Use the following pseudo-code template to get started:
+You can use the following code to test your function:
 
-<div id="cb2" class="sourceCode">
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i < 10; i++) {
+    std::cout << b.factorial(i) << std::endl;
+}
+```
 
-``` sourceCode
-#include <Rcpp.h>
+### Exercise 2: Choose
 
-using namespace Rcpp;
+Write a program that implements the `choose` function. It should match the following results in R
 
-// [[Rcpp::export]]
-[output must be list] ps_match1(const NumericVector & x) {
+```{r}
+choose(10, 1:10)
+```
 
-    ...prepare the output (save space)...
-    ...it should be an integer vector indicating the id of the match...
-    ...and a numeric vector with the value of `x` for the match...
+You can use the following code to test your function:
 
-    for (...loop over i...) {
-
-        for (...loop over j and check if it is the optimum...) {
-            if (...the closests so far...) {
-                ...update the optimum...
-            }
-        }
-        
-    }
-
-    return [a list like the R function]
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i < 10; i++) {
+    std::cout << b.choose(10, i) << std::endl;
 
 }
 ```
 
-</div>
+### Exercise 3: implement the binom
 
-</div>
+Write a program that implements the `dbinom` function. It should match the following results in R
 
-<div id="question-2-things-can-be-done-faster" class="section level2">
+```{r}
+dbinom(0:10, 10, 0.5)
+```
 
-## Question 2: Things can be done faster
+You can use the following code to test your function:
 
-In the previous question, we have a double loop running twice over the
-full set of observations. We need you to write the C++ so that the
-computational complexity goes below `n^2`. (hint: Distance is symmetric)
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i < 10; i++) {
+    std::cout << b.dbinom(i) << std::endl;
+}
+```
 
-</div>
+### Exercise 4: Print
 
-</div>
+Write a program that implements the `print` function. It should match the following results in R
 
-</div>
-
-</div>
+```{r}
+sprintf(
+  "P(Y=%-2d; n=%d, p=%.2f) = %.4f",
+  0:10, 10, 0.5, dbinom(0:10, 10, 0.5)
+  ) |>
+  cat(sep = "\n")
+```
