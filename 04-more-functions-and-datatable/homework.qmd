@@ -3,13 +3,13 @@ title: "Homework 1b (bonus) - Data Wrangling"
 format:
   html:
     embed-resources: true
-    date-modified: 2024-09-12
+    date-modified: 2024-09-16
     author: George G. Vega Yon, Ph.D.
 ---
 
 # Due Date
 
-Tuesday, September 24
+~~Tuesday, September 24~~ Thursday, September 26
 
 # Data Wrangling
 
