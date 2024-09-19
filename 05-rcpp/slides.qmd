@@ -2,9 +2,18 @@
 title: "Intro to Rcpp"
 subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
+date-modified: 2024-09-19
+date: 2024-09-24
+institute: "The University of Utah"
 format:
   revealjs:
     embed-resources: true
+    theme: ["default", "style.scss"]
+    code-annotations: true
+    slide-number: c
+revealjs-plugins:
+  - codefocus
+engine: knitr
 ---
 
 # Intro
@@ -47,6 +56,7 @@ And that's it!
 
 ## R is great, but...
 
+::: {.incremental}
 *  The problem:
     
     *  As we saw, R is very fast... once vectorized
@@ -56,30 +66,30 @@ And that's it!
 *  The solution: **Use C/C++/Fotran! It works with R!**
     
 *  The problem to the solution: **What R user knows any of those!?**
-    
-
-## R is great, but... (cont'd)
 
 *  R has had an API (application programming interface) for integrating
    C/C++ code with R for a long time.
    
 *  Unfortunately, it is not very straightforward
+:::
 
 ## Enter Rcpp
 
+::: {.incremental}
 - One of the **most important R packages on CRAN**.
 
-- As of January 22, 2023, about [50% of CRAN packages depend on it](http://dirk.eddelbuettel.com/blog/2023/01/22/#rcpp_1.0.10) (directly or not).
+- As of July 17, 2024, about [60% of CRAN packages depend on it](http://dirk.eddelbuettel.com/blog/2024/07/17/#rcpp_1.0.130) (directly or not).
 
 - From the package description:
 
 >  The 'Rcpp' package provides R functions as well as C++ classes which offer a seamless integration of R and C++
+:::
 
 
 ## Why bother?
 
 *   To draw ten numbers from a normal distribution with sd = 100.0 using R C API:
-    
+
     ```c
     SEXP stats = PROTECT(R_FindNamespace(mkString("stats")));
     SEXP rnorm = PROTECT(findVarInFrame(stats, install("rnorm")));
@@ -93,8 +103,8 @@ And that's it!
     ```
 
 -   Using Rcpp:
-    
-    ```c
+
+    ```cpp
     Environment stats("package:stats");
     Function rnorm = stats["rnorm"];
     return rnorm(10, Named("sd", 100.0));
@@ -157,10 +167,11 @@ add1R <- function(x) {
 microbenchmark::microbenchmark(add1R(1:1000), add1Cpp(1:1000))
 ```
 
-# C++ in R
+# C++ in R {background-color="black"}
 
 ## Main differences between R and C++
 
+::: {.fragment}
 1.  One is compiled, and the other interpreted
 
 2.  Indexing objects: In C++ the indices range from 0 to `(n - 1)`, whereas in
@@ -169,10 +180,12 @@ microbenchmark::microbenchmark(add1R(1:1000), add1Cpp(1:1000))
 3.  All expressions end with a `;` (optional in R).
 
 4.  In C++ object need to be declared, in R not ([dynamic](https://en.wikipedia.org/wiki/Dynamic_programming_language)).
+::: 
 
 
 ## C++/Rcpp fundamentals: Types
 
+::: {.fragment}
 Besides C-like data types (`double`, `int`, `char`, and `bool`), we can use
 the following types of objects with Rcpp:
 
@@ -181,17 +194,16 @@ the following types of objects with Rcpp:
 - Vectors: `NumericVector`, `IntegerVector`, `LogicalVector`, `CharacterVector`
 
 - And more!: `DataFrame`, `List`, `Function`, `Environment`
+:::
 
 
 ## Parts of "an Rcpp program"
 
 ::: {.columns style="font-size: 20pt"}
 
-::: {.column width="50%"}
+::: {.column width="50%" .incremental}
 
-```{cpp}
-#| eval: false
-#| echo: true
+```cpp
 #include<Rcpp.h>
 using namespace Rcpp
 // [[Rcpp::export]]
@@ -222,7 +234,7 @@ Line by line, we see the following:
     `Rcpp::NumericVector`
 :::
 
-::: {.column width="50%"}
+::: {.column width="50%" .incremental}
    
 3.  The `//` starts a comment in C++, in this case, the `r bold_code("// [[Rcpp::export]]")`
     comment is a flag Rcpp uses to "export" this C++ function to R.
@@ -239,11 +251,9 @@ Line by line, we see the following:
 
 ::: {.columns style="font-size: 20pt"}
 
-::: {.column with="50%"}
+::: {.column with="50%" .incremental}
 
-```{cpp}
-#| eval: false
-#| echo: true
+```cpp
 #include<Rcpp.h>
 using namespace Rcpp
 // [[Rcpp::export]]
@@ -262,7 +272,7 @@ NumericVector add1(NumericVector x) {
 
 :::
 
-::: {.column width="50%"}
+::: {.column width="50%" .incremental}
     
 6.  We are declaring a for-loop (three parts):
     
@@ -293,17 +303,16 @@ Now, where to execute/run this?
 
 > -   Write an R package that works with Rcpp.
 
+::: {.fragment}
 For now, let's use the first option.
+:::
 
 
 ## Example running .cpp file
 
 Imagine that we have the following file named `norm.cpp`
 
-```{c++}
-#| label: simple-file
-#| cahe: true
-#| echo: true
+```cpp
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -320,7 +329,7 @@ We can compile and obtain this function using this line `Rcpp::sourceCpp("norm.c
 Once compiled, a function called `normRcpp` will be available in the current
 R session.
 
----
+# Your turn {background-color="black"}
 
 <div style="text-align:center;margin:auto;">
 Now, get ready for some Rcpp action!
@@ -329,7 +338,6 @@ Now, get ready for some Rcpp action!
 </div>
 
 
-# Your turn
 
 ## Problem 1: Adding vectors {.smaller}
 
@@ -363,7 +371,7 @@ if ([some condition])
 
 ::: {.column width="50%"}
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/FibonacciSpiral.svg" width="100%" alt="Fibonacci Spiral">
+![Fibonacci Spiral](https://upload.wikimedia.org/wikipedia/commons/2/2e/FibonacciSpiral.svg){width=90%}
 
 Each element of the sequence is determined by the following:
 
