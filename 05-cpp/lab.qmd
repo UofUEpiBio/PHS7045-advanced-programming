@@ -25,20 +25,21 @@ $$
 Implement the following class representing a binomial distribution:
 
 ```cpp
-#include <iostream> // Needed for cout / printf
-#include <cmath>    // Needed for pow
-
 class Binom {
 private:
-    int n;
-    double p;
-
+  int n;
+  double p;
+  
 public:
-    Binom(int n, double p) : n(n), p(p) {};
-    int factorial(int n) const;
-    double choose(int a, int b) const;
-    double dbinom(int k) const;
-    void print(int k) const;
+  // Binom(int n_, double p_) : n(n_), p(p_) {};
+  Binom(int n_, double p_) {
+    n = n_;
+    p = p_;
+  };
+  int factorial(int k) const;
+  double choose(int a, int b) const;
+  double dbinom(int k) const;
+  void print(int k) const;
 };
 ```
 
