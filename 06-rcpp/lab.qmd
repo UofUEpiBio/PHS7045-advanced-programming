@@ -1,48 +1,28 @@
 ---
-format: html
+title: Lab 05 - Rcpp and C++
+author: George G. Vega Yon, Ph.D.
+date-modified: 2024-09-23
+date: 2024-09-24
+format:
+  html:
+    embed-resources: true
 ---
 
-
-<div id="quarto-content"
-class="page-columns page-rows-contents page-layout-article">
-
-<div id="quarto-document-content" class="content" role="main">
-
-<div id="title-block-header" class="quarto-title-block default">
-
-<div class="quarto-title">
-
-# Lab 05 - Rcpp
-
-</div>
-
-<div class="quarto-title-meta">
-
-</div>
-
-</div>
-
-<div id="learning-goals" class="section level1">
-
-# Learning goals
+## Learning goals
 
 - Use the different data types in Rcpp.
 - Learn some fundamentals about C++ optimization.
 - Practice your GitHub skills.
 
-</div>
 
-<div id="lab-description" class="section level1">
-
-# Lab description
+## Lab description
 
 For this lab, we will create a function for propensity score matching.
 The goal is simple: write out a C++ function with Rcpp and measure how
 faster it is compared to the following R implementation:
 
-<div id="cb1" class="sourceCode">
 
-``` sourceCode
+```r
 ps_matchR <- function(x) {
   
   match_expected <- as.matrix(dist(x))
@@ -57,17 +37,12 @@ ps_matchR <- function(x) {
 }
 ```
 
-</div>
-
-<div id="question-1-create-a-simple-function" class="section level2">
-
 ## Question 1: Create a simple function
 
 Use the following pseudo-code template to get started:
 
-<div id="cb2" class="sourceCode">
 
-``` sourceCode
+```cpp
 #include <Rcpp.h>
 
 using namespace Rcpp;
@@ -94,22 +69,9 @@ using namespace Rcpp;
 }
 ```
 
-</div>
-
-</div>
-
-<div id="question-2-things-can-be-done-faster" class="section level2">
-
 ## Question 2: Things can be done faster
 
 In the previous question, we have a double loop running twice over the
 full set of observations. We need you to write the C++ so that the
 computational complexity goes below `n^2`. (hint: Distance is symmetric)
 
-</div>
-
-</div>
-
-</div>
-
-</div>
