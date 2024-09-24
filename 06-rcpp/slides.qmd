@@ -410,7 +410,7 @@ if ([some condition])
 
 ::: {.column width="50%"}
 
-![Fibonacci Spiral](https://upload.wikimedia.org/wikipedia/commons/2/2e/FibonacciSpiral.svg){width=90%}
+![Fibonacci Spiral](https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Fibonacci_Spiral.svg/320px-Fibonacci_Spiral.svg.png){width=90%}
 
 Each element of the sequence is determined by the following:
 
