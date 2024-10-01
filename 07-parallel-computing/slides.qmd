@@ -13,7 +13,6 @@ format:
     fig-dpi: 200
     fig-asp: 1
     css: ["default", "style.css"]
-    footer: George G. Vega Yon, Ph.D. -- [ggv.cl/slides/exeter-hpc-2024](https://ggv.cl/slides/hpc-exeter-sep2024)
     title-slide-attributes: 
       data-background-image: 'fig/Zoom-Background_PrideU.jpg'
       data-background-opacity: '0.2'
@@ -21,14 +20,6 @@ format:
 bibliography: references.bib
 embed-resources: true
 ---
-
-## Before we start
-
-You can access the content here:
-
-- Slides: <https://ggv.cl/slides/exeter-hpc-2024>
-- Code: <https://github.com/gvegayon/exeter-hpc-sep2024>
-- posit.cloud: <https://ggv.cl/cloud/exeter-hpc-2024>
 
 # Fundamentals {background-color="#515A5A"}
 
