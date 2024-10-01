@@ -1,41 +1,62 @@
 # Midterm
 
-- There are three products (both built using quarto):
-  - (30%) A short 5 min presentation and
-  - (70%) A report (35% writing and 35% coding). 
-  - (100% -- a must) A repository hosting the project
+
+Hackathon: Lecture of October 15th, 2024\
+Presentations: Lecture of October 17th, 2024
+
+Report and presentation is due on **October 17th, 2024 AoE**.
+
+
+## Format
+
+- The midterm consists of a first approach to the final project of the course.
+
+- Students will present the project on October 17th.
+
+- The lecture of October 15th will be replaced with a coding session (aka hackathon) to work on the midterm project alongside the instructors.
+
+- Students will return the midterm (presentation and report) as a GitHub repo dedicated to the midterm project only on October 17th.
+
+- We will provide a template repository for you to use.
+
+
+## Requirements
+
+The midterm should be posted on a GitHub repository featuring:
+
+- (30% of the grade) A short 5 min presentation.
+- (70% of he grade) A report.
+- The code should incorporate the content of at least three topics, including:
+  - Rcpp
+  - Simulation and timing
+  - Vectorization
+  - data.table
+  - parallel computing
+
+### 1.1 Report
 
 - The report should describe two things: A problem/analysis/method to address
 using the methods taught in class and a strategy for approaching them.
 
-- The structure should be the following: Introduction to the problem (~1 page),
-Description of the solution plan (~1 page) and some example code with prototypes
-or a first attack featuring (a) some data (simulated or not), (b) one or more
-functions, and (c) the execution of the functions (~1 page of text + outcomes);
-the code and figures used can go above that). **Page-count within 3-5**.
-The values of the three sections are split evenly (1/3 of the grade each).
+- The structure should be the following (each equally weighted in the grade):
+    - Introduction to the problem (~1 page),
+    - Description of the solution plan (~1 page) and
+    - Preliminary results (~1 page)
 
-- The first day will be a hackathon, and the second will be a presentation.
+  Reports can exceed the page count to be at most 5 pages (but not less than 3).
+    
+- Besides of text (~1 page), the preliminary results section should include:
+  - Some data (simulated or not), 
+  - One or more functions, and
+  - The execution of the functions
+  
 
-- We should be able to render both the slides and the report.
+### 1.2 Presentation
 
-- The midterm should be on a separate repository than the class's.
+- The presentation should be a 5-minute presentation (hard stop).
 
-The code should incorporate the content of at least three topics, including:
+- The presentation should roughly follow the same structure of the report.
 
-- Rcpp
-- Simulation and timing
-- Vectorization
-- data.table
-- parallel computing
+- The presentation should be clear and concise, focusing on the essentials (details like excessive math can be skipped).
 
-- Code technical aspects:
-  - Must use functions (modularized)
-  - With clear comments describing the code. Most important for parameters
-    of the functions.
-
-- Text and presentation technical aspects:
-  - Should be approachable for non-experts.
-  - Clear communication focusing on the essentials.
-
-- We will provide a template repository for you to use.
+- The presentation should be oriented to a general audience (not necessarily technical).
