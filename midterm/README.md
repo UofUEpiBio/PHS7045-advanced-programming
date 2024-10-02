@@ -17,7 +17,7 @@ Report and presentation is due on **October 17th, 2024 AoE**.
 
 - Students will return the midterm (presentation and report) as a GitHub repo dedicated to the midterm project only on October 17th.
 
-- We will provide a template repository for you to use.
+- Students should use the following template repository: <https://github.com/UofUEpiBio/advanced-programming-midterm>.
 
 
 ## Requirements
