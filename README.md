@@ -19,13 +19,13 @@ them.
 | 9/24 and 9/26 | C++ in R Deliver a paragraph in abstract mode describing their projects for the midterm. | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/06-rcpp/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/06-rcpp/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/06-rcpp/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/06-rcpp/lab.qmd)) |
 | 10/01 and 10/03 | Parallel Computing | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/07-parallel-computing/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/07-parallel-computing/lab.qmd)) |
 | 10/08 and 10/10 | Fall Break |  |  |
-| 10/15 and 10/17 (presentations) | Midterm project + Homework 3 (vectorization and Rcpp) |  |  |
+| 10/15 and 10/17 (presentations) | Midterm project [+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd)) |  |  |
 | 10/22 and 10/24 | UofU’s CHPC |  |  |
 | 10/29 and 10/31 | Slurm + Homework 4 (Slurm) |  |  |
-| 11/05 and 11/07 | R packages I |  |  |
-| 11/12 and 11/14 | R packages II |  |  |
-| 11/19 and 11/21 | Automatic Reports with GitHub Actions |  |  |
-| 11/26 and 11/28 (off) | More practice with slurm (and netplot) |  |  |
+| 11/05 and 11/07 | More practice with slurm |  |  |
+| 11/12 and 11/14 | R packages I |  |  |
+| 11/19 and 11/21 | R packages II |  |  |
+| 11/26 and 11/28 (off) | Automatic Reports with GitHub Actions |  |  |
 | 12/03 and 12/05 | Final Prep (Hackathon) |  |  |
 | 12/12 | Final |  |  |
 
