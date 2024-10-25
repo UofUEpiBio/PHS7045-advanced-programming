@@ -8,7 +8,7 @@ date,week,name,id,issue,extra
 10/01 and 10/03,7,Parallel Computing,07-parallel-computing,,
 10/08 and 10/10,8,Fall Break,,,
 10/15 and 10/17 (presentations),9,Midterm project,09-midterm,,[+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd))
-10/22 and 10/24,10,UofU's CHPC,,,
+10/22 and 10/24,10,UofU's CHPC,10-chpc-week,,([Slides Linux](10-chpc-week/IntroLinux-RClass.pdf) + [Slides Slurm](10-chpc-week/RClass-Slurm.pdf))
 10/29 and 10/31,11,Slurm,,,+ Homework 4 (Slurm)
 11/05 and 11/07,12,More practice with slurm,,,
 11/12 and 11/14,13,R packages I,07-rpkgs-i,,

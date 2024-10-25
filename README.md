@@ -20,7 +20,7 @@ them.
 | 10/01 and 10/03 | Parallel Computing | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/07-parallel-computing/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/07-parallel-computing/lab.qmd)) |
 | 10/08 and 10/10 | Fall Break |  |  |
 | 10/15 and 10/17 (presentations) | Midterm project [+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd)) |  |  |
-| 10/22 and 10/24 | UofU’s CHPC |  |  |
+| 10/22 and 10/24 | UofU’s CHPC ([Slides Linux](10-chpc-week/IntroLinux-RClass.pdf) + [Slides Slurm](10-chpc-week/RClass-Slurm.pdf)) |  |  |
 | 10/29 and 10/31 | Slurm + Homework 4 (Slurm) |  |  |
 | 11/05 and 11/07 | More practice with slurm |  |  |
 | 11/12 and 11/14 | R packages I |  |  |

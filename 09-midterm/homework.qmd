@@ -11,7 +11,7 @@ Thursday, October 31
 
 # Background
 
-For this assignment, you'll be quested with speeding up some code using what
+For this assignment, you'll be quested with speeding up some code usint g what
 you have learned about vectorization and Rcpp.
 
 ## Part 1: Vectorizing code
