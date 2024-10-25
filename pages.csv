@@ -1,18 +1,18 @@
 date,week,name,id,issue,extra
 8/20 and 8/22,1,Intro to Git + Intro to classes,01-git,,+ [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd))
 8/27 and 8/29,2,R Essentials,02-essentials,,+ [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/01-essentialsSimulations.html) ([source](02-essentials/01-essentialsSimulations.qmd))
-9/03 and 9/5,3,Debugging and profiling,04-debugging-and-profiling,,
-9/10 and 9/12,4,Functions and data.table,03-more-functions-and-datatable,,+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/hw-01b-datatable.html) ([source](https://UofUEpiBio.github.io/PHS7045-advanced-programming/hw-01b-datatable.qmd))
-9/17 and 9/19,5,Introduction to C++,,,"+ Homework 3 (C++), Deliver a paragraph in abstract mode describing their projects for the midterm."
-9/24 and 9/26,6,C++ in R,05-rcpp,,
-10/01 and 10/03,7,Parallel Computing,06-parallel-computing,,
+9/03 and 9/5,3,Debugging and profiling,03-debugging-and-profiling,,
+9/10 and 9/12,4,Functions and data.table,04-more-functions-and-datatable,,+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/homework.html) ([source](04-more-functions-and-datatable/homework.qmd))
+9/17 and 9/19,5,Introduction to C++,05-cpp,,""
+9/24 and 9/26,6,C++ in R,06-rcpp,,"Deliver a paragraph in abstract mode describing their projects for the midterm."
+10/01 and 10/03,7,Parallel Computing,07-parallel-computing,,
 10/08 and 10/10,8,Fall Break,,,
-10/15 and 10/17 (presentations),9,Midterm project,,,
-10/22 and 10/24,10,UofU's CHPC,,,+ Homework 4 (Slurm)
-10/29 and 10/31,11,Slurm,,,
-11/05 and 11/07,12,R packages I,07-rpkgs-i,,
-11/12 and 11/14,13,R packages II,07-rpkgs-i,,
-11/19 and 11/21,14,Automatic Reports with GitHub Actions,99-autoreport,,
-11/26 and 11/28 (off),15,More practice with slurm (and netplot),,,
+10/15 and 10/17 (presentations),9,Midterm project,09-midterm,,[+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd))
+10/22 and 10/24,10,UofU's CHPC,10-chpc-week,,([Slides Linux](10-chpc-week/IntroLinux-RClass.pdf) + [Slides Slurm](10-chpc-week/RClass-Slurm.pdf))
+10/29 and 10/31,11,Slurm,,,+ Homework 4 (Slurm)
+11/05 and 11/07,12,More practice with slurm,,,
+11/12 and 11/14,13,R packages I,07-rpkgs-i,,
+11/19 and 11/21,14,R packages II,07-rpkgs-i,,
+11/26 and 11/28 (off),15,Automatic Reports with GitHub Actions,99-autoreport,,
 12/03 and 12/05,16,Final Prep (Hackathon),,,
 12/12,17,Final,,,

@@ -1,0 +1,77 @@
+---
+title: Lab 05 - Rcpp and C++
+author: George G. Vega Yon, Ph.D.
+date-modified: 2024-09-23
+date: 2024-09-24
+format:
+  html:
+    embed-resources: true
+---
+
+## Learning goals
+
+- Use the different data types in Rcpp.
+- Learn some fundamentals about C++ optimization.
+- Practice your GitHub skills.
+
+
+## Lab description
+
+For this lab, we will create a function for propensity score matching.
+The goal is simple: write out a C++ function with Rcpp and measure how
+faster it is compared to the following R implementation:
+
+
+```r
+ps_matchR <- function(x) {
+  
+  match_expected <- as.matrix(dist(x))
+  diag(match_expected) <- .Machine$integer.max
+  indices <- apply(match_expected, 1, which.min)
+  
+  list(
+    match_id = as.integer(unname(indices)),
+    match_x  = x[indices]
+  )
+  
+}
+```
+
+## Question 1: Create a simple function
+
+Use the following pseudo-code template to get started:
+
+
+```cpp
+#include <Rcpp.h>
+
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+[output must be list] ps_match1(const NumericVector & x) {
+
+    ...prepare the output (save space)...
+    ...it should be an integer vector indicating the id of the match...
+    ...and a numeric vector with the value of `x` for the match...
+
+    for (...loop over i...) {
+
+        for (...loop over j and check if it is the optimum...) {
+            if (...the closests so far...) {
+                ...update the optimum...
+            }
+        }
+        
+    }
+
+    return [a list like the R function]
+
+}
+```
+
+## Question 2: Things can be done faster
+
+In the previous question, we have a double loop running twice over the
+full set of observations. We need you to write the C++ so that the
+computational complexity goes below `n^2`. (hint: Distance is symmetric)
+

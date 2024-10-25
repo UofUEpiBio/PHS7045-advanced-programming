@@ -1,0 +1,116 @@
+---
+title: Lab 05 - C++
+author: George G. Vega Yon, Ph.D.
+date-modified: 2024-09-16
+date: 2024-09-19
+format:
+  html:
+    embed-resources: true
+---
+
+## Learning goals
+
+- Practice class programming in C++.
+- Be able to map R functions to C++.
+- Practice your GitHub skills.
+
+## Lab description
+
+For this lab, we will implement a class representing a binomial distribution:
+
+$$
+\Pr{\left(Y=k; n, p\right)} = {n \choose  k}p^k(1-p)^{n-k}
+$$
+
+Implement the following class representing a binomial distribution:
+
+```cpp
+class Binom {
+private:
+  int n;
+  double p;
+  
+public:
+  // Binom(int n_, double p_) : n(n_), p(p_) {};
+  Binom(int n_, double p_) {
+    n = n_;
+    p = p_;
+  };
+  int factorial(int k) const;
+  double choose(int a, int b) const;
+  double dbinom(int k) const;
+  void print(int k) const;
+};
+```
+
+Remember that to implement the function, you have to use the following pattern:
+
+```cpp
+inline [return type] [class name]::[function name]([arguments]) {
+    // Your code here
+}
+```
+
+### Exercise 1: Factorial
+
+Write a program that implements the `factorial` function. It should match the following results in R
+
+```{r}
+factorial(1:10)
+```
+
+You can use the following code to test your function:
+
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i < 10; i++) {
+    std::cout << b.factorial(i) << std::endl;
+}
+```
+
+### Exercise 2: Choose
+
+Write a program that implements the `choose` function. It should match the following results in R
+
+```{r}
+choose(10, 1:10)
+```
+
+You can use the following code to test your function:
+
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i < 10; i++) {
+    std::cout << b.choose(10, i) << std::endl;
+
+}
+```
+
+### Exercise 3: implement the binom
+
+Write a program that implements the `dbinom` function. It should match the following results in R
+
+```{r}
+dbinom(0:10, 10, 0.5)
+```
+
+You can use the following code to test your function:
+
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i < 10; i++) {
+    std::cout << b.dbinom(i) << std::endl;
+}
+```
+
+### Exercise 4: Print
+
+Write a program that implements the `print` function. It should match the following results in R
+
+```{r}
+sprintf(
+  "P(Y=%-2d; n=%d, p=%.2f) = %.4f",
+  0:10, 10, 0.5, dbinom(0:10, 10, 0.5)
+  ) |>
+  cat(sep = "\n")
+```

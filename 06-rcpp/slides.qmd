@@ -1,0 +1,576 @@
+---
+title: "Intro to Rcpp"
+subtitle: "PHS 7045: Advanced Programming"
+author: "George G. Vega Yon, Ph.D."
+date-modified: 2024-09-19
+date: 2024-09-24
+institute: "The University of Utah"
+format:
+  revealjs:
+    embed-resources: true
+    theme: ["default", "style.scss"]
+    code-annotations: true
+    slide-number: c
+revealjs-plugins:
+  - codefocus
+engine: knitr
+---
+
+# Intro
+
+```{r}
+#| echo: false
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(eval = TRUE, fig.width = 7, fig.height = 5)
+slides_eval <- TRUE
+```
+
+## Before we start {style="font-size: 16pt"}
+
+<div style="text-align: center; margin: auto;">
+<a href="https://imgflip.com/i/38ji3q"><img src="https://i.imgflip.com/38ji3q.jpg" title="made at imgflip.com" width="30%"/></a>
+<a href="https://imgflip.com/i/38jiku"><img src="https://i.imgflip.com/38jiku.jpg" title="made at imgflip.com" width="30%"/></a>
+</div>
+
+1.  You need to have Rcpp installed in your system:
+        
+    ```r
+    install.packages("Rcpp")
+    ```
+        
+2.  You need to have a compiler
+        
+    -  Windows: You can download Rtools [from here](https://cran.r-project.org/bin/windows/Rtools/).
+    
+    -  MacOS: It is a bit complicated... Here are some options:
+        
+        *  CRAN's manual to get the clang, clang++, and gfortran compilers
+        [here](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#macOS).
+        
+        *  A great guide by the coatless professor
+        [here](https://thecoatlessprofessor.com/programming/r-compiler-tools-for-rcpp-on-macos/)
+            
+
+And that's it!
+
+## R is great, but...
+
+::: {.incremental}
+*  The problem:
+    
+    *  As we saw, R is very fast... once vectorized
+    
+    *  What to do if your model cannot be vectorized?
+    
+*  The solution: **Use C/C++/Fotran! It works with R!**
+    
+*  The problem to the solution: **What R user knows any of those!?**
+
+*  R has had an API (application programming interface) for integrating
+   C/C++ code with R for a long time.
+   
+*  Unfortunately, it is not very straightforward
+:::
+
+## Enter Rcpp
+
+::: {.incremental}
+- One of the **most important R packages on CRAN**.
+
+- As of July 17, 2024, about [60% of CRAN packages depend on it](http://dirk.eddelbuettel.com/blog/2024/07/17/#rcpp_1.0.130) (directly or not).
+
+- From the package description:
+
+>  The 'Rcpp' package provides R functions as well as C++ classes which offer a seamless integration of R and C++
+:::
+
+
+## Why bother?
+
+*   To draw ten numbers from a normal distribution with sd = 100.0 using R C API:
+
+    ```c
+    SEXP stats = PROTECT(R_FindNamespace(mkString("stats")));
+    SEXP rnorm = PROTECT(findVarInFrame(stats, install("rnorm")));
+    SEXP call = PROTECT(
+      LCONS( rnorm, CONS(ScalarInteger(10), CONS(ScalarReal(100.0),
+      R_NilValue))));
+    SET_TAG(CDDR(call),install("sd"));
+    SEXP res = PROTECT(eval(call, R_GlobalEnv));
+    UNPROTECT(4);
+    return res;
+    ```
+
+-   Using Rcpp:
+
+    ```cpp
+    Environment stats("package:stats");
+    Function rnorm = stats["rnorm"];
+    return rnorm(10, Named("sd", 100.0));
+    ```
+
+## The Rcpp ecosystem
+
+::: {.incremental}
+- **Rcpp [(link)](https://cran.r-project.org/package=Rcpp)**: The main API that exposes C++ to R.
+
+- **RcppArmadillo [(link)](https://cran.r-project.org/package=RcppArmadillo)**: A package that provides a high-level interface to the [Armadillo C++ library](https://arma.sourceforge.net) for linear algebra (great for sparse matrices).
+
+- **RcppEigen [(link)](https://cran.r-project.org/package=RcppEigen)**: A package that provides a high-level interface to the [Eigen C++ library](http://eigen.tuxfamily.org) for linear algebra (great for file-backed matrices).
+
+- **RcppParallel [(link)](https://cran.r-project.org/package=RcppParallel)** and **RcppThread [(link)](https://cran.r-project.org/package=RcppThread)**: Packages that provide parallel computing capabilities.
+
+- You can find execellent examples using Rcpp in <https://gallery.rcpp.org>.
+
+- There's also the [`cpp11`](https://cpp11.r-lib.org) package (we won't cover it in this course).
+:::
+
+
+## Example 1: Looping over a vector
+
+::: {.incremental}
+```{Rcpp}
+#| cache: true
+#| label: "rcpp-add1"
+#| echo: true
+#include<Rcpp.h> // <1>
+
+using namespace Rcpp; // <2>
+
+// [[Rcpp::export]] // <3>
+NumericVector add1(NumericVector x) {
+
+  NumericVector ans(x.size()); // <4>
+
+  for (int i = 0; i < x.size(); ++i)
+    ans[i] = x[i] + 1;
+
+  return ans;
+}
+```
+ 1. We include the header using `<Rcpp.h>`, not `"Rcpp.h"`.
+ 2. This is to avoid typing `Rcpp::` before every object.
+ 3. This is a comment that tells Rcpp to export this function to R.
+ 4. Create a vector of the same size as x.
+
+```{r}
+#| echo: true
+add1(1:10)
+```
+:::
+
+## Example 1: Looping over a vector (vers 2)
+
+Make it sweeter by adding some "sugar" (the Rcpp kind)
+
+```{Rcpp}
+#| cache: true
+#| echo: true
+#include<Rcpp.h>
+
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+NumericVector add1Cpp(NumericVector x) {
+  return x + 1;
+}
+```
+
+```{r}
+#| echo: true
+add1Cpp(1:10)
+```
+
+## How much fast?
+
+Compared to this:
+
+```{r}
+#| echo: true
+add1R <- function(x) {
+  for (i in 1:length(x))
+    x[i] <- x[i] + 1
+  x
+}
+
+microbenchmark::microbenchmark(add1R(1:1000), add1Cpp(1:1000))
+```
+
+::: {.fragment}
+Obviously vectorization in R would be faster, but this is just an example.
+:::
+
+# C++ in R {background-color="black"}
+
+## Main differences between R and C++
+
+::: {.fragment .incremental}
+1.  One is compiled, and the other interpreted
+
+2.  Indexing objects: In C++ the indices range from 0 to `(n - 1)`, whereas in
+    R is from 1 to `n`.
+    
+3.  All expressions end with a `;` (optional in R).
+
+4.  In C++ object need to be declared, in R not ([dynamic](https://en.wikipedia.org/wiki/Dynamic_programming_language)).
+::: 
+
+
+## C++/Rcpp fundamentals: Types
+
+::: {.fragment}
+Besides C-like data types (`double`, `int`, `char`, and `bool`), we can use
+the following types of objects with Rcpp:
+
+- Matrices: `NumericMatrix`, `IntegerMatrix`, `LogicalMatrix`, `CharacterMatrix`
+
+- Vectors: `NumericVector`, `IntegerVector`, `LogicalVector`, `CharacterVector`
+
+- And more!: `DataFrame`, `List`, `Function`, `Environment`
+:::
+
+
+## Parts of "an Rcpp program"
+
+
+```{r}
+#| label: "code-bolder"
+#| echo: false
+bold_code <- function(x) {
+  sprintf('<text style="color:white;font-weight:bold;font-family:monospace;background-color: black;border-style: solid;border-color: black;">%s</text>', x)
+}
+```
+
+::: {layout-ncol="2" style="font-size: 80%" .incremental}
+
+```cpp
+#include<Rcpp.h> // <1>
+
+using namespace Rcpp // <2>
+
+// [[Rcpp::export]] // <3>
+NumericVector add1(NumericVector x) { // <4>
+
+  NumericVector ans(x.size());
+
+  for (int i = 0; i < x.size(); ++i)
+    ans[i] = x[i] + 1;
+
+  return ans;
+}
+```
+1.  The `r bold_code("#include<Rcpp.h>")` is similar to `library(...)` in R, it brings in all that
+    we need to write C++ code for Rcpp.
+2.  `r bold_code("using namespace Rcpp")` is somewhat similar to `detach(...)`. This
+    simplifies syntax. If we don't include this, all calls to Rcpp members need to be
+    explicit, **e.g.**, instead of typing `NumericVector`, we would need to type
+    `Rcpp::NumericVector`
+3.  The `//` starts a comment in C++, in this case, the `r bold_code("// [[Rcpp::export]]")`
+    comment is a flag Rcpp uses to "export" this C++ function to R.
+4.  It is the first part of the function definition. We are creating a function that
+    returns a `r bold_code("NumericVector")`, is called `r bold_code("add1")`,
+    has a single input element named  `r bold_code("x")` that is also a
+    `r bold_code("NumericVector")`.
+:::
+
+## Parts of "an Rcpp program" (cont'd) 
+
+::: {layout-ncol="2" style="font-size: 80%" .incremental}
+
+```cpp
+#include<Rcpp.h>
+
+using namespace Rcpp 
+
+// [[Rcpp::export]]
+NumericVector add1(NumericVector x) {
+
+  NumericVector ans(x.size()); // <5>
+
+  for (int i = 0; i < x.size(); ++i) // <6>
+    ans[i] = x[i] + 1; // <7>
+  
+  return ans; //<8>
+}
+```
+5.  Here, we are declaring an object called `r bold_code("ans")`, which is a
+    `r bold_code("NumericVector")` with an initial size equal to the size of
+    `r bold_code("x")`. Notice that `r bold_code(".size()")` is called a
+    "member function" of the `x` object, which is of class `NumericVector`.
+6.  We are declaring a for-loop (three parts):
+    
+    a.  `r bold_code("int i = 0")` We declare the variable `i`, an integer, and initialize it at 0.
+    
+    b.  `r bold_code("i < x.size()")` This loop will end when `i`'s value is at or above the length of `x`.
+    
+    c.  `r bold_code("++i")` At each iteration, `i` will increment in one unit.
+
+7.  `r bold_code("ans[i] = x[i] + 1")` set the i-th element of `ans` equal to
+    the i-th element of `x` plus 1.
+    
+8.  `r bold_code("return ans")` exists the function returning the vector `ans`.
+:::
+
+
+## C++/Rcpp fundamentals
+
+Now, where to execute/run this?
+
+> -   You can use the `sourceCpp` function from the `Rcpp` package to run .cpp 
+    scripts (this is what I do most of the time).
+    
+> -   There's also `cppFunction`, which allows compiling a single function.
+
+> -   Write an R package that works with Rcpp.
+
+::: {.fragment}
+For now, let's use the first option.
+:::
+
+
+## Example running .cpp file
+
+Using the [norm.cpp](norm.cpp) file (which you can download):
+
+```cpp
+#include <Rcpp.h>
+
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+double normRcpp(NumericVector x) {
+  
+  return sqrt(sum(pow(x, 2.0)));
+  
+}
+```
+
+We can compile and obtain this function using this line `Rcpp::sourceCpp("norm.cpp")`:
+
+```{r}
+#| echo: true
+#| cache: true
+#| label: "sourceCpp"
+Rcpp::sourceCpp("norm.cpp")
+normRcpp(1:10)
+sqrt(sum((1:10)^2))
+```
+
+## Examlpe running .cpp file (cont'd)
+
+Let's do it again but see the verbose output:
+
+```{r}
+#| echo: true
+#| cache: true
+#| label: "sourceCpp-verbose"
+Rcpp::sourceCpp("norm.cpp", verbose = TRUE)
+```
+
+# Your turn {background-color="black"}
+
+<div style="text-align:center;margin:auto;">
+Now, get ready for some Rcpp action!
+
+<img src="https://giphygifs.s3.amazonaws.com/media/8rOtpl0yzFe6I/giphy.gif" width="800px"/>
+</div>
+
+
+
+## Problem 1: Adding vectors 
+
+1.  Using what you have just learned about Rcpp, write a function to add two vectors of the same length. Use the following template
+        
+```cpp
+#include <Rcpp.h>
+
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+NumericVector add_vectors([declare vector 1], [declare vector 2]) {
+  
+  ... magick ...
+  
+  return [something];
+}
+```
+        
+    
+2.  Now, we have to check for lengths. Use the `stop` function to make sure lengths match. Add the following lines in your code
+        
+```cpp
+if ([some condition])
+  stop("an arbitrary error message :)");
+```
+
+## Problem 2: Fibonacci series 
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+![Fibonacci Spiral](https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Fibonacci_Spiral.svg/320px-Fibonacci_Spiral.svg.png){width=90%}
+
+Each element of the sequence is determined by the following:
+
+::: {style="font-size: 15pt"}
+$$
+F(n) = \left\{\begin{array}{ll}
+n, & \mbox{ if }n \leq 1\\
+F(n - 1) + F(n - 2), & \mbox{otherwise}
+\end{array}\right.
+$$
+:::
+
+:::
+
+::: {.column width="50%"}
+
+Using recursions, we can implement this algorithm in R as follows:
+    
+```{r}
+#| echo: true
+fibR <- function(n) {
+  if (n <= 1)
+    return(n)
+  fibR(n - 1) + fibR(n - 2)
+}
+
+# Is it working?
+c(
+  fibR(0), fibR(1), fibR(2),
+  fibR(3), fibR(4), fibR(5),
+  fibR(6)
+)
+```
+
+Now, let's translate this code into Rcpp and see how much speed boost we get!
+
+:::
+:::
+
+## Problem 2: Fibonacci series (solution)
+
+Here is the full solution (hidden!):
+
+```{Rcpp}
+#| label: fib
+#| cache: true
+#| echo: true
+#| code-fold: true
+#include <Rcpp.h>
+
+// [[Rcpp::export]]
+int fibCpp(int n) {
+  if (n <= 1)
+    return n;
+  
+  return fibCpp(n - 1) + fibCpp(n - 2);
+  
+}
+```
+
+```{r}
+#| echo: true
+#| cache: true
+microbenchmark::microbenchmark(fibR(20), fibCpp(20))
+```
+
+# Exposing C++ classes to R {background-color="black"}
+
+## Exposing C++ classes to R
+
+::: {.columns style="font-size: 80%"}
+::: {.column width="50%"}
+```{Rcpp}
+#| eval: true
+#| label: "person-class"
+#| cache: true
+#| echo: true
+#include <Rcpp.h>
+
+class Person {
+public:
+  Person(std::string name, int age) : 
+    name(name), age(age) {}
+  std::string get_name() const { return name; }
+  int get_age() const { return age; }
+  void print() const {Rprintf(
+    "%s is %d years old\n", name.c_str(), age);
+    }
+
+private:
+  std::string name;
+  int age;
+};
+
+// [[Rcpp::export]]
+Rcpp::XPtr<Person> create_person(
+  std::string name, int age
+  ) {
+  return Rcpp::XPtr<Person>(new Person(name, age));
+}
+
+// [[Rcpp::export]]
+std::string get_name(SEXP person) {
+  Rcpp::XPtr<Person> p(person);
+  return p->get_name();
+}
+
+// [[Rcpp::export]]
+int print_person(SEXP person) {
+  Rcpp::XPtr<Person> p(person);
+  p->print();
+  return 0;
+}
+```
+:::
+::: {.column width="50%"}
+::: {.fragment data-code-focus="3-17"}
+- We define a class `Person` with a constructor, three methods, and two private members.
+:::
+::: {.fragment data-code-focus="9-11"}
+- The print method uses `Rprintf` to print to the R console.
+:::
+
+::: {.fragment data-code-focus="18-23"}
+- **(Wrapping the class)** The `create_person` function creates a pointer (wrapper) to a `Person` object (`XPtr<Person>`). Notice the `new` keyword.
+:::
+
+::: {.fragment data-code-focus="25-36"}
+- **(Unwrapping the class)** To unwrap the class, we use the `XPtr` constructor on an `SEXP` object (S expression, from when R was called S!). We use `->` to access the class methods.
+:::
+
+:::
+:::
+
+::: {.fragment data-code-focus="1-36"}
+Now let's use it!
+:::
+
+## Exposing C++ classes to R (cont'd)
+
+::: {}
+```{r}
+#| echo: true
+#| label: "create-person"
+#| eval: true
+#| collapse: true
+# Construct a person
+myperson <- create_person("Jorge", 30)
+
+# Get the name
+get_name(myperson)
+
+# Default print is not very informative
+myperson
+print_person(myperson) # Custom print
+```
+:::
+
+# Fin
+
+```{r}
+devtools::session_info()
+```
