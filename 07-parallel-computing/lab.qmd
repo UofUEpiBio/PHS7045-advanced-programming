@@ -7,35 +7,91 @@ format:
 
 # Learning goals
 
-* Learn from HW 1 and revisit vectorizing
 * Parallel computing for simulations
 
 # Lab task
 
-**Part 1 (20 minutes)**:
+**Part 1 (Overhead costs)**:
 
-Write an outline of [lab 2  / HW 1 solution](https://github.com/UofUEpiBio/PHS7045-advanced-programming-solutions).
+Compare the timing of taking the sum of 100 numbers when parallelized versus not.  For the unparallized (serialized) version, use the following:
 
 
-Two people will present their outline.  After the first presenter, the second presenter will add any additional details/insights.
+```{r}
+set.seed(123)
+x <- runif(n=100)
 
-```{r,eval=FALSE}
-set.seed(NULL)
-sample(c("Daniel", "Eric", "Haojia", "Hyejung", "Kline", "Linda", "Ransmond", "Ravi"),2)
+serial_sum <- function(x){
+  x_sum <- sum(x)
+  return(x_sum)
+}
 ```
 
 
-**Part 2 (30 minutes)**:
+For the parallized version, follow this outline
 
-Re-write design 1 and/or design 2 based upon what you've learned/outlined from the solution.  Compare efficiency between your submission and your revision using the `bench` package.
+```{r}
+library(parallel)
+```
+
+```{r, eval=FALSE}
+
+set.seed(123)
+x <- runif(n=100)
+
+parallel_sum <- function(){
+  
+  
+  # Set number of cores to use
+  # make cluster and export to the cluster the x variable
+  # Use "split function to divide x up into as many chunks as the number of cores
+  
+  # Calculate partial sums doing something like:
+  
+  partial_sums <- parallel::parSapply(cl, x_split, sum)
+  
+  # Stop the cluster
+  
+  # Add and return the partial sums
+  
+}
+
+```
 
 
-**Part 3 (25 minutes)**:
+```{r, echo=FALSE, eval=TRUE, results=FALSE}
 
-Using either submitted design in HW 1 or revisions made in Part 2, use a parallelization method to simulate 1000 replicates.  Compare the timing to simulating the same 1000 replicates without parallelization.
+set.seed(123)
+x <- runif(n=100)
 
-Extra time? Take any next steps on completing the simluation from the original homework assignment:
+parallel_sum <- function(x){
+  
+  
+  num_cores <- parallel::detectCores()-1
+  cl <- makeCluster(num_cores)
+  clusterExport(cl,"x")
+  
+  x_split <- suppressWarnings(split(x, 1:num_cores))
+  
+  partial_sums <- parallel::parSapply(cl, x_split, sum)
+  
+  stopCluster(cl)
+  
+  x_sum <- sum(partial_sums)
+  
+  return(x_sum)
+  
+}
+```
 
-* Assess the Type I error (increase the number of replicates)
-* Refine $\delta$ as needed
-* Simulate under the alternative hypothesis
+Compare the timing of the two approaches:
+
+```{r}
+bench::mark(serial=serial_sum(x),parallel=parallel_sum(x),relative=TRUE)
+```
+
+
+
+
+**Part 2**:
+
+Using your homework 1 solution, use parallel computing to generate replicates of the trial design.  Compare the timing when not using parallel computing versus when using parallel computing.  (If you used parallel computing in your submission, remove or modify the parallel computing component and compare the timing).

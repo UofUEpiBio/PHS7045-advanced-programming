@@ -1,0 +1,179 @@
+---
+title: 'Bash and HPC Essentials'
+author: 'Jonathan Chipman, Ph.D.'
+format: 
+  html:
+    toc: TRUE
+    toc-depth: 2
+    toc-location: left
+    highlight: pygments
+    font_adjustment: -1
+    css: styles.css
+    # code-fold: true
+    code-tools: true
+    smooth-scroll: true
+    embed-resources: true
+  revealjs: default
+  pdf: default
+---
+
+# Table of Contents
+1. Set up Aliases for Bash File (.bash_profile)
+    1. Example
+2. First Example: Simulating Pi
+    1. Save File on Local Machine
+    2. Set Up the Target Location
+    3. SCP File from Local to CHPC Account
+    4. Create Slurm File
+    5. Run File
+    6. Watch SQ
+    7. Examine Results
+    8. Send Back to Local Machine
+3. Parallel, Arrays, Multi-node
+4. Appendix: Vim Common Commands
+
+# 1. Set up Aliases for Bash File (.bash_profile)
+
+First set up aliases to log-in to chpc. Begin by determining what SHELL you are using.
+
+```bash
+echo $PATH
+```
+
+If you're using a `zsh` shell, modify your `.zshrc` file.
+
+If you're using a `bash` shell, modify your `.bashrc` file.
+
+```bash
+cd
+ls -a
+vim .zshrc
+```
+
+Example of aliases added to rc file:
+
+```bash
+export PATH="/opt/homebrew/bin:$PATH"
+
+alias np='ssh -Y [uid]@notchpeak.chpc.utah.edu'
+alias kp='ssh -Y [uid]@kingspeak.chpc.utah.edu'
+```
+
+When you re-open your terminal, these settings will be loaded. You can either close and re-open the terminal.  Or, you can call:
+
+```bash
+source .zshrc
+```
+or 
+```bash
+source .bashrc
+```
+
+Now, we'll add aliases when logging into chpc.
+
+```bash
+np
+cd
+vim .bash_profile
+```
+
+Example of added aliases
+
+```bash
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+alias watch="watch "
+alias sq="squeue --me"
+alias sq2="squeue -o \"%8i %12j %4t %10u %20q %20a %10g %20P %10Q %5D %11l %11L %R\""
+alias sqNode="squeue --me --sort=\"N\""
+alias cl="rm e_* o_* R_* my*"
+alias si="sinfo -o \"%20P %5D %14F %8z %10m %10d %11l %25f %N\""
+alias siMem="sinfo -o \"%20P %5D %6t %8z %10m %10d %11l %25f %N\" -S \"-m\""
+alias siNode="sinfo -o \"%20P %5D %6t %8z %10m %10d %11l %25f %N\" -S \"-N\""
+sa() {
+  sacct -j "$1" --format=JobID,partition,state,time,elapsed,MaxRss,MaxVMSize,nodelist -X
+}
+
+# User specific environment and startup programs
+
+PATH=$PATH:$HOME/bin
+
+export PATH
+unset USERNAME
+
+# Restore modules
+
+# module restore clusterMods
+```
+
+# 2. Run a slurm script
+
+We'll simulate estimating pi using chpc, using the script here [Applied HPC with R](https://book-hpc.ggvy.cl/slurm-simpi).
+
+First, download the R script file ([01-sapply.R](https://book-hpc.ggvy.cl/01-sapply.R)) and save to a directory of interest.
+
+On my machine, I've created a new folder and saved the `01-sapply.R` file here:
+
+```bash
+cd ~/Library/CloudStorage/Box-Box/__teaching/advanced\ computing/2024 
+mkdir chpc-examples
+cd chpc-examples
+curl -O "https://book-hpc.ggvy.cl/01-sapply.R" 
+ls
+```
+
+Generally, I develop the code on my local machine, so I don't need to download the file. Google search for how to download a file using terminal ([here](https://askubuntu.com/questions/207265/how-to-download-a-file-from-a-website-via-terminal)) .
+
+
+Second, set up where you'd like to save the file within your chpc account.
+
+```bash
+cd
+mkdir examples
+cd examples
+mkdir pi
+cd pi
+pwd
+```
+
+Third, securely transfer the file from your local machine to your chpc account in the desired location.
+
+```bash
+# scp [source file(s)] [target location]
+scp * -r [uid]@notchpeak2.chpc.utah.edu:~/chpc-examples/pi
+```
+
+Fourth, create a slurm file, here we'll follow along [submitting-jobs-to-slurm](https://book-hpc.ggvy.cl/slurm-simpi#submitting-jobs-to-slurm). Save the slurm file as `01-sapply.slurm` and then run calling `$ sbatch 01-sapply.slurm`.
+
+Run the code and note that it needs additional information -- specifically the account and partition.
+
+Use the following modification of [submitting-jobs-to-slurm](https://book-hpc.ggvy.cl/slurm-simpi#submitting-jobs-to-slurm):
+
+```bash
+#!/bin/sh
+#SBATCH --job-name=sapply
+#SBATCH --time=00:10:00
+#SBATCH --account=phs7045
+#SBATCH --partition=notchpeak-shared-freecycle
+#SBATCH --output out.%j 
+#SBATCH --error err.%j
+module load R
+Rscript --vanilla 01-sapply.R
+```
+
+Rerun with `$ sbatch 01-sapply.slurm` and watch with `watch sq`.
+
+Call `ls -l` and see the new files: 
+
+
+Fifth, transfer the results back to your local machine.  Go back to your local machine and the directory of interest.
+
+```bash
+scp [uid]@notchpeak2.chpc.utah.edu:~/chpc-examples/pi/02-mclpply.rds .
+```
+
