@@ -21,7 +21,7 @@ them.
 | 10/08 and 10/10 | Fall Break |  |  |
 | 10/15 and 10/17 (presentations) | Midterm project [+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd)) |  |  |
 | 10/22 and 10/24 | UofU’s CHPC ([CHPC overview slides](10-chpc-week/chpc_overview.pdf), [Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf)) |  |  |
-| 10/29 and 10/31 | Slurm + Homework 4 (Slurm) |  |  |
+| 10/29 and 10/31 | Slurm + Homework 4 (Slurm) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-slurm-week1/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/11-slurm-week1/slides.qmd)) |  |
 | 11/05 and 11/07 | More practice with slurm |  |  |
 | 11/12 and 11/14 | R packages I |  |  |
 | 11/19 and 11/21 | R packages II |  |  |
