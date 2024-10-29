@@ -111,13 +111,13 @@ unset USERNAME
 # module restore clusterMods
 ```
 
-# 2. Run a slurm script
+# 2. Run a slurm script and transfer results to local machine
 
 We'll simulate estimating pi using chpc, using the script here [Applied HPC with R](https://book-hpc.ggvy.cl/slurm-simpi).
 
 First, download the R script file ([01-sapply.R](https://book-hpc.ggvy.cl/01-sapply.R)) and save to a directory of interest.
 
-On my machine, I've created a new folder and saved the `01-sapply.R` file here:
+On my machine, I've created a new folder `chpc-examples` and saved the `01-sapply.R` file here:
 
 ```bash
 cd ~/Library/CloudStorage/Box-Box/__teaching/advanced\ computing/2024 
@@ -160,15 +160,37 @@ Use the following modification of [submitting-jobs-to-slurm](https://book-hpc.gg
 #SBATCH --time=00:10:00
 #SBATCH --account=phs7045
 #SBATCH --partition=notchpeak-shared-freecycle
-#SBATCH --output out.%j 
-#SBATCH --error err.%j
+#SBATCH --output o_%j 
+#SBATCH --error e_%j
 module load R
 Rscript --vanilla 01-sapply.R
 ```
 
 Rerun with `$ sbatch 01-sapply.slurm` and watch with `watch sq`.
 
-Call `ls -l` and see the new files: 
+Call `ls -l` and see the new files: `e_[job]`, `o_[job]`, and `01-sapply.rds`.
+
+Optional, take a look at the error and output files.
+
+```bash
+vim e_[job]
+```
+
+```bash
+vim o_[job]
+```
+
+Optional, take a quick look at output (but don't take more than 10-15 minutes or it'll use up resources on the log-in node).
+
+```bash
+$ module load R
+$ R
+```
+
+```{r, eval=FALSE}
+o <- readRDS("01-sapply.rds)
+mean(o)
+```
 
 
 Fifth, transfer the results back to your local machine.  Go back to your local machine and the directory of interest.
@@ -176,4 +198,77 @@ Fifth, transfer the results back to your local machine.  Go back to your local m
 ```bash
 scp [uid]@notchpeak2.chpc.utah.edu:~/chpc-examples/pi/02-mclpply.rds .
 ```
+
+# SBATCH options
+
+Now, let's practice updating slurm options.
+
+First, clean up directory
+
+```bash
+rm o_* e_*
+```
+
+```bash
+cl
+```
+
+Optional, copy the slurm file to a file. Notice that the slurm file does not need to end with `.slurm` suffix.
+
+```bash
+cp 01-sapply.slurm 01a-sapply.sl
+vim 01a-sapply.sl
+```
+
+
+
+```bash
+#!/bin/sh
+#SBATCH --job-name=sapply
+#SBATCH --time=00:10:00
+# SBATCH --account=phs7045
+#SBATCH --account=owner-guest
+# SBATCH --partition=notchpeak-shared-freecycle
+#SBATCH --partition=kingspeak-shared-guest
+#SBATCH --output out_%j 
+#SBATCH --error error_%j
+#SBATCH --mail-type=START,END,FAIL
+#SBATCH --mail-user=jonathan.chipman@hci.utah.edu
+module load R
+Rscript --vanilla 01-sapply.R
+```
+
+Try `sbatch 01a-sapply.sl` and see that it doesn't run.  You get the error:
+
+```bash
+sbatch: error: invalid partition specified: kingspeak-shared-guest
+sbatch: error: Batch job submission failed: Invalid partition name specified
+```
+
+This is because we are not logged onto kingspeak.  Now, call:
+
+```bash
+sbatch -M kingspeak 01a-sapply.sl
+watch sq -M kingspeak
+```
+
+Keep your eye out for an email when it starts and finishes.
+
+
+# Parallel (an exercise)
+
+Now, we'll use the Rscript for using the parallel package [Case 2: Single job, multicore job](https://book-hpc.ggvy.cl/slurm-simpi#case-2-single-job-multicore-job):
+
+Exercise: 
+
+1. Pull the file `02-mclapply.R` to your local machine and then send it to hpc.
+2. Copy a version of the slurm script to have the name `02-mclapply.slurm` (or a similar name) and add the SBATCH option:
+
+```bash
+#SBATCH --cpus-per-task=4
+```
+
+3. Run the results and send it back to your local machine.
+
+
 
