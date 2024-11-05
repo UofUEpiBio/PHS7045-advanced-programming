@@ -1,0 +1,23 @@
+---
+title: "Homework 04 - Slurm"
+format:
+  html:
+    embed-resources: true
+---
+
+# Due date
+
+Tuesday, November 19
+
+
+# Assignment
+
+Re-run homework 1 but through using parallelization on the cluster.  You can either use (1) single-threading across multiple cores/nodes or (2) a call to `slurmR`.
+
+For your submission, turn in the following:
+
+1. Turn in all scripts
+
+2. Write a report that says how you ran your slurm call.  Describe how the cluster is performing parallelization.
+
+3. Include in your report the Table 2 as done in homework 1.
