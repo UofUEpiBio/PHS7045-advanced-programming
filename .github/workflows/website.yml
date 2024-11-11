@@ -12,14 +12,12 @@ jobs:
 
       - name: preping
         run: |
-          mkdir _site
-          cp -R * _site
           quarto render README.qmd --to=html
-          mv README.html _site/index.html
+          mv README.html index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "_site"
+          path: "./"
 
   website:
     if: ${{ github.event_name != 'pull_request' }}
