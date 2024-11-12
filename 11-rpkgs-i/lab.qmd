@@ -51,13 +51,12 @@ The function should be named `ps_match`:
 it using `roxygen`. Once you finish that, ensure it compiles and the function
 is visible.[^reminder] (then commit and push)
 
-[^reminder]: Remember to run `roxygen2::roxygenise()` or Ctr + Shift + D, if using RStudio.
+[^reminder]: Remember to run `roxygen2::roxygenise()`, `devtools::document()`, or Ctr + Shift + D, if using RStudio.
 
 2. Write an example with artificial data passing a random vector with ten elements
    distributed U[0, 1]. Add the example to the documentation using the `@examples` tag. (then commit and push)
 
-3. Write a test using the `tinytest`. The C++ function should match the results of
-   the equivalent R function:
+3. Write a test using the `testthat` R package. The C++ function should match the results of the equivalent R function:
 
    ```r
     set.seed(1231)
