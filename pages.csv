@@ -10,7 +10,7 @@ date,week,name,id,issue,extra
 10/15 and 10/17 (presentations),9,Midterm project,09-midterm,,[+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd))
 10/22 and 10/24,10,UofU's CHPC,10-chpc-week,,"([CHPC overview slides](10-chpc-week/chpc_overview.pdf), [Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf))"
 10/29 and 10/31,11,Slurm,11-slurm-week1,,+ Homework 4 (Slurm)
-11/05 and 11/07,12,More practice with slurm,,,
+11/05 and 11/07,12,More practice with slurm,12-slurm-week2,,+ [Homework 4](https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/12-slurm-hw.html) ([source](12-slurm-week2/12-slurm-hw.qmd))
 11/12 and 11/14,13,R packages I,13-rpkgs-i,,
 11/19 and 11/21,14,R packages II,07-rpkgs-i,,
 11/26 and 11/28 (off),15,Automatic Reports with GitHub Actions,99-autoreport,,

@@ -1,6 +1,5 @@
 ---
 title: 'Bash and HPC Essentials'
-author: 'Jonathan Chipman, Ph.D.'
 format: 
   html:
     toc: TRUE
@@ -16,21 +15,6 @@ format:
   revealjs: default
   pdf: default
 ---
-
-# Table of Contents
-1. Set up Aliases for Bash File (.bash_profile)
-    1. Example
-2. First Example: Simulating Pi
-    1. Save File on Local Machine
-    2. Set Up the Target Location
-    3. SCP File from Local to CHPC Account
-    4. Create Slurm File
-    5. Run File
-    6. Watch SQ
-    7. Examine Results
-    8. Send Back to Local Machine
-3. Parallel, Arrays, Multi-node
-4. Appendix: Vim Common Commands
 
 # 1. Set up Aliases for Bash File (.bash_profile)
 
