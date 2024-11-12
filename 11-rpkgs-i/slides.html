@@ -1286,7 +1286,7 @@ George G. Vega Yon, Ph.D.
 <p>Folders</p>
 <ul>
 <li><p><strong>R</strong> Where the R scripts live, e.g., <code>addnums.r</code>, <code>boring-pkg.r</code>.</p></li>
-<li><p><strong>tests</strong> Where the tests live, e.g., <code>testthat/test-addnums.r</code> (using testthat).</p></li>
+<li><p><strong>tests</strong> Where the tests live, e.g., <code>testthat/test-addnums.r</code> (using <a href="https://cran.r-project.org/package=testthat">testthat</a> or <a href="https://cran.r-project.org/package=tinytest">tinytest</a>).</p></li>
 <li><p><strong>vignettes</strong> Where vignettes live, e.g., <code>vignettes/mode_details_on_addnums.rmd</code>.</p></li>
 <li><p><strong>data</strong> Where the data lives, e.g., <code>fakedata.rda</code>, <code>aneattable.csv</code>.</p></li>
 <li><p><strong>man</strong> Where the manuals live, e.g., <code>addnums.Rd</code>, <code>boringpkg.Rd</code>.</p></li>
@@ -1413,31 +1413,322 @@ George G. Vega Yon, Ph.D.
 <span id="cb4-21"><a href></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div>
 </section>
+<section id="detour-s3-classes" class="slide level2">
+<h2>Detour: S3 classes</h2>
+<p>Here we are leveraging S3 classes. In R, the S3 is a simple way to do object oriented programming. The way it works:</p>
+<ol type="1">
+<li><p>Objects should have a class attribute (e.g., <code>class(x) &lt;- &quot;myclass&quot;</code>).</p></li>
+<li><p>You can then define “methods” for that class, e.g., <code>print.myclass</code> and <code>plot.myclass</code>.</p></li>
+<li><p>These are valid as long as there is a generic function (e.g., <code>print</code> and <code>plot</code>) that can handle the class.</p></li>
+</ol>
+<p>You can inspect the methods using the <code>methods()</code> function, e.g.,</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r code-overflow-scroll number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">methods</span>(<span class="at">generic.function =</span> <span class="st">&quot;print&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] print.acf*                                          
+  [2] print.activeConcordance*                            
+  [3] print.AES*                                          
+  [4] print.anova*                                        
+  [5] print.aov*                                          
+  [6] print.aovlist*                                      
+  [7] print.ar*                                           
+  [8] print.Arima*                                        
+  [9] print.arima0*                                       
+ [10] print.AsIs                                          
+ [11] print.aspell*                                       
+ [12] print.aspell_inspect_context*                       
+ [13] print.bibentry*                                     
+ [14] print.Bibtex*                                       
+ [15] print.browseVignettes*                              
+ [16] print.by                                            
+ [17] print.changedFiles*                                 
+ [18] print.check_bogus_return*                           
+ [19] print.check_code_usage_in_package*                  
+ [20] print.check_compiled_code*                          
+ [21] print.check_demo_index*                             
+ [22] print.check_depdef*                                 
+ [23] print.check_details*                                
+ [24] print.check_details_changes*                        
+ [25] print.check_doi_db*                                 
+ [26] print.check_dotInternal*                            
+ [27] print.check_make_vars*                              
+ [28] print.check_nonAPI_calls*                           
+ [29] print.check_package_code_assign_to_globalenv*       
+ [30] print.check_package_code_attach*                    
+ [31] print.check_package_code_data_into_globalenv*       
+ [32] print.check_package_code_startup_functions*         
+ [33] print.check_package_code_syntax*                    
+ [34] print.check_package_code_unload_functions*          
+ [35] print.check_package_compact_datasets*               
+ [36] print.check_package_CRAN_incoming*                  
+ [37] print.check_package_datalist*                       
+ [38] print.check_package_datasets*                       
+ [39] print.check_package_depends*                        
+ [40] print.check_package_description*                    
+ [41] print.check_package_description_encoding*           
+ [42] print.check_package_license*                        
+ [43] print.check_packages_in_dir*                        
+ [44] print.check_packages_used*                          
+ [45] print.check_po_files*                               
+ [46] print.check_pragmas*                                
+ [47] print.check_Rd_line_widths*                         
+ [48] print.check_Rd_metadata*                            
+ [49] print.check_Rd_xrefs*                               
+ [50] print.check_RegSym_calls*                           
+ [51] print.check_S3_methods_needing_delayed_registration*
+ [52] print.check_so_symbols*                             
+ [53] print.check_T_and_F*                                
+ [54] print.check_url_db*                                 
+ [55] print.check_vignette_index*                         
+ [56] print.checkDocFiles*                                
+ [57] print.checkDocStyle*                                
+ [58] print.checkFF*                                      
+ [59] print.checkRd*                                      
+ [60] print.checkRdContents*                              
+ [61] print.checkReplaceFuns*                             
+ [62] print.checkS3methods*                               
+ [63] print.checkTnF*                                     
+ [64] print.checkVignettes*                               
+ [65] print.citation*                                     
+ [66] print.cli_ansi_html_style*                          
+ [67] print.cli_ansi_string*                              
+ [68] print.cli_ansi_style*                               
+ [69] print.cli_boxx*                                     
+ [70] print.cli_diff_chr*                                 
+ [71] print.cli_doc*                                      
+ [72] print.cli_progress_demo*                            
+ [73] print.cli_rule*                                     
+ [74] print.cli_sitrep*                                   
+ [75] print.cli_spark*                                    
+ [76] print.cli_spinner*                                  
+ [77] print.cli_tree*                                     
+ [78] print.codoc*                                        
+ [79] print.codocClasses*                                 
+ [80] print.codocData*                                    
+ [81] print.colorConverter*                               
+ [82] print.compactPDF*                                   
+ [83] print.condition                                     
+ [84] print.connection                                    
+ [85] print.CRAN_package_reverse_dependencies_and_views*  
+ [86] print.data.frame                                    
+ [87] print.Date                                          
+ [88] print.default                                       
+ [89] print.dendrogram*                                   
+ [90] print.density*                                      
+ [91] print.difftime                                      
+ [92] print.dist*                                         
+ [93] print.Dlist                                         
+ [94] print.DLLInfo                                       
+ [95] print.DLLInfoList                                   
+ [96] print.DLLRegisteredRoutines                         
+ [97] print.dummy_coef*                                   
+ [98] print.dummy_coef_list*                              
+ [99] print.ecdf*                                         
+[100] print.eigen                                         
+[101] print.evaluate_evaluation*                          
+[102] print.factanal*                                     
+[103] print.factor                                        
+[104] print.family*                                       
+[105] print.fileSnapshot*                                 
+[106] print.findLineNumResult*                            
+[107] print.formula*                                      
+[108] print.ftable*                                       
+[109] print.function                                      
+[110] print.getAnywhere*                                  
+[111] print.glm*                                          
+[112] print.hashtab*                                      
+[113] print.hclust*                                       
+[114] print.help_files_with_topic*                        
+[115] print.hexmode                                       
+[116] print.HoltWinters*                                  
+[117] print.hsearch*                                      
+[118] print.hsearch_db*                                   
+[119] print.htest*                                        
+[120] print.html*                                         
+[121] print.html_dependency*                              
+[122] print.htmltools.selector*                           
+[123] print.htmltools.selector.list*                      
+[124] print.infl*                                         
+[125] print.integrate*                                    
+[126] print.isoreg*                                       
+[127] print.json*                                         
+[128] print.key_missing*                                  
+[129] print.kmeans*                                       
+[130] print.knitr_kable*                                  
+[131] print.Latex*                                        
+[132] print.LaTeX*                                        
+[133] print.libraryIQR                                    
+[134] print.listof                                        
+[135] print.lm*                                           
+[136] print.loadings*                                     
+[137] print.loess*                                        
+[138] print.logLik*                                       
+[139] print.ls_str*                                       
+[140] print.medpolish*                                    
+[141] print.MethodsFunction*                              
+[142] print.mtable*                                       
+[143] print.NativeRoutineList                             
+[144] print.news_db*                                      
+[145] print.nls*                                          
+[146] print.noquote                                       
+[147] print.numeric_version                               
+[148] print.object_size*                                  
+[149] print.octmode                                       
+[150] print.packageDescription*                           
+[151] print.packageInfo                                   
+[152] print.packageIQR*                                   
+[153] print.packageStatus*                                
+[154] print.paged_df*                                     
+[155] print.pairwise.htest*                               
+[156] print.person*                                       
+[157] print.POSIXct                                       
+[158] print.POSIXlt                                       
+[159] print.power.htest*                                  
+[160] print.ppr*                                          
+[161] print.prcomp*                                       
+[162] print.princomp*                                     
+[163] print.proc_time                                     
+[164] print.quosure*                                      
+[165] print.quosures*                                     
+[166] print.raster*                                       
+[167] print.Rconcordance*                                 
+[168] print.Rd*                                           
+[169] print.recordedplot*                                 
+[170] print.restart                                       
+[171] print.RGBcolorConverter*                            
+[172] print.RGlyphFont*                                   
+[173] print.rlang_box_done*                               
+[174] print.rlang_box_splice*                             
+[175] print.rlang_data_pronoun*                           
+[176] print.rlang_dict*                                   
+[177] print.rlang_dyn_array*                              
+[178] print.rlang_envs*                                   
+[179] print.rlang_error*                                  
+[180] print.rlang_fake_data_pronoun*                      
+[181] print.rlang_lambda_function*                        
+[182] print.rlang_message*                                
+[183] print.rlang_trace*                                  
+[184] print.rlang_warning*                                
+[185] print.rlang_zap*                                    
+[186] print.rlang:::list_of_conditions*                   
+[187] print.rle                                           
+[188] print.rlib_bytes*                                   
+[189] print.rlib_error_3_0*                               
+[190] print.rlib_trace_3_0*                               
+[191] print.roman*                                        
+[192] print.scalar*                                       
+[193] print.sessionInfo*                                  
+[194] print.shiny.tag*                                    
+[195] print.shiny.tag.env*                                
+[196] print.shiny.tag.list*                               
+[197] print.shiny.tag.query*                              
+[198] print.simple.list                                   
+[199] print.smooth.spline*                                
+[200] print.socket*                                       
+[201] print.srcfile                                       
+[202] print.srcref                                        
+[203] print.stepfun*                                      
+[204] print.stl*                                          
+[205] print.StructTS*                                     
+[206] print.subdir_tests*                                 
+[207] print.summarize_CRAN_check_status*                  
+[208] print.summary.aov*                                  
+[209] print.summary.aovlist*                              
+[210] print.summary.ecdf*                                 
+[211] print.summary.glm*                                  
+[212] print.summary.lm*                                   
+[213] print.summary.loess*                                
+[214] print.summary.manova*                               
+[215] print.summary.nls*                                  
+[216] print.summary.packageStatus*                        
+[217] print.summary.ppr*                                  
+[218] print.summary.prcomp*                               
+[219] print.summary.princomp*                             
+[220] print.summary.table                                 
+[221] print.summary.warnings                              
+[222] print.summaryDefault                                
+[223] print.table                                         
+[224] print.tables_aov*                                   
+[225] print.terms*                                        
+[226] print.ts*                                           
+[227] print.tskernel*                                     
+[228] print.TukeyHSD*                                     
+[229] print.tukeyline*                                    
+[230] print.tukeysmooth*                                  
+[231] print.undoc*                                        
+[232] print.vignette*                                     
+[233] print.warnings                                      
+[234] print.xfun_raw_string*                              
+[235] print.xfun_record_results*                          
+[236] print.xfun_rename_seq*                              
+[237] print.xfun_strict_list*                             
+[238] print.xgettext*                                     
+[239] print.xngettext*                                    
+[240] print.xtabs*                                        
+see &#39;?methods&#39; for accessing help and source code</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r code-overflow-scroll number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a><span class="fu">methods</span>(<span class="at">class =</span> <span class="st">&quot;glm&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] add1           anova          coerce         confint        cooks.distance
+ [6] deviance       drop1          effects        extractAIC     family        
+[11] formula        influence      initialize     logLik         model.frame   
+[16] nobs           predict        print          profile        residuals     
+[21] rstandard      rstudent       show           sigma          slotsFromS3   
+[26] summary        vcov           weights       
+see &#39;?methods&#39; for accessing help and source code</code></pre>
+</div>
+</div>
+</div></div>
+</section>
+<section id="detour-s3-classes-cont." class="slide level2">
+<h2>Detour: S3 classes (cont.)</h2>
+<p>You can also define your own methods, e.g.,:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href></a>my_generic <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">UseMethod</span>(<span class="st">&quot;my_generic&quot;</span>)</span>
+<span id="cb9-2"><a href></a>my_generic.default <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="st">&quot;I don&#39;t know how to handle this&quot;</span></span>
+<span id="cb9-3"><a href></a>my_generic.numeric <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="st">&quot;I know how to handle this&quot;</span></span>
+<span id="cb9-4"><a href></a></span>
+<span id="cb9-5"><a href></a><span class="fu">my_generic</span>(<span class="st">&quot;a&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;I don&#39;t know how to handle this&quot;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a><span class="fu">my_generic</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] &quot;I know how to handle this&quot;</code></pre>
+</div>
+</div>
+</section>
 <section id="step-2.1-and-2.2-write-f-and-document-it-cont.-1" class="slide level2">
 <h2>Step 2.1 and 2.2: Write <code>f</code> and Document it (cont. 1)</h2>
+<p>Here we are defining a method for <code>plot.boringpkg_addnums</code>. Notice that the <code>plot</code> function already has a generic method, which is why we only need to define the method for <code>boringpkg_addnums</code>.</p>
 <div class="columns" style="font-size: 20pt">
 <div class="column" style="width:55%;">
-<div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="co">#&#39; @rdname addnums</span></span>
-<span id="cb5-2"><a href></a><span class="co">#&#39; @export</span></span>
-<span id="cb5-3"><a href></a><span class="co">#&#39; @param x An object of class \code{boringpkg_addnums}.</span></span>
-<span id="cb5-4"><a href></a><span class="co">#&#39; @param y Ignored.</span></span>
-<span id="cb5-5"><a href></a><span class="co">#&#39; @param ... Further arguments passed to</span></span>
-<span id="cb5-6"><a href></a><span class="co">#&#39; \code{\link[graphics:plot.window]{plot.window}}.</span></span>
-<span id="cb5-7"><a href></a>plot.boringpkg_addnums <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">y =</span> <span class="cn">NULL</span>, ...) {</span>
-<span id="cb5-8"><a href></a>    graphics<span class="sc">::</span><span class="fu">plot.new</span>()</span>
-<span id="cb5-9"><a href></a>    graphics<span class="sc">::</span><span class="fu">plot.window</span>(<span class="at">xlim =</span> <span class="fu">range</span>(<span class="fu">unlist</span>(<span class="fu">c</span>(<span class="dv">0</span>,x))), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">5</span>,<span class="dv">1</span>))</span>
-<span id="cb5-10"><a href></a>    graphics<span class="sc">::</span><span class="fu">axis</span>(<span class="dv">1</span>)</span>
-<span id="cb5-11"><a href></a>    <span class="fu">with</span>(x, graphics<span class="sc">::</span><span class="fu">segments</span>(<span class="dv">0</span>, <span class="dv">1</span>, ab, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">3</span>))</span>
-<span id="cb5-12"><a href></a>    <span class="fu">with</span>(x, graphics<span class="sc">::</span><span class="fu">segments</span>(<span class="dv">0</span>, <span class="dv">0</span>, a, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>, <span class="at">lwd=</span><span class="dv">3</span>))</span>
-<span id="cb5-13"><a href></a>    <span class="fu">with</span>(x, graphics<span class="sc">::</span><span class="fu">segments</span>(a, .<span class="dv">5</span>, a <span class="sc">+</span> b, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">3</span>))</span>
-<span id="cb5-14"><a href></a>    graphics<span class="sc">::</span><span class="fu">legend</span>(<span class="st">&quot;bottom&quot;</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;red&quot;</span>), </span>
-<span id="cb5-15"><a href></a>            <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;a+b&quot;</span>, <span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, </span>
-<span id="cb5-16"><a href></a>            <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">3</span>)</span>
-<span id="cb5-17"><a href></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href></a><span class="co">#&#39; @rdname addnums</span></span>
+<span id="cb13-2"><a href></a><span class="co">#&#39; @export</span></span>
+<span id="cb13-3"><a href></a><span class="co">#&#39; @param x An object of class \code{boringpkg_addnums}.</span></span>
+<span id="cb13-4"><a href></a><span class="co">#&#39; @param y Ignored.</span></span>
+<span id="cb13-5"><a href></a><span class="co">#&#39; @param ... Further arguments passed to</span></span>
+<span id="cb13-6"><a href></a><span class="co">#&#39; \code{\link[graphics:plot.window]{plot.window}}.</span></span>
+<span id="cb13-7"><a href></a>plot.boringpkg_addnums <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">y =</span> <span class="cn">NULL</span>, ...) {</span>
+<span id="cb13-8"><a href></a>    graphics<span class="sc">::</span><span class="fu">plot.new</span>()</span>
+<span id="cb13-9"><a href></a>    graphics<span class="sc">::</span><span class="fu">plot.window</span>(<span class="at">xlim =</span> <span class="fu">range</span>(<span class="fu">unlist</span>(<span class="fu">c</span>(<span class="dv">0</span>,x))), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span>.<span class="dv">5</span>,<span class="dv">1</span>))</span>
+<span id="cb13-10"><a href></a>    graphics<span class="sc">::</span><span class="fu">axis</span>(<span class="dv">1</span>)</span>
+<span id="cb13-11"><a href></a>    <span class="fu">with</span>(x, graphics<span class="sc">::</span><span class="fu">segments</span>(<span class="dv">0</span>, <span class="dv">1</span>, ab, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd=</span><span class="dv">3</span>))</span>
+<span id="cb13-12"><a href></a>    <span class="fu">with</span>(x, graphics<span class="sc">::</span><span class="fu">segments</span>(<span class="dv">0</span>, <span class="dv">0</span>, a, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>, <span class="at">lwd=</span><span class="dv">3</span>))</span>
+<span id="cb13-13"><a href></a>    <span class="fu">with</span>(x, graphics<span class="sc">::</span><span class="fu">segments</span>(a, .<span class="dv">5</span>, a <span class="sc">+</span> b, <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">3</span>))</span>
+<span id="cb13-14"><a href></a>    graphics<span class="sc">::</span><span class="fu">legend</span>(<span class="st">&quot;bottom&quot;</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;red&quot;</span>), </span>
+<span id="cb13-15"><a href></a>            <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;a+b&quot;</span>, <span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, </span>
+<span id="cb13-16"><a href></a>            <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">3</span>)</span>
+<span id="cb13-17"><a href></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div><div class="column" style="width:40%;">
 <ul>
 <li><p>Here, we are adding a function that is documented in <code>addnums</code>. The plot method (left).</p></li>
-<li><p>You’ll need to update the <code>man/*Rd</code> every time that you add new roxygen content. Press Ctrl + Shift + D, and RStudio will do it for you.</p></li>
+<li><p>You’ll need to update the <code>man/*Rd</code> every time that you add new roxygen content. Press Ctrl + Shift + D, and RStudio will do it for you (or enter <code>devtools::document()</code> which calls <code>roxygen2::roxygenize()</code>).</p></li>
 </ul>
 </div></div>
 <div style="font-size: 20pt">
@@ -1451,39 +1742,39 @@ George G. Vega Yon, Ph.D.
 <div class="columns" style="font-size: 20pt">
 <p>Since we added foreign functions, we need to add them to the NAMESPACE and to the DESCRIPTION files:</p><div class="column" style="width:50%;">
 <p><code>R/boring-pkg.r</code></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href></a><span class="co">#&#39; @importFrom graphics plot.new plot.window axis legend</span></span>
-<span id="cb6-2"><a href></a><span class="cn">NULL</span></span>
-<span id="cb6-3"><a href></a></span>
-<span id="cb6-4"><a href></a><span class="co">#&#39; boringpkg</span></span>
-<span id="cb6-5"><a href></a><span class="co">#&#39;</span></span>
-<span id="cb6-6"><a href></a><span class="co">#&#39; A (not so) boring collection of functions</span></span>
-<span id="cb6-7"><a href></a><span class="co">#&#39;</span></span>
-<span id="cb6-8"><a href></a><span class="co">#&#39; @description We add stuff up... You can access to the project</span></span>
-<span id="cb6-9"><a href></a><span class="co">#&#39; website at \url{https://github.com/USCbiostats/software-dev/tree/master/rpkgs/boringpkg}</span></span>
-<span id="cb6-10"><a href></a><span class="co">#&#39;</span></span>
-<span id="cb6-11"><a href></a><span class="co">#&#39; @docType package</span></span>
-<span id="cb6-12"><a href></a><span class="co">#&#39; @name boringpkg</span></span>
-<span id="cb6-13"><a href></a><span class="co">#&#39;</span></span>
-<span id="cb6-14"><a href></a><span class="co">#&#39; @author George G. Vega Yon</span></span>
-<span id="cb6-15"><a href></a><span class="cn">NULL</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href></a><span class="co">#&#39; @importFrom graphics plot.new plot.window axis legend</span></span>
+<span id="cb14-2"><a href></a><span class="cn">NULL</span></span>
+<span id="cb14-3"><a href></a></span>
+<span id="cb14-4"><a href></a><span class="co">#&#39; boringpkg</span></span>
+<span id="cb14-5"><a href></a><span class="co">#&#39;</span></span>
+<span id="cb14-6"><a href></a><span class="co">#&#39; A (not so) boring collection of functions</span></span>
+<span id="cb14-7"><a href></a><span class="co">#&#39;</span></span>
+<span id="cb14-8"><a href></a><span class="co">#&#39; @description We add stuff up... You can access to the project</span></span>
+<span id="cb14-9"><a href></a><span class="co">#&#39; website at \url{https://github.com/USCbiostats/software-dev/tree/master/rpkgs/boringpkg}</span></span>
+<span id="cb14-10"><a href></a><span class="co">#&#39;</span></span>
+<span id="cb14-11"><a href></a><span class="co">#&#39; @docType package</span></span>
+<span id="cb14-12"><a href></a><span class="co">#&#39; @name boringpkg</span></span>
+<span id="cb14-13"><a href></a><span class="co">#&#39;</span></span>
+<span id="cb14-14"><a href></a><span class="co">#&#39; @author George G. Vega Yon</span></span>
+<span id="cb14-15"><a href></a><span class="cn">NULL</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div><div class="column" style="width:50%;">
 <p><code>DESCRIPTION</code></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource yml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href></a><span class="fu">Package</span><span class="kw">:</span><span class="at"> boringpkg</span></span>
-<span id="cb7-2"><a href></a><span class="fu">Type</span><span class="kw">:</span><span class="at"> Package</span></span>
-<span id="cb7-3"><a href></a><span class="fu">Title</span><span class="kw">:</span><span class="at"> What the Package Does (Title Case)</span></span>
-<span id="cb7-4"><a href></a><span class="fu">Version</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.1.0</span></span>
-<span id="cb7-5"><a href></a><span class="fu">Author</span><span class="kw">:</span><span class="at"> Who wrote it</span></span>
-<span id="cb7-6"><a href></a><span class="fu">Maintainer</span><span class="kw">:</span><span class="at"> The package maintainer &lt;yourself@somewhere.net&gt;</span></span>
-<span id="cb7-7"><a href></a><span class="fu">Description</span><span class="kw">:</span><span class="at"> More about what it does (maybe more than one line)</span></span>
-<span id="cb7-8"><a href></a><span class="at">    Use four spaces when indenting paragraphs within the Description.</span></span>
-<span id="cb7-9"><a href></a><span class="fu">License</span><span class="kw">:</span><span class="at"> What license is it under?</span></span>
-<span id="cb7-10"><a href></a><span class="fu">Encoding</span><span class="kw">:</span><span class="at"> UTF-8</span></span>
-<span id="cb7-11"><a href></a><span class="fu">LazyData</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb7-12"><a href></a><span class="fu">Suggests</span><span class="kw">:</span></span>
-<span id="cb7-13"><a href></a><span class="at">    testthat,</span></span>
-<span id="cb7-14"><a href></a><span class="at">    covr</span></span>
-<span id="cb7-15"><a href></a><span class="fu">RoxygenNote</span><span class="kw">:</span><span class="at"> </span><span class="fl">5.0.1</span></span>
-<span id="cb7-16"><a href></a><span class="fu">Imports</span><span class="kw">:</span><span class="at"> graphics</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode numberSource yml number-lines code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href></a><span class="fu">Package</span><span class="kw">:</span><span class="at"> boringpkg</span></span>
+<span id="cb15-2"><a href></a><span class="fu">Type</span><span class="kw">:</span><span class="at"> Package</span></span>
+<span id="cb15-3"><a href></a><span class="fu">Title</span><span class="kw">:</span><span class="at"> What the Package Does (Title Case)</span></span>
+<span id="cb15-4"><a href></a><span class="fu">Version</span><span class="kw">:</span><span class="at"> </span><span class="fl">0.1.0</span></span>
+<span id="cb15-5"><a href></a><span class="fu">Author</span><span class="kw">:</span><span class="at"> Who wrote it</span></span>
+<span id="cb15-6"><a href></a><span class="fu">Maintainer</span><span class="kw">:</span><span class="at"> The package maintainer &lt;yourself@somewhere.net&gt;</span></span>
+<span id="cb15-7"><a href></a><span class="fu">Description</span><span class="kw">:</span><span class="at"> More about what it does (maybe more than one line)</span></span>
+<span id="cb15-8"><a href></a><span class="at">    Use four spaces when indenting paragraphs within the Description.</span></span>
+<span id="cb15-9"><a href></a><span class="fu">License</span><span class="kw">:</span><span class="at"> What license is it under?</span></span>
+<span id="cb15-10"><a href></a><span class="fu">Encoding</span><span class="kw">:</span><span class="at"> UTF-8</span></span>
+<span id="cb15-11"><a href></a><span class="fu">LazyData</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb15-12"><a href></a><span class="fu">Suggests</span><span class="kw">:</span></span>
+<span id="cb15-13"><a href></a><span class="at">    testthat,</span></span>
+<span id="cb15-14"><a href></a><span class="at">    covr</span></span>
+<span id="cb15-15"><a href></a><span class="fu">RoxygenNote</span><span class="kw">:</span><span class="at"> </span><span class="fl">5.0.1</span></span>
+<span id="cb15-16"><a href></a><span class="fu">Imports</span><span class="kw">:</span><span class="at"> graphics</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div><p>The <code>Suggests</code> and <code>RoxygenNote</code> fields were added automagically by <code>devtools</code>.</p>
 </div>
 </section>
@@ -1493,25 +1784,25 @@ George G. Vega Yon, Ph.D.
 <p>Test are run every time that you run R CMD check</p>
 <ul>
 <li><p>In the <code>tests/testthat/</code> dir, add/edit a source file with tests, e.g. <code>test-addnums.r</code></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;addnums(a, b) = a+b&quot;</span>, {</span>
-<span id="cb8-2"><a href></a>  <span class="co"># Preparing the test</span></span>
-<span id="cb8-3"><a href></a>  a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb8-4"><a href></a>  b <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
-<span id="cb8-5"><a href></a></span>
-<span id="cb8-6"><a href></a>  <span class="co"># Calling the function</span></span>
-<span id="cb8-7"><a href></a>  ans0 <span class="ot">&lt;-</span> a<span class="sc">+</span>b</span>
-<span id="cb8-8"><a href></a>  ans1 <span class="ot">&lt;-</span> <span class="fu">addnums</span>(a, b)</span>
-<span id="cb8-9"><a href></a></span>
-<span id="cb8-10"><a href></a>  <span class="co"># Are these equal?</span></span>
-<span id="cb8-11"><a href></a>  <span class="fu">expect_equal</span>(ans0, ans1<span class="sc">$</span>ab)</span>
-<span id="cb8-12"><a href></a>})</span>
-<span id="cb8-13"><a href></a></span>
-<span id="cb8-14"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;Plot returns -boringpkg_foo-&quot;</span>, {</span>
-<span id="cb8-15"><a href></a>  <span class="fu">expect_s3_class</span>(</span>
-<span id="cb8-16"><a href></a>    <span class="fu">plot</span>(<span class="fu">addnums</span>(<span class="dv">1</span>,<span class="dv">2</span>)), <span class="st">&quot;boringpkg_foo&quot;</span></span>
-<span id="cb8-17"><a href></a>    ) <span class="co"># This will generate an error as the function plot.boringpkg_addnum</span></span>
-<span id="cb8-18"><a href></a>      <span class="co"># does not return an object of that class.</span></span>
-<span id="cb8-19"><a href></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;addnums(a, b) = a+b&quot;</span>, {</span>
+<span id="cb16-2"><a href></a>  <span class="co"># Preparing the test</span></span>
+<span id="cb16-3"><a href></a>  a <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb16-4"><a href></a>  b <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span></span>
+<span id="cb16-5"><a href></a></span>
+<span id="cb16-6"><a href></a>  <span class="co"># Calling the function</span></span>
+<span id="cb16-7"><a href></a>  ans0 <span class="ot">&lt;-</span> a<span class="sc">+</span>b</span>
+<span id="cb16-8"><a href></a>  ans1 <span class="ot">&lt;-</span> <span class="fu">addnums</span>(a, b)</span>
+<span id="cb16-9"><a href></a></span>
+<span id="cb16-10"><a href></a>  <span class="co"># Are these equal?</span></span>
+<span id="cb16-11"><a href></a>  <span class="fu">expect_equal</span>(ans0, ans1<span class="sc">$</span>ab)</span>
+<span id="cb16-12"><a href></a>})</span>
+<span id="cb16-13"><a href></a></span>
+<span id="cb16-14"><a href></a><span class="fu">test_that</span>(<span class="st">&quot;Plot returns -boringpkg_foo-&quot;</span>, {</span>
+<span id="cb16-15"><a href></a>  <span class="fu">expect_s3_class</span>(</span>
+<span id="cb16-16"><a href></a>    <span class="fu">plot</span>(<span class="fu">addnums</span>(<span class="dv">1</span>,<span class="dv">2</span>)), <span class="st">&quot;boringpkg_foo&quot;</span></span>
+<span id="cb16-17"><a href></a>    ) <span class="co"># This will generate an error as the function plot.boringpkg_addnum</span></span>
+<span id="cb16-18"><a href></a>      <span class="co"># does not return an object of that class.</span></span>
+<span id="cb16-19"><a href></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 <li><p>You can run the tests using Ctrl + Shift + t</p></li>
 <li><p>Furthermore, tests are used to evaluate code coverage.</p></li>
 </ul>
@@ -1524,113 +1815,113 @@ George G. Vega Yon, Ph.D.
 <ul>
 <li><p>If you don’t have C/C++ code Just press Ctrl + Shift + E</p></li>
 <li><p>If you have C/C++ code, use <code>R CMD Check</code> with valgrind (check for segfaults)</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb9-1"><a href></a>$ R CMD build boringpkg/</span>
-<span id="cb9-2"><a href></a>$ R CMD check --as-cran --use-valgrind boringpkg*.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb17-1"><a href></a>$ R CMD build boringpkg/</span>
+<span id="cb17-2"><a href></a>$ R CMD check --as-cran --use-valgrind boringpkg*.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>You can ask RStudio to use valgrind too.</p></li>
 </ul>
 <p>For an extensive list of the checks, see the section <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Checking-packages">1.3.1 Checking packages</a>in the “Writing R extensions” manual.</p>
 <p>How does the output of <code>R CMD check</code> looks like?</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb10-1"><a href></a>==&gt; devtools::check()</span>
-<span id="cb10-2"><a href></a></span>
-<span id="cb10-3"><a href></a>Updating boringpkg documentation</span>
-<span id="cb10-4"><a href></a>Loading boringpkg</span>
-<span id="cb10-5"><a href></a>Setting env vars ---------------------------------------------------------------</span>
-<span id="cb10-6"><a href></a>CFLAGS  : -Wall -pedantic</span>
-<span id="cb10-7"><a href></a>CXXFLAGS: -Wall -pedantic</span>
-<span id="cb10-8"><a href></a>Building boringpkg --------------------------------------------------------------</span>
-<span id="cb10-9"><a href></a>&#39;/usr/lib/R/bin/R&#39; --no-site-file --no-environ --no-save --no-restore --quiet  \</span>
-<span id="cb10-10"><a href></a>  CMD build  \</span>
-<span id="cb10-11"><a href></a>  &#39;/home/vegayon/Dropbox/usc/core_project/CodingStandards/rpkgs/boringpkg&#39;  \</span>
-<span id="cb10-12"><a href></a>  --no-resave-data --no-manual </span>
-<span id="cb10-13"><a href></a></span>
-<span id="cb10-14"><a href></a>* checking for file ‘/home/vegayon/Dropbox/usc/core_project/CodingStandards/rpkgs/boringpkg/DESCRIPTION’ ... OK</span>
-<span id="cb10-15"><a href></a>* preparing ‘boringpkg’:</span>
-<span id="cb10-16"><a href></a>* checking DESCRIPTION meta-information ... OK</span>
-<span id="cb10-17"><a href></a>* checking for LF line-endings in source and make files</span>
-<span id="cb10-18"><a href></a>* checking for empty or unneeded directories</span>
-<span id="cb10-19"><a href></a>* building ‘boringpkg_0.1.999.tar.gz’</span>
-<span id="cb10-20"><a href></a></span>
-<span id="cb10-21"><a href></a>Setting env vars ---------------------------------------------------------------</span>
-<span id="cb10-22"><a href></a>_R_CHECK_CRAN_INCOMING_USE_ASPELL_: TRUE</span>
-<span id="cb10-23"><a href></a>_R_CHECK_CRAN_INCOMING_           : FALSE</span>
-<span id="cb10-24"><a href></a>_R_CHECK_FORCE_SUGGESTS_          : FALSE</span>
-<span id="cb10-25"><a href></a>Checking boringpkg --------------------------------------------------------------</span>
-<span id="cb10-26"><a href></a>&#39;/usr/lib/R/bin/R&#39; --no-site-file --no-environ --no-save --no-restore --quiet  \</span>
-<span id="cb10-27"><a href></a>  CMD check &#39;/tmp/RtmpBYGSto/boringpkg_0.1.999.tar.gz&#39; --as-cran --timings  \</span>
-<span id="cb10-28"><a href></a>  --no-manual </span>
-<span id="cb10-29"><a href></a></span>
-<span id="cb10-30"><a href></a>* using log directory ‘/home/vegayon/Dropbox/usc/core_project/CodingStandards/rpkgs/boringpkg.Rcheck’</span>
-<span id="cb10-31"><a href></a>* using R version 3.3.2 (2016-10-31)</span>
-<span id="cb10-32"><a href></a>* using platform: x86_64-pc-linux-gnu (64-bit)</span>
-<span id="cb10-33"><a href></a>* using session charset: UTF-8</span>
-<span id="cb10-34"><a href></a>* using options ‘--no-manual --as-cran’</span>
-<span id="cb10-35"><a href></a>* checking for file ‘boringpkg/DESCRIPTION’ ... OK</span>
-<span id="cb10-36"><a href></a>* checking extension type ... Package</span>
-<span id="cb10-37"><a href></a>* this is package ‘boringpkg’ version ‘0.1.999’</span>
-<span id="cb10-38"><a href></a>* package encoding: UTF-8</span>
-<span id="cb10-39"><a href></a>* checking package namespace information ... OK</span>
-<span id="cb10-40"><a href></a>* checking package dependencies ... OK</span>
-<span id="cb10-41"><a href></a>* checking if this is a source package ... OK</span>
-<span id="cb10-42"><a href></a>* checking if there is a namespace ... OK</span>
-<span id="cb10-43"><a href></a>* checking for executable files ... OK</span>
-<span id="cb10-44"><a href></a>* checking for hidden files and directories ... OK</span>
-<span id="cb10-45"><a href></a>* checking for portable file names ... OK</span>
-<span id="cb10-46"><a href></a>* checking for sufficient/correct file permissions ... OK</span>
-<span id="cb10-47"><a href></a>* checking whether package ‘boringpkg’ can be installed ... OK</span>
-<span id="cb10-48"><a href></a>* checking installed package size ... OK</span>
-<span id="cb10-49"><a href></a>* checking package directory ... OK</span>
-<span id="cb10-50"><a href></a>* checking DESCRIPTION meta-information ... OK</span>
-<span id="cb10-51"><a href></a>* checking top-level files ... OK</span>
-<span id="cb10-52"><a href></a>* checking for left-over files ... OK</span>
-<span id="cb10-53"><a href></a>* checking index information ... OK</span>
-<span id="cb10-54"><a href></a>* checking package subdirectories ... OK</span>
-<span id="cb10-55"><a href></a>* checking R files for non-ASCII characters ... OK</span>
-<span id="cb10-56"><a href></a>* checking R files for syntax errors ... OK</span>
-<span id="cb10-57"><a href></a>* checking whether the package can be loaded ... OK</span>
-<span id="cb10-58"><a href></a>* checking whether the package can be loaded with stated dependencies ... OK</span>
-<span id="cb10-59"><a href></a>* checking whether the package can be unloaded cleanly ... OK</span>
-<span id="cb10-60"><a href></a>* checking whether the namespace can be loaded with stated dependencies ... OK</span>
-<span id="cb10-61"><a href></a>* checking whether the namespace can be unloaded cleanly ... OK</span>
-<span id="cb10-62"><a href></a>* checking loading without being on the library search path ... OK</span>
-<span id="cb10-63"><a href></a>* checking dependencies in R code ... OK</span>
-<span id="cb10-64"><a href></a>* checking S3 generic/method consistency ... OK</span>
-<span id="cb10-65"><a href></a>* checking replacement functions ... OK</span>
-<span id="cb10-66"><a href></a>* checking foreign function calls ... OK</span>
-<span id="cb10-67"><a href></a>* checking R code for possible problems ... OK</span>
-<span id="cb10-68"><a href></a>* checking Rd files ... OK</span>
-<span id="cb10-69"><a href></a>* checking Rd metadata ... OK</span>
-<span id="cb10-70"><a href></a>* checking Rd line widths ... OK</span>
-<span id="cb10-71"><a href></a>* checking Rd cross-references ... OK</span>
-<span id="cb10-72"><a href></a>* checking for missing documentation entries ... OK</span>
-<span id="cb10-73"><a href></a>* checking for code/documentation mismatches ... OK</span>
-<span id="cb10-74"><a href></a>* checking Rd \usage sections ... OK</span>
-<span id="cb10-75"><a href></a>* checking Rd contents ... OK</span>
-<span id="cb10-76"><a href></a>* checking for unstated dependencies in examples ... OK</span>
-<span id="cb10-77"><a href></a>* checking examples ... OK</span>
-<span id="cb10-78"><a href></a>* checking for unstated dependencies in ‘tests’ ... OK</span>
-<span id="cb10-79"><a href></a>* checking tests ...</span>
-<span id="cb10-80"><a href></a>  Running ‘testthat.R’ OK</span>
-<span id="cb10-81"><a href></a>* DONE</span>
-<span id="cb10-82"><a href></a>Status: OK</span>
-<span id="cb10-83"><a href></a></span>
-<span id="cb10-84"><a href></a></span>
-<span id="cb10-85"><a href></a></span>
-<span id="cb10-86"><a href></a></span>
-<span id="cb10-87"><a href></a>R CMD check results</span>
-<span id="cb10-88"><a href></a>0 errors | 0 warnings | 0 notes</span>
-<span id="cb10-89"><a href></a></span>
-<span id="cb10-90"><a href></a>R CMD check succeeded</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb18-1"><a href></a>==&gt; devtools::check()</span>
+<span id="cb18-2"><a href></a></span>
+<span id="cb18-3"><a href></a>Updating boringpkg documentation</span>
+<span id="cb18-4"><a href></a>Loading boringpkg</span>
+<span id="cb18-5"><a href></a>Setting env vars ---------------------------------------------------------------</span>
+<span id="cb18-6"><a href></a>CFLAGS  : -Wall -pedantic</span>
+<span id="cb18-7"><a href></a>CXXFLAGS: -Wall -pedantic</span>
+<span id="cb18-8"><a href></a>Building boringpkg --------------------------------------------------------------</span>
+<span id="cb18-9"><a href></a>&#39;/usr/lib/R/bin/R&#39; --no-site-file --no-environ --no-save --no-restore --quiet  \</span>
+<span id="cb18-10"><a href></a>  CMD build  \</span>
+<span id="cb18-11"><a href></a>  &#39;/home/vegayon/Dropbox/usc/core_project/CodingStandards/rpkgs/boringpkg&#39;  \</span>
+<span id="cb18-12"><a href></a>  --no-resave-data --no-manual </span>
+<span id="cb18-13"><a href></a></span>
+<span id="cb18-14"><a href></a>* checking for file ‘/home/vegayon/Dropbox/usc/core_project/CodingStandards/rpkgs/boringpkg/DESCRIPTION’ ... OK</span>
+<span id="cb18-15"><a href></a>* preparing ‘boringpkg’:</span>
+<span id="cb18-16"><a href></a>* checking DESCRIPTION meta-information ... OK</span>
+<span id="cb18-17"><a href></a>* checking for LF line-endings in source and make files</span>
+<span id="cb18-18"><a href></a>* checking for empty or unneeded directories</span>
+<span id="cb18-19"><a href></a>* building ‘boringpkg_0.1.999.tar.gz’</span>
+<span id="cb18-20"><a href></a></span>
+<span id="cb18-21"><a href></a>Setting env vars ---------------------------------------------------------------</span>
+<span id="cb18-22"><a href></a>_R_CHECK_CRAN_INCOMING_USE_ASPELL_: TRUE</span>
+<span id="cb18-23"><a href></a>_R_CHECK_CRAN_INCOMING_           : FALSE</span>
+<span id="cb18-24"><a href></a>_R_CHECK_FORCE_SUGGESTS_          : FALSE</span>
+<span id="cb18-25"><a href></a>Checking boringpkg --------------------------------------------------------------</span>
+<span id="cb18-26"><a href></a>&#39;/usr/lib/R/bin/R&#39; --no-site-file --no-environ --no-save --no-restore --quiet  \</span>
+<span id="cb18-27"><a href></a>  CMD check &#39;/tmp/RtmpBYGSto/boringpkg_0.1.999.tar.gz&#39; --as-cran --timings  \</span>
+<span id="cb18-28"><a href></a>  --no-manual </span>
+<span id="cb18-29"><a href></a></span>
+<span id="cb18-30"><a href></a>* using log directory ‘/home/vegayon/Dropbox/usc/core_project/CodingStandards/rpkgs/boringpkg.Rcheck’</span>
+<span id="cb18-31"><a href></a>* using R version 3.3.2 (2016-10-31)</span>
+<span id="cb18-32"><a href></a>* using platform: x86_64-pc-linux-gnu (64-bit)</span>
+<span id="cb18-33"><a href></a>* using session charset: UTF-8</span>
+<span id="cb18-34"><a href></a>* using options ‘--no-manual --as-cran’</span>
+<span id="cb18-35"><a href></a>* checking for file ‘boringpkg/DESCRIPTION’ ... OK</span>
+<span id="cb18-36"><a href></a>* checking extension type ... Package</span>
+<span id="cb18-37"><a href></a>* this is package ‘boringpkg’ version ‘0.1.999’</span>
+<span id="cb18-38"><a href></a>* package encoding: UTF-8</span>
+<span id="cb18-39"><a href></a>* checking package namespace information ... OK</span>
+<span id="cb18-40"><a href></a>* checking package dependencies ... OK</span>
+<span id="cb18-41"><a href></a>* checking if this is a source package ... OK</span>
+<span id="cb18-42"><a href></a>* checking if there is a namespace ... OK</span>
+<span id="cb18-43"><a href></a>* checking for executable files ... OK</span>
+<span id="cb18-44"><a href></a>* checking for hidden files and directories ... OK</span>
+<span id="cb18-45"><a href></a>* checking for portable file names ... OK</span>
+<span id="cb18-46"><a href></a>* checking for sufficient/correct file permissions ... OK</span>
+<span id="cb18-47"><a href></a>* checking whether package ‘boringpkg’ can be installed ... OK</span>
+<span id="cb18-48"><a href></a>* checking installed package size ... OK</span>
+<span id="cb18-49"><a href></a>* checking package directory ... OK</span>
+<span id="cb18-50"><a href></a>* checking DESCRIPTION meta-information ... OK</span>
+<span id="cb18-51"><a href></a>* checking top-level files ... OK</span>
+<span id="cb18-52"><a href></a>* checking for left-over files ... OK</span>
+<span id="cb18-53"><a href></a>* checking index information ... OK</span>
+<span id="cb18-54"><a href></a>* checking package subdirectories ... OK</span>
+<span id="cb18-55"><a href></a>* checking R files for non-ASCII characters ... OK</span>
+<span id="cb18-56"><a href></a>* checking R files for syntax errors ... OK</span>
+<span id="cb18-57"><a href></a>* checking whether the package can be loaded ... OK</span>
+<span id="cb18-58"><a href></a>* checking whether the package can be loaded with stated dependencies ... OK</span>
+<span id="cb18-59"><a href></a>* checking whether the package can be unloaded cleanly ... OK</span>
+<span id="cb18-60"><a href></a>* checking whether the namespace can be loaded with stated dependencies ... OK</span>
+<span id="cb18-61"><a href></a>* checking whether the namespace can be unloaded cleanly ... OK</span>
+<span id="cb18-62"><a href></a>* checking loading without being on the library search path ... OK</span>
+<span id="cb18-63"><a href></a>* checking dependencies in R code ... OK</span>
+<span id="cb18-64"><a href></a>* checking S3 generic/method consistency ... OK</span>
+<span id="cb18-65"><a href></a>* checking replacement functions ... OK</span>
+<span id="cb18-66"><a href></a>* checking foreign function calls ... OK</span>
+<span id="cb18-67"><a href></a>* checking R code for possible problems ... OK</span>
+<span id="cb18-68"><a href></a>* checking Rd files ... OK</span>
+<span id="cb18-69"><a href></a>* checking Rd metadata ... OK</span>
+<span id="cb18-70"><a href></a>* checking Rd line widths ... OK</span>
+<span id="cb18-71"><a href></a>* checking Rd cross-references ... OK</span>
+<span id="cb18-72"><a href></a>* checking for missing documentation entries ... OK</span>
+<span id="cb18-73"><a href></a>* checking for code/documentation mismatches ... OK</span>
+<span id="cb18-74"><a href></a>* checking Rd \usage sections ... OK</span>
+<span id="cb18-75"><a href></a>* checking Rd contents ... OK</span>
+<span id="cb18-76"><a href></a>* checking for unstated dependencies in examples ... OK</span>
+<span id="cb18-77"><a href></a>* checking examples ... OK</span>
+<span id="cb18-78"><a href></a>* checking for unstated dependencies in ‘tests’ ... OK</span>
+<span id="cb18-79"><a href></a>* checking tests ...</span>
+<span id="cb18-80"><a href></a>  Running ‘testthat.R’ OK</span>
+<span id="cb18-81"><a href></a>* DONE</span>
+<span id="cb18-82"><a href></a>Status: OK</span>
+<span id="cb18-83"><a href></a></span>
+<span id="cb18-84"><a href></a></span>
+<span id="cb18-85"><a href></a></span>
+<span id="cb18-86"><a href></a></span>
+<span id="cb18-87"><a href></a>R CMD check results</span>
+<span id="cb18-88"><a href></a>0 errors | 0 warnings | 0 notes</span>
+<span id="cb18-89"><a href></a></span>
+<span id="cb18-90"><a href></a>R CMD check succeeded</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="step-2.4-r-cmd-check-cont.-1" class="slide level2">
 <h2>Step 2.4: R CMD check (cont. 1)</h2>
 <div style="font-size: 25pt">
 <p>R packages can be shared by “building” them. For example, the following command:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb11-1"><a href></a>R CMD build ~/Documents/boringpkg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb19-1"><a href></a>R CMD build ~/Documents/boringpkg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Will generate package the R package into a file named <code>boringpkg_0.1.0.tar.gz</code> that can later be distributed. Users can install this package either through command line:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb12-1"><a href></a>R CMD INSTALL boringpkg_0.1.0.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb20-1"><a href></a>R CMD INSTALL boringpkg_0.1.0.tar.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Or through the console in R</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href></a><span class="fu">install.packages</span>(<span class="st">&quot;boringpkg_0.1.0.tar.gz&quot;</span>, <span class="at">repos =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href></a><span class="fu">install.packages</span>(<span class="st">&quot;boringpkg_0.1.0.tar.gz&quot;</span>, <span class="at">repos =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="step-2.5-commit-your-changes" class="slide level2">
@@ -1640,9 +1931,9 @@ George G. Vega Yon, Ph.D.
 <ol type="1">
 <li><p>Edit the <a href="https://github.com/hadley/dplyr/blob/master/NEWS.md"><code>NEWS.md</code></a> file and the <a href="https://github.com/RcppCore/RcppArmadillo/blob/master/ChangeLog"><code>ChangeLog</code></a> (if you have one).</p></li>
 <li><p>Add the new files to the tree, commit your changes, and push them to Github</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb14-1"><a href></a>$ git add R/newfile.r man/newfile.Rd</span>
-<span id="cb14-2"><a href></a>$ git commit -a -m &quot;Adding new function&quot;</span>
-<span id="cb14-3"><a href></a>$ git push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<div class="sourceCode" id="cb22"><pre class="sourceCode numberSource shell number-lines code-with-copy"><code class="sourceCode"><span id="cb22-1"><a href></a>$ git add R/newfile.r man/newfile.Rd</span>
+<span id="cb22-2"><a href></a>$ git commit -a -m &quot;Adding new function&quot;</span>
+<span id="cb22-3"><a href></a>$ git push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ol>
 <p>Once uploaded, I recommend checking Travis and AppVeyor to see if everything went well.</p>
 </div>
@@ -1691,7 +1982,7 @@ George G. Vega Yon, Ph.D.
  collate  en_US.UTF-8
  ctype    en_US.UTF-8
  tz       America/Denver
- date     2024-11-04
+ date     2024-11-12
  pandoc   3.2.1 @ /opt/homebrew/bin/ (via rmarkdown)
 
 ─ Packages ───────────────────────────────────────────────────────────────────
@@ -1705,7 +1996,7 @@ George G. Vega Yon, Ph.D.
  fastmap       1.2.0   2024-05-15 [1] CRAN (R 4.4.1)
  fs            1.6.4   2024-04-25 [1] CRAN (R 4.4.1)
  glue          1.7.0   2024-01-09 [1] CRAN (R 4.4.1)
- htmltools     0.5.8.1 2024-04-04 [1] CRAN (R 4.4.1)
+ htmltools     0.5.8.1 2024-04-04 [1] RSPM (R 4.4.1)
  htmlwidgets   1.6.4   2023-12-06 [1] CRAN (R 4.4.1)
  httpuv        1.6.15  2024-03-26 [1] CRAN (R 4.4.1)
  jsonlite      1.8.9   2024-09-20 [1] RSPM (R 4.4.1)

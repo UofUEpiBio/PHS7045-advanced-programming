@@ -95,7 +95,7 @@ Folders
   - **R** Where the R scripts live, e.g., `addnums.r`, `boring-pkg.r`.
 
   - **tests** Where the tests live, e.g., `testthat/test-addnums.r`
-    (using testthat).
+    (using [testthat](https://cran.r-project.org/package=testthat) or [tinytest](https://cran.r-project.org/package=tinytest)).
 
   - **vignettes** Where vignettes live, e.g.,
     `vignettes/mode_details_on_addnums.rmd`.
@@ -280,7 +280,57 @@ addnums <- function(a, b) {
 
 :::
 
+## Detour: S3 classes
+
+Here we are leveraging S3 classes. In R, the S3 is a simple way to do object oriented programming. The way it works:
+
+1. Objects should have a class attribute (e.g., `class(x) <- "myclass"`).
+
+2. You can then define "methods" for that class, e.g., `print.myclass` and
+`plot.myclass`.
+
+3. These are valid as long as there is a generic function (e.g., `print` and `plot`) that can handle the class.
+
+You can inspect the methods using the `methods()` function, e.g.,
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| label: showing-methods
+#| code-overflow: scroll
+#| echo: true
+methods(generic.function = "print")
+```
+::: 
+
+::: {.column width="50%"}
+```{r}
+#| label: showing-methods-2
+#| code-overflow: scroll
+#| echo: true
+methods(class = "glm")
+```
+:::
+:::
+
+## Detour: S3 classes (cont.)
+
+You can also define your own methods, e.g.,:
+
+```{r}
+#| label: defining-methods
+#| echo: true
+my_generic <- function(x) UseMethod("my_generic")
+my_generic.default <- function(x) "I don't know how to handle this"
+my_generic.numeric <- function(x) "I know how to handle this"
+
+my_generic("a")
+my_generic(1)
+```
+
 ## Step 2.1 and 2.2: Write `f` and Document it (cont. 1)
+
+Here we are defining a method for `plot.boringpkg_addnums`. Notice that the `plot` function already has a generic method, which is why we only need to define the method for `boringpkg_addnums`.
 
 ::: {.columns style="font-size: 20pt"}
 
@@ -315,7 +365,7 @@ plot.boringpkg_addnums <- function(x, y = NULL, ...) {
 
   - You’ll need to update the `man/*Rd` every time that you add new
     roxygen content. Press Ctrl + Shift + D, and RStudio will do it
-    for you.
+    for you (or enter `devtools::document()` which calls `roxygen2::roxygenize()`).
 
 :::
 :::
