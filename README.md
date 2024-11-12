@@ -23,7 +23,7 @@ them.
 | 10/22 and 10/24 | UofU’s CHPC ([CHPC overview slides](10-chpc-week/chpc_overview.pdf), [Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf)) |  |  |
 | 10/29 and 10/31 | Slurm + Homework 4 (Slurm) | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-slurm-week1/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/11-slurm-week1/slides.qmd)) |  |
 | 11/05 and 11/07 | More practice with slurm |  |  |
-| 11/12 and 11/14 | R packages I |  |  |
+| 11/12 and 11/14 | R packages I | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/13-rpkgs-i/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/13-rpkgs-i/lab.qmd)) |
 | 11/19 and 11/21 | R packages II |  |  |
 | 11/26 and 11/28 (off) | Automatic Reports with GitHub Actions |  |  |
 | 12/03 and 12/05 | Final Prep (Hackathon) |  |  |
