@@ -37,12 +37,52 @@ and clone it to your local computer. Once you have a copy, do the following:
 
 3. Run R CMD check using RStudio.
 
-4. RUn R CMD check using the command line (if available).
+4. Run R CMD check using the command line (if available).
 
 If you don't fork it and instead downloaded it manually, make sure you 
 set up a GitHub repository in your account to push your changes.
 
-## Question 2: Adding a C++ function
+## Question 2: Adding a plot function
+
+Copy the following R function and add it to the package:
+
+```r
+# Here is the function
+myplot <- function(x, y) {
+
+  if (!is.numeric(x) | !is.numeric(y)) {
+    stop("x and y must be numeric")
+  }
+
+  plot(x, y, col = "blue", pch = 19, cex = 2)
+
+  invisible(
+   list(
+     x = x,
+     y = y
+   )
+  )
+
+}
+
+# Here is an example
+set.seed(312)
+x <- rnorm(100)
+y <- rnorm(100)
+myplot(x, y)
+```
+
+Notice that you will need to:
+
+1. Add it to the R folder.
+2. Document it using roxygen2.
+3. Add the graphics package to the namespace (because of the `plot` function).
+4. Add an example to the documentation (using the `@examples` tag).
+4. Add a test for checking that the error message is thrown when the input is not numeric.
+
+Remember to commit and push your changes.
+
+## Question 3: Adding a C++ function
 
 Add the `ps_match` function [we wrote on Week 5](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/8#issuecomment-1424974938).
 The function should be named `ps_match`:
@@ -78,7 +118,7 @@ is visible.[^reminder] (then commit and push)
 
 (then commit and push)
 
-## Question 3: Checkout the coverage of the package (if time permits)
+## Question 4: Checkout the coverage of the package (if time permits)
 
 Using the `covr` R package, checkout the coverage using the following function
 

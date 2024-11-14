@@ -3125,41 +3125,77 @@ vertical-align: -.125em;
 <li><p>Inspect its contents and the file located at <code>.github/workflows</code>.</p></li>
 <li><p>Make sure you can install it using Rstudio.</p></li>
 <li><p>Run R CMD check using RStudio.</p></li>
-<li><p>RUn R CMD check using the command line (if available).</p></li>
+<li><p>Run R CMD check using the command line (if available).</p></li>
 </ol>
 <p>If you don’t fork it and instead downloaded it manually, make sure you set up a GitHub repository in your account to push your changes.</p>
 </section>
-<section id="question-2-adding-a-c-function" class="level2">
-<h2 class="anchored" data-anchor-id="question-2-adding-a-c-function">Question 2: Adding a C++ function</h2>
+<section id="question-2-adding-a-plot-function" class="level2">
+<h2 class="anchored" data-anchor-id="question-2-adding-a-plot-function">Question 2: Adding a plot function</h2>
+<p>Copy the following R function and add it to the package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Here is the function</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>myplot <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(x) <span class="sc">|</span> <span class="sc">!</span><span class="fu">is.numeric</span>(y)) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;x and y must be numeric&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">2</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">list</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">x =</span> x,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> y</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>   )</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Here is an example</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">312</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">myplot</span>(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Notice that you will need to:</p>
+<ol type="1">
+<li>Add it to the R folder.</li>
+<li>Document it using roxygen2.</li>
+<li>Add the graphics package to the namespace (because of the <code>plot</code> function).</li>
+<li>Add an example to the documentation (using the <code>@examples</code> tag).</li>
+<li>Add a test for checking that the error message is thrown when the input is not numeric.</li>
+</ol>
+<p>Remember to commit and push your changes.</p>
+</section>
+<section id="question-3-adding-a-c-function" class="level2">
+<h2 class="anchored" data-anchor-id="question-3-adding-a-c-function">Question 3: Adding a C++ function</h2>
 <p>Add the <code>ps_match</code> function <a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/8#issuecomment-1424974938">we wrote on Week 5</a>. The function should be named <code>ps_match</code>:</p>
 <ol type="1">
 <li>Add the function in a separate c++ file in the <code>src</code> folder. Make sure to document it using <code>roxygen</code>. Once you finish that, ensure it compiles and the function is visible.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> (then commit and push)</li>
 </ol>
 <ol start="2" type="1">
 <li><p>Write an example with artificial data passing a random vector with ten elements distributed U[0, 1]. Add the example to the documentation using the <code>@examples</code> tag. (then commit and push)</p></li>
-<li><p>Write a test using the <code>tinytest</code>. The C++ function should match the results of the equivalent R function:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">1231</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a> x <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">runif</span>(<span class="dv">20</span>))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a> ps_matchR <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a> match_expected <span class="ot">&lt;-</span> <span class="fu">dist</span>(x) <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>()</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a> <span class="fu">diag</span>(match_expected) <span class="ot">&lt;-</span> .Machine<span class="sc">$</span>integer.max</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a> indices <span class="ot">&lt;-</span> <span class="fu">apply</span>(match_expected, <span class="dv">1</span>, which.min)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a> <span class="fu">list</span>(</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">match_id =</span> <span class="fu">as.integer</span>(<span class="fu">unname</span>(indices)),</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">match_x  =</span> x[indices]</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a> )</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>Write a test using the <code>testthat</code> R package. The C++ function should match the results of the equivalent R function:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(<span class="dv">1231</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> x <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">runif</span>(<span class="dv">20</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a> ps_matchR <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a> match_expected <span class="ot">&lt;-</span> <span class="fu">dist</span>(x) <span class="sc">|&gt;</span> <span class="fu">as.matrix</span>()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a> <span class="fu">diag</span>(match_expected) <span class="ot">&lt;-</span> .Machine<span class="sc">$</span>integer.max</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a> indices <span class="ot">&lt;-</span> <span class="fu">apply</span>(match_expected, <span class="dv">1</span>, which.min)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a> <span class="fu">list</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">match_id =</span> <span class="fu">as.integer</span>(<span class="fu">unname</span>(indices)),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">match_x  =</span> x[indices]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a> )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a> }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ol>
 <p>(then commit and push)</p>
 </section>
-<section id="question-3-checkout-the-coverage-of-the-package-if-time-permits" class="level2">
-<h2 class="anchored" data-anchor-id="question-3-checkout-the-coverage-of-the-package-if-time-permits">Question 3: Checkout the coverage of the package (if time permits)</h2>
+<section id="question-4-checkout-the-coverage-of-the-package-if-time-permits" class="level2">
+<h2 class="anchored" data-anchor-id="question-4-checkout-the-coverage-of-the-package-if-time-permits">Question 4: Checkout the coverage of the package (if time permits)</h2>
 <p>Using the <code>covr</code> R package, checkout the coverage using the following function</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>covr<span class="sc">::</span><span class="fu">package_coverage</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>covr<span class="sc">::</span><span class="fu">package_coverage</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 
@@ -3167,7 +3203,7 @@ vertical-align: -.125em;
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Remember to run <code>roxygen2::roxygenise()</code> or Ctr + Shift + D, if using RStudio.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Remember to run <code>roxygen2::roxygenise()</code>, <code>devtools::document()</code>, or Ctr + Shift + D, if using RStudio.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main>
 <!-- /main column -->
