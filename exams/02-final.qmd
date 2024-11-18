@@ -7,38 +7,36 @@ format:
 
 ## Due date
 
-There are two due dates: Thursday, May 2nd (presentation) and May 4th (R package), 2023.
+The R package is due by the end of Tuesday December 10th. 
+
+The in-class presentation will be Thursday, December 12th.
 
 ## Task
 
-This will be an extension of the package submitted for the midterm. The new component will be agreed upon on the week of April 17th.
+Expand upon midterm project with a new component and create an R package. The new component will be agreed upon on by Thursday November 21.
 
 ## Deliverables
 
-* An extension of the package developed for the midterm (70% of grade).
+* An extension of the midterm project and package creation (70% of grade).
 * An oral presentation of no more than seven minutes (30% of grade).
 
 ## Requirements
 
-The presentation (May 2nd):
+The presentation:
 
- - The time allocation will be the same as the midterm (7 minutes).
+ - The time allocation will be 7 minutes.
 
  - It Should be presented with slides (PowerPoint/quarto::revealjs/google slides/etc.)
 
  - It should have the following structure (roughly):
 
-   a.  Review of the problem which highlights the issue or “why” the problem needs   solving (may consider including visuals to highlight the issue; ~2 slides)
+   a.  Review of the problem which highlights the issue or “why” the problem needs solving (may consider including visuals to highlight the issue; ~2 slides)
 
    b.  Overview of the package until the midterm (~1 slide)
 
-   c.  The new feature of the package (~ 1 slide each)
+   c.  The new feature of the coding solution (~ 1 slide each)
 
-   d.  Problem/motive 
-
-   e.  Solution
-
-   f.  Example
+   d.  Provide a single example highlighting the package (~1-3 slides).
 
 ::: {.callout-tip}
 
@@ -62,6 +60,7 @@ The R package (May 4th `r fa`):
 
 - The package should pass the `R CMD check` on Ubuntu using the R release version with the option [`--as-cran`](https://cran.r-project.org/web/packages/submission_checklist.html) (more strict `R CMD check`.)
 
+- The package should have a vignette.
 
 
 
