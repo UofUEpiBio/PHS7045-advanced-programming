@@ -67,3 +67,28 @@ The R package (May 4th `r fa`):
 ## Grading
 
 The grade will be based on clear communication and coding.
+
+# Misc
+
+## Installing the package with the vignettes
+
+You can install this package from the source using the following
+commands from the command line:
+
+``` bash
+R CMD build .
+R CMD INSTALL egpkg2024_1.0.tar.gz
+```
+
+The first command builds a tar.gz file that can be shared. This is what
+you share when you submit to CRAN. The second command installs the
+package in your computer. Notice that this approach builds the
+vignettes, making them available to your R session. Recall you can
+access vignettes using the `vignette` command like this:
+
+``` r
+vignette(package="dplyr")
+```
+
+Which will list the vignettes available to the dplyr R package (learn
+more typing `?vignette` in your R console).
