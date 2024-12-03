@@ -26,8 +26,8 @@ them.
 | 11/12 and 11/14 | R packages I | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/13-rpkgs-i/slides.qmd)) | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/13-rpkgs-i/lab.qmd)) |
 | 11/19 and 11/21 | R packages II |  |  |
 | 11/26 and 11/28 (off) | Automatic Reports with GitHub Actions |  |  |
-| 12/03 and 12/05 | Final Prep (Hackathon) |  |  |
-| 12/12 | Final |  |  |
+| 12/03 and 12/05 (hybrid) | Final Prep (Hackathon) |  |  |
+| 12/10 (pkg) and 12/12 (talk) | Final ([Requirements](https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/final.html)) |  |  |
 
 ## Assignment workflow
 

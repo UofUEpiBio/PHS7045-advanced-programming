@@ -22,21 +22,23 @@ Expand upon midterm project with a new component and create an R package. The ne
 
 ## Requirements
 
+Grading will be based on the following:
+
 The presentation:
 
- - The time allocation will be 7 minutes.
+- [ ] The time allocation will be 7 minutes (5/100 points of penalty per extra minute).
 
- - It Should be presented with slides (PowerPoint/quarto::revealjs/google slides/etc.)
+- [ ] Presentation should be clear.
 
- - It should have the following structure (roughly):
+- [ ] It Should be presented with slides using quarto.
 
-   a.  Review of the problem which highlights the issue or “why” the problem needs solving (may consider including visuals to highlight the issue; ~2 slides)
+- [ ] Review of the problem which highlights the issue or “why” the problem needs solving (may consider including visuals to highlight the issue; ~2 slides)
 
-   b.  Overview of the package until the midterm (~1 slide)
+- [ ] Overview of the package until the midterm (~1 slide)
 
-   c.  The new feature of the coding solution (~ 1 slide each)
+- [ ] The new feature of the coding solution (other than the R package itself; ~ 1 slide each)
 
-   d.  Provide a single example highlighting the package (~1-3 slides).
+- [ ] Provide a single example highlighting the package (~1-3 slides).
 
 ::: {.callout-tip}
 
@@ -44,7 +46,6 @@ The presentation:
 (ii) More figures and less text, *i.e.*, avoid paragraphs.
 (iii) Avoid diving into the details (or at least, most of your talk should be to the general audience). 
 (iv) Focus on what your audience would value the most.
-(v) Cluttered slides are never good: It probably needs to be split if they are too long.
 :::
 
 ```{r}
@@ -52,21 +53,18 @@ The presentation:
 fa <- fontawesome::fa("jedi-order")
 ```
 
-The R package (May 4th `r fa`):
+The R package:
 
-- Add a new function/feature to the R package using parallel computing or `Rcpp` (a must.)
+- [ ] Add a new function/feature to the R package using parallel computing or `Rcpp` (a must.)
 
-- The package should pass `R CMD check`s using macOS, Ubuntu, and Windows for the R release and development versions (x6 `R CMD check`s). Notes are OK, but warnings are not. 
+- [ ] The package should have a `README.md` file with a brief description of the package.
 
-- The package should pass the `R CMD check` on Ubuntu using the R release version with the option [`--as-cran`](https://cran.r-project.org/web/packages/submission_checklist.html) (more strict `R CMD check`.)
+- [ ] The package should pass `R CMD check`s using macOS, Ubuntu, and Windows for the R release and development versions (x6 `R CMD check`s). Notes are OK, but warnings are not (recall the `usethis::use_github_action...` function). 
 
-- The package should have a vignette.
+- [ ] The package should pass the `R CMD check` on Ubuntu using the R release version with the option [`--as-cran`](https://cran.r-project.org/web/packages/submission_checklist.html) (more strict `R CMD check`.)
 
+- [ ] The package should have a vignette that illustrates the use of the functions in the package.
 
-
-## Grading
-
-The grade will be based on clear communication and coding.
 
 # Misc
 
