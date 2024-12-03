@@ -7,38 +7,38 @@ format:
 
 ## Due date
 
-There are two due dates: Thursday, May 2nd (presentation) and May 4th (R package), 2023.
+The R package is due by the end of Tuesday December 10th. 
+
+The in-class presentation will be Thursday, December 12th.
 
 ## Task
 
-This will be an extension of the package submitted for the midterm. The new component will be agreed upon on the week of April 17th.
+Expand upon midterm project with a new component and create an R package. The new component will be agreed upon on by Thursday November 21.
 
 ## Deliverables
 
-* An extension of the package developed for the midterm (70% of grade).
+* An extension of the midterm project and package creation (70% of grade).
 * An oral presentation of no more than seven minutes (30% of grade).
 
 ## Requirements
 
-The presentation (May 2nd):
+Grading will be based on the following:
 
- - The time allocation will be the same as the midterm (7 minutes).
+The presentation:
 
- - It Should be presented with slides (PowerPoint/quarto::revealjs/google slides/etc.)
+- [ ] The time allocation will be 7 minutes (5/100 points of penalty per extra minute).
 
- - It should have the following structure (roughly):
+- [ ] Presentation should be clear.
 
-   a.  Review of the problem which highlights the issue or “why” the problem needs   solving (may consider including visuals to highlight the issue; ~2 slides)
+- [ ] It Should be presented with slides using quarto.
 
-   b.  Overview of the package until the midterm (~1 slide)
+- [ ] Review of the problem which highlights the issue or “why” the problem needs solving (may consider including visuals to highlight the issue; ~2 slides)
 
-   c.  The new feature of the package (~ 1 slide each)
+- [ ] Overview of the package until the midterm (~1 slide)
 
-   d.  Problem/motive 
+- [ ] The new feature of the coding solution (other than the R package itself; ~ 1 slide each)
 
-   e.  Solution
-
-   f.  Example
+- [ ] Provide a single example highlighting the package (~1-3 slides).
 
 ::: {.callout-tip}
 
@@ -46,7 +46,6 @@ The presentation (May 2nd):
 (ii) More figures and less text, *i.e.*, avoid paragraphs.
 (iii) Avoid diving into the details (or at least, most of your talk should be to the general audience). 
 (iv) Focus on what your audience would value the most.
-(v) Cluttered slides are never good: It probably needs to be split if they are too long.
 :::
 
 ```{r}
@@ -54,17 +53,40 @@ The presentation (May 2nd):
 fa <- fontawesome::fa("jedi-order")
 ```
 
-The R package (May 4th `r fa`):
+The R package:
 
-- Add a new function/feature to the R package using parallel computing or `Rcpp` (a must.)
+- [ ] Add a new function/feature to the R package using parallel computing or `Rcpp` (a must.)
 
-- The package should pass `R CMD check`s using macOS, Ubuntu, and Windows for the R release and development versions (x6 `R CMD check`s). Notes are OK, but warnings are not. 
+- [ ] The package should have a `README.md` file with a brief description of the package.
 
-- The package should pass the `R CMD check` on Ubuntu using the R release version with the option [`--as-cran`](https://cran.r-project.org/web/packages/submission_checklist.html) (more strict `R CMD check`.)
+- [ ] The package should pass `R CMD check`s using macOS, Ubuntu, and Windows for the R release and development versions (x6 `R CMD check`s). Notes are OK, but warnings are not (recall the `usethis::use_github_action...` function). 
+
+- [ ] The package should pass the `R CMD check` on Ubuntu using the R release version with the option [`--as-cran`](https://cran.r-project.org/web/packages/submission_checklist.html) (more strict `R CMD check`.)
+
+- [ ] The package should have a vignette that illustrates the use of the functions in the package.
 
 
+# Misc
 
+## Installing the package with the vignettes
 
-## Grading
+You can install this package from the source using the following
+commands from the command line:
 
-The grade will be based on clear communication and coding.
+``` bash
+R CMD build .
+R CMD INSTALL egpkg2024_1.0.tar.gz
+```
+
+The first command builds a tar.gz file that can be shared. This is what
+you share when you submit to CRAN. The second command installs the
+package in your computer. Notice that this approach builds the
+vignettes, making them available to your R session. Recall you can
+access vignettes using the `vignette` command like this:
+
+``` r
+vignette(package="dplyr")
+```
+
+Which will list the vignettes available to the dplyr R package (learn
+more typing `?vignette` in your R console).

@@ -27,7 +27,7 @@ them.
 | 11/19 and 11/21 | R packages II |  |  |
 | 11/26 and 11/28 (off) | Automatic Reports with GitHub Actions | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/15-autoreport/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming//tree/main/15-autoreport/slides.qmd)) |  |
 | 12/03 and 12/05 (hybrid) | Final Prep (Hackathon) |  |  |
-| 12/12 | Final |  |  |
+| 12/10 (pkg) and 12/12 (talk) | Final ([Requirements](https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/final.html)) |  |  |
 
 ## Assignment workflow
 
