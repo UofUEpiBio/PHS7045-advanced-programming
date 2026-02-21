@@ -75,7 +75,7 @@ We will use OpenMP to accelerate the function.
 # RcppArmadillo and OpenMP
 
 <p style="text-align:center;color:white;font-size:200%;">
-RcppArmadillo + OpenMP<br>=<br><img src="https://media.giphy.com/media/WUq1cg9K7uzHa/giphy.gif" style="width:400px">
+RcppArmadillo + OpenMP<br>=<br><img src="https://media.giphy.com/media/WUq1cg9K7uzHa/giphy.gif" style="width:400px" alt="Animated GIF of a happy celebration, representing the power of combining RcppArmadillo with OpenMP">
 </p>
 
 *   Friendlier than [**RcppParallel**](http://rcppcore.github.io/RcppParallel/)...
@@ -269,7 +269,7 @@ squeue -u$(id -u)
 
 Once your job is submitted, the R script should generate a boxplot like the following:
 
-<img src="openmp-exampl.png" style="width: 80%">
+<img src="openmp-exampl.png" style="width: 80%" alt="Boxplot comparing execution times of serial versus parallel OpenMP implementations in R">
 
 ## Single job
 

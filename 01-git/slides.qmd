@@ -90,7 +90,7 @@ Throughout the course, we will be using the following tools:
 :::
 
 ::: {.column width="20%"}
-![](https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg)
+![](https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg){fig-alt="Diagram of version-controlled project history showing branching and merging of revisions over time"}
 <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg" alt="Diagram of version control" width="100%"> -->
 :::
 :::
@@ -166,7 +166,7 @@ In these cases, and no doubt others, a version control system should make your l
 ::: {.r-fit-text}
 During this class (and perhaps, the entire program,) we will be using
  <!-- <a href="" target="_blank"> -->
-[<img style="width: 100px;vertical-align: middle;" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg">](https://commons.wikimedia.org/wiki/File:Git-logo.svg) 
+[<img style="width: 100px;vertical-align: middle;" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg" alt="Git logo">](https://commons.wikimedia.org/wiki/File:Git-logo.svg) 
 
 ::: {.fragment .fade-in}
 - Git is used by [most developers in the world](https://insights.stackoverflow.com/survey/2018#work-_-version-control).

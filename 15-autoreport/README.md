@@ -1,7 +1,6 @@
 
 
-![GitHub last
-commit](https://img.shields.io/github/last-commit/UofUEpiBio/PHS-7045-egga.png)
+![GitHub last commit](https://img.shields.io/github/last-commit/UofUEpiBio/PHS-7045-egga.png)
 
 # Latest papers on Agent-Based Modeling in PubMed
 

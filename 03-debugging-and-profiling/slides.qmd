@@ -103,7 +103,7 @@ With debugging start top-down.  Assume lower-level functions are correct until f
 
 An example from collaboration:
 
-<img src="./fig/modular_collaboration.png" style="width:1000px;">
+<img src="./fig/modular_collaboration.png" style="width:1000px;" alt="Diagram showing modular collaboration pattern in software development with top-level and lower-level function modules">
 
 
 An example from an R package: [SeqSGPV](https://github.com/chipmanj/SeqSGPV/blob/master/R/SeqSGPV.R)

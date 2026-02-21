@@ -35,7 +35,7 @@ To start you just need to use the Fork button available on the project you would
 [^githubmanualfork]: For more details, take a look at the [Forking Projects](https://guides.github.com/activities/forking/) article in GitHub guides.
 
 <figure>
-<img src="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" width="400px">
+<img src="https://github-images.s3.amazonaws.com/help/bootcamp/Bootcamp-Fork.png" width="400px" alt="GitHub fork button on a repository page">
 <figcaption>Source: GitHub Help</figcaption>
 </figure>
 
@@ -46,14 +46,14 @@ Once you "Fork" a project, GitHub will:
 2. Set up a pipeline to generate pull requests.
 
 <figure>
-<img src="https://github-images.s3.amazonaws.com/help/pull_requests/recently_pushed_branch.png" width="600px">
+<img src="https://github-images.s3.amazonaws.com/help/pull_requests/recently_pushed_branch.png" width="600px" alt="GitHub notification showing a recently pushed branch with a Compare and pull request button">
 <figcaption>Source: GitHub Help</figcaption>
 </figure>
 
 Or 
 
 <figure>
-<img src="https://user-images.githubusercontent.com/893619/132388465-849ef04d-ad4f-4365-a646-27e88cb9d828.png" width="600px">
+<img src="https://user-images.githubusercontent.com/893619/132388465-849ef04d-ad4f-4365-a646-27e88cb9d828.png" width="600px" alt="Screenshot of GitHub interface showing pull request creation">
 <figcaption>Source: Screenshot!</figcaption>
 </figure>
 
@@ -105,7 +105,7 @@ This is the final step. Overall, pull requests (PR) are as complex as the propos
 To create the PR, you just need to go to your online copy of the project and click on the "Compare & pull request" link:
 
 <figure>
-<img src="https://github-images.s3.amazonaws.com/help/pull_requests/recently_pushed_branch.png" width="600px">
+<img src="https://github-images.s3.amazonaws.com/help/pull_requests/recently_pushed_branch.png" width="600px" alt="GitHub notification showing a recently pushed branch with a Compare and pull request button">
 <figcaption>Source: GitHub Help</figcaption>
 </figure>
 

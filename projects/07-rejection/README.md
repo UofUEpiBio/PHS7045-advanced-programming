@@ -26,7 +26,7 @@ For i = 1 to n do:
 The following plot shows the result of a simple implementation of the algorithm
 (not very computationally efficient)
 
-![](rejection.png)
+![Scatter plot of rejection sampling results: uniformly distributed points in a 2D ball (left) and exponentially decreasing acceptance rates for higher dimensions (right)](rejection.png)
 
 The figure on the left shows the distribution of 10,000 points distributed
 uniformly distributed in a d=2 ball, and the figure on the right shows the
