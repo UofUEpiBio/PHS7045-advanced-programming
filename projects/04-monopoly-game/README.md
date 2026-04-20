@@ -35,7 +35,7 @@ If everything goes as expected, you should be getting something like the followi
 plot in which the distribution of the number of times an indivual steps into any
 of the 40 locations of the board (excluding chance and community chest).
 
-![](monopoly.png)
+![Bar chart showing distribution of landing frequencies across the 40 Monopoly board locations based on 50,000 simulated games](monopoly.png)
 
 The simulation was carried out 50000, each time throwing the die 500 times.
 
@@ -47,7 +47,7 @@ To create the simulation, use the following description of the board and cards.
 
 ## Board
 
-![](monopoly-board-us-edition-after-sep-2008.png "Downloaded from http://monopoly.wikia.com/wiki/Monopoly_Board")
+![US Monopoly board showing all 40 property spaces, railroads, utilities, and corner spaces](monopoly-board-us-edition-after-sep-2008.png "Downloaded from http://monopoly.wikia.com/wiki/Monopoly_Board")
 
 ## Community Chest ([source](http://monopoly.wikia.com/wiki/Community_Chest))
 

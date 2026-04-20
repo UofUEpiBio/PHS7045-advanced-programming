@@ -75,7 +75,7 @@ opts_chunk$set(warning = FALSE, message = FALSE, echo = FALSE, comment = "")
 ::: {.r-fit-text}
 
 ::: {.fragment}
-![](fig/rstudio-qmd-how-it-works.png){style="width: 800px;"}
+![](fig/rstudio-qmd-how-it-works.png){style="width: 800px;" fig-alt="Diagram showing how Quarto works: a .qmd file is processed by knitr and Pandoc to produce HTML, PDF, or Word output"}
 :::
 
 Source: Quarto website https://quarto.org/docs/faq/rmarkdown.html

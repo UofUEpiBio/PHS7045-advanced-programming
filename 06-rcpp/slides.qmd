@@ -29,8 +29,8 @@ slides_eval <- TRUE
 ## Before we start {style="font-size: 16pt"}
 
 <div style="text-align: center; margin: auto;">
-<a href="https://imgflip.com/i/38ji3q"><img src="https://i.imgflip.com/38ji3q.jpg" title="made at imgflip.com" width="30%"/></a>
-<a href="https://imgflip.com/i/38jiku"><img src="https://i.imgflip.com/38jiku.jpg" title="made at imgflip.com" width="30%"/></a>
+<a href="https://imgflip.com/i/38ji3q"><img src="https://i.imgflip.com/38ji3q.jpg" title="made at imgflip.com" alt="Meme: one does not simply avoid writing C++ when using Rcpp" width="30%"/></a>
+<a href="https://imgflip.com/i/38jiku"><img src="https://i.imgflip.com/38jiku.jpg" title="made at imgflip.com" alt="Meme: Emergency broadcast - your R code will get a serious speed boost with Rcpp" width="30%"/></a>
 </div>
 
 1.  You need to have Rcpp installed in your system:
@@ -373,7 +373,7 @@ Rcpp::sourceCpp("norm.cpp", verbose = TRUE)
 <div style="text-align:center;margin:auto;">
 Now, get ready for some Rcpp action!
 
-<img src="https://giphygifs.s3.amazonaws.com/media/8rOtpl0yzFe6I/giphy.gif" width="800px"/>
+<img src="https://giphygifs.s3.amazonaws.com/media/8rOtpl0yzFe6I/giphy.gif" width="800px" alt="Animated GIF of an excited crowd cheering"/>
 </div>
 
 

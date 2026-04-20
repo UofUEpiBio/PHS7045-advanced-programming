@@ -47,7 +47,7 @@ The resulting report can be viewed at [https://github.com/UofUEpiBio/PHS-7045-eg
 
 We need to extract the information from [this website](https://pubmed.ncbi.nlm.nih.gov/?term=agent-based+model&sort=date){target="_blank"}:
 
-![](fig/pubmed.png){width="70%" fig-align="center"}
+![](fig/pubmed.png){width="70%" fig-align="center" fig-alt="Screenshot of PubMed search results page showing recent papers about agent-based models"}
 
 ::: {.fragment}
 Let's start by looking into the Quarto document used to do so. You can download it from [here](https://github.com/UofUEpiBio/PHS-7045-egga){target="_blank"}.

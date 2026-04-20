@@ -24,6 +24,6 @@ directions at each step it takes. The "ant" moves according to the rules below:
 
 Here is an animation of the expected result.
 
-![](ant.gif)
+![Animation of Langton's Ant cellular automaton showing the ant's path creating complex patterns on a grid](ant.gif)
 
 <div>The ant icon was made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>

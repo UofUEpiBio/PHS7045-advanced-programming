@@ -277,7 +277,7 @@ Before we continue, let's learn a bit more on `data.table` and `dtplyr`
 square brackets. Here is common way to imagine DT:
 
 <div align="center">
-<img src="datatable-syntax-paths.svg" width="700px">
+<img src="datatable-syntax-paths.svg" width="700px" alt="Diagram illustrating data.table syntax: DT[i, j, by] where i filters rows, j selects or computes columns, and by groups results">
 </div>
 
 - Any time that you see **:=** in **j** that is "Assignment by reference." Using
@@ -349,7 +349,7 @@ address(dat_ldt$parent)
 dat_ldt <- lazy_dt(dat, immutable = TRUE) 
 ```
 
-![](pointer-paths.svg){width="800px"}
+![](pointer-paths.svg){width="800px" fig-alt="Diagram illustrating R object pointer behavior: showing memory address sharing and copying when modifying a data.table object"}
 
 Question: What is the `immutable = FALSE` option used for?
 

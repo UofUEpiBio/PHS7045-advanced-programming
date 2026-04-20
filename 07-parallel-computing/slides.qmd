@@ -23,7 +23,7 @@ embed-resources: true
 
 # Fundamentals {background-color="#515A5A"}
 
-![](https://raw.githubusercontent.com/USCbiostats/hpc-with-r/df60e1cfdc0f848f4f0de5a0aa7d0833f4cfe3d5/fig/bulldog-teaches-baby-crawl.gif){fig-align="center"}
+![](https://raw.githubusercontent.com/USCbiostats/hpc-with-r/df60e1cfdc0f848f4f0de5a0aa7d0833f4cfe3d5/fig/bulldog-teaches-baby-crawl.gif){fig-align="center" fig-alt="Animated GIF of a bulldog teaching a baby to crawl"}
 
 
 
@@ -94,7 +94,7 @@ f(1:4)
 - 3 idle cores.
 :::
 ::: {.column width="60%"}
-![](fig/pll-computing-explained-serial.svg){width=450px}
+![](fig/pll-computing-explained-serial.svg){width=450px fig-alt="Diagram showing serial computing: one core processes tasks one element at a time while other cores are idle"}
 :::
 :::
 
@@ -115,7 +115,7 @@ f_pll(1:4)
 - 4 times faster.
 :::
 ::: {.column width="60%"}
-![](fig/pll-computing-explained-parallel.svg){width=450px}
+![](fig/pll-computing-explained-parallel.svg){width=450px fig-alt="Diagram showing parallel computing: four cores each process one element simultaneously with no idle cores"}
 :::
 :::
 
@@ -124,7 +124,7 @@ f_pll(1:4)
 
 <text style="color:white;">Let's think before we start...</text>
 
-![](https://media.giphy.com/media/Dwclsfe6Gb91m/giphy.gif){style="width:500px"}
+![](https://media.giphy.com/media/Dwclsfe6Gb91m/giphy.gif){style="width:500px" fig-alt="Animated GIF illustrating a thinking or decision-making moment"}
 
 <text style="color:white;">When is it a good idea to go HPC?</text>
 
@@ -320,7 +320,7 @@ And there's also a more advanced set of options
 - Multiple types of cluster: `PSOCK`, `Fork`, `MPI`, etc.
 :::
 ::: {.column width="50%"}
-![](fig/parallel-package.svg)
+![](fig/parallel-package.svg){fig-alt="Diagram showing the R parallel package architecture with clusters composed of local and remote R sessions"}
 :::
 :::
 
@@ -760,7 +760,7 @@ Using a Fork cluster instead of a PSOCK cluster can further reduce the overhead 
 
 ## {style="text-align:center!important;"}
 
-```{r thanks, out.width="300px", echo=FALSE}
+```{r thanks, out.width="300px", echo=FALSE, fig.alt="Animated GIF of a runner celebrating a fast finish, representing speed gains from parallel computing"}
 knitr::include_graphics("fig/speed.gif")
 ```
 
