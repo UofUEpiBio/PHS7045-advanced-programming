@@ -8,6 +8,16 @@ format:
     embed-resources: true
 ---
 
+```{=html}
+<style>
+.filelist {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  background-color: #f5f7fa;
+  padding: 0.75em 1em;
+}
+</style>
+```
+
 # Preamble
 
 ## Welcome to "PHS 7045: Advanced Programming"
@@ -97,6 +107,34 @@ Throughout the course, we will be using the following tools:
 
 ---
 
+## Why do we care
+
+::: {.columns}
+
+::: {.column width="50%" .fragment}
+You might have seen this...
+
+```{.filelist}
+mydocument.txt
+mydocumentversion2.txt
+mydocumentwithrevision.txt
+mydocumentfinal.txt
+```
+:::
+
+::: {.column width="50%" .fragment}
+Or even this…
+
+```{.filelist}
+mydocument2016-01-06.txt
+mydocument2016-01-08.txt
+```
+:::
+
+:::
+
+---
+
 ## Why do we care 
 
 Have you ever:
@@ -157,6 +195,53 @@ In these cases, and no doubt others, a version control system should make your l
 -- [Stackoverflow](https://stackoverflow.com/a/1408464/2097171) (by [si618](https://stackoverflow.com/users/44540/si618))
 :::
 
+:::
+
+---
+
+## A (Very) Short History of Git 
+
+- **1991–2002**: Linux kernel developed via emailed patches, no formal version control
+
+```{.email}
+From: torvalds@klaava.Helsinki.FI (Linus Benedict Torvalds)
+Newsgroups: comp.os.minix
+Subject: What would you like to see most in minix?
+Summary: small poll for my new operating system
+Date: 25 Aug 91 20:57:08 GMT
+Organization: University of Helsinki
+
+Hello everybody out there using minix -
+
+I'm doing a (free) operating system (just a hobby, won't be big and
+professional like gnu) for 386(486) AT clones. This has been brewing
+since april, and is starting to get ready. I'd like any feedback on
+things people like/dislike in minix, as my OS resembles it somewhat
+(same physical layout of the file-system (due to practical reasons)
+among other things).
+
+I've currently ported bash(1.08) and gcc(1.40), and things seem to work.
+This implies that I'll get something practical within a few months, and
+I'd like to know what features most people would want. Any suggestions
+are welcome, but I won't promise I'll implement them :-)
+
+Linus (torvalds@kruuna.helsinki.fi)
+
+PS. Yes - it's free of any minix code, and it has a multi-threaded fs.
+It is NOT protable (uses 386 task switching etc), and it probably never
+will support anything other than AT-harddisks, as that's all I have :-(.
+```
+
+---
+
+## A (Very) Short History of Git (cont'd)
+
+::: {.incremental}
+- **2002**: Kernel team adopts **BitKeeper**, a proprietary DVCS, free to use for open source projects
+- **April 2005**: Free license revoked after a licensing dispute
+- **April 2005**: Torvalds writes **Git** from scratch in ~two weeks
+- **July 2005**: Torvalds hands maintenance to **Junio Hamano**, who still leads Git development today
+- **2008 onward**: **GitHub** launches, making distributed workflows (fork/branch/PR) mainstream far beyond kernel hacking
 :::
 
 ---
