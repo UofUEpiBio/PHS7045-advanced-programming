@@ -1,18 +1,35 @@
-date,week,name,id,issue,extra
-8/20 and 8/22,1,Intro to Git + Intro to classes,01-git,,+ [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd))
-8/27 and 8/29,2,R Essentials,02-essentials,,+ [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/01-essentialsSimulations.html) ([source](02-essentials/01-essentialsSimulations.qmd))
-9/03 and 9/5,3,Debugging and profiling,03-debugging-and-profiling,,
-9/10 and 9/12,4,Functions and data.table,04-more-functions-and-datatable,,+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/homework.html) ([source](04-more-functions-and-datatable/homework.qmd))
-9/17 and 9/19,5,Introduction to C++,05-cpp,,""
-9/24 and 9/26,6,C++ in R,06-rcpp,,"Deliver a paragraph in abstract mode describing their projects for the midterm."
-10/01 and 10/03,7,Parallel Computing,07-parallel-computing,,
-10/08 and 10/10,8,Fall Break,,,
-10/15 and 10/17 (presentations),9,Midterm project,09-midterm,,[+ Homework 3 (vectorization and Rcpp)](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](09-midterm/homework.qmd))
-10/22 and 10/24,10,UofU's CHPC,10-chpc-week,,"([CHPC overview slides](10-chpc-week/chpc_overview.pdf), [Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf))"
-10/29 and 10/31,11,Slurm,11-slurm-week1,,+ Homework 4 (Slurm)
-11/05 and 11/07,12,More practice with slurm,12-slurm-week2,,+ [Homework 4](https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/12-slurm-hw.html) ([source](12-slurm-week2/12-slurm-hw.qmd))
-11/12 and 11/14,13,R packages I,13-rpkgs-i,,
-11/19 and 11/21,14,R packages II,,,
-11/26 and 11/28 (off),15,Automatic Reports with GitHub Actions,15-autoreport,,
-12/03 and 12/05 (hybrid),16,Final Prep (Hackathon),,,
-12/10 (pkg) and 12/12 (talk),17,Final,,,([Requirements](https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html))
+date,week,session,name,issue,link_text,link,source,extra
+8/25/26,1,Lecture,Intro to Git,,"slides",01-git/slides.html,01-git/slides.qmd,
+8/27/26,1,Lab,Intro to classes,,"lab",01-git/lab.html,01-git/lab.qmd,"+ [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd))"
+9/1/26,2,Lecture,R Essentials,,"slides",02-essentials/slides.html,02-essentials/slides.qmd,
+9/3/26,2,Lab,R Essentials,,"lab",02-essentials/lab.html,02-essentials/lab.qmd,"+ [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/01-essentialsSimulations.html) ([source](02-essentials/01-essentialsSimulations.qmd))"
+9/8/26,3,Lecture,Debugging and profiling,,"slides",03-debugging-and-profiling/slides.html,03-debugging-and-profiling/slides.qmd,
+9/10/26,3,Lab,Debugging and profiling,,"lab",03-debugging-and-profiling/lab.html,03-debugging-and-profiling/lab.qmd,
+9/15/26,4,Lecture,Functions and data.table,,"slides",04-more-functions-and-datatable/slides.html,04-more-functions-and-datatable/slides.qmd,
+9/17/26,4,Lab,Functions and data.table,,"lab",04-more-functions-and-datatable/lab.html,04-more-functions-and-datatable/lab.qmd,"+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/homework.html) ([source](04-more-functions-and-datatable/homework.qmd))"
+9/22/26,5,Lecture,Introduction to C++,,"slides",05-cpp/slides.html,05-cpp/slides.qmd,
+9/24/26,5,Lab,Introduction to C++,,"lab",05-cpp/lab.html,05-cpp/lab.qmd,
+9/29/26,6,Lecture,C++ in R,,"slides",06-rcpp/slides.html,06-rcpp/slides.qmd,
+10/1/26,6,Lab,C++ in R,,"lab",06-rcpp/lab.html,06-rcpp/lab.qmd,"Deliver a paragraph in abstract mode describing their projects for the midterm."
+10/6/26,7,Break,Fall Break,,,,,
+10/8/26,7,Break,Fall Break,,,,,
+10/13/26,8,Lecture,Parallel Computing,,"slides",07-parallel-computing/slides.html,07-parallel-computing/slides.qmd,
+10/15/26,8,Lab,Parallel Computing,,"lab",07-parallel-computing/lab.html,07-parallel-computing/lab.qmd,
+10/20/26,9,Lecture,Midterm project,,,,,
+10/22/26,9,Presentations,Midterm project,,"Homework 3",09-midterm/homework.html,09-midterm/homework.qmd,
+10/27/26,10,Lecture,UofU's CHPC,,"CHPC overview",10-chpc-week/chpc_overview.pdf,,"[Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf)"
+10/29/26,10,Lab,Slurm practice,,"lab",10-slurm-practice/lab.html,10-slurm-practice/lab.qmd,
+11/3/26,11,Lecture,Slurm,,"slides",11-slurm-week1/slides.html,11-slurm-week1/slides.qmd,
+11/5/26,11,Lab,Slurm,,,,,"+ Homework 4 (Slurm)"
+11/10/26,12,Lecture,More practice with slurm,,"slides",12-slurm-week2/slides.html,12-slurm-week2/slides.qmd,
+11/12/26,12,Lab,More practice with slurm,,"Homework 4",12-slurm-week2/12-slurm-hw.html,12-slurm-week2/12-slurm-hw.qmd,
+11/17/26,13,Lecture,R packages I,,"slides",13-rpkgs-i/slides.html,13-rpkgs-i/slides.qmd,
+11/19/26,13,Lab,R packages I,,"lab",13-rpkgs-i/lab.html,13-rpkgs-i/lab.qmd,
+11/24/26,14,Lecture,R packages II,,,,,
+11/26/26,14,Off,Thanksgiving recess,,,,,
+12/1/26,15,Lecture,Automatic Reports with GitHub Actions,,"slides",15-autoreport/slides.html,15-autoreport/slides.qmd,
+12/3/26,15,Lab,R packages II,,,,,
+12/8/26,16,Hybrid,Final Prep (Hackathon),,,,,
+12/10/26,16,Hybrid,Final Prep (Hackathon),,,,,
+12/15/26,17,Package,Final,,,,,
+12/17/26,17,Talk,Final,,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html,,
