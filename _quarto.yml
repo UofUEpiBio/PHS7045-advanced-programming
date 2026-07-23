@@ -1,0 +1,69 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "PHS 7045: Advanced Programming"
+  page-navigation: true
+  chapters:
+    - index.qmd
+    - part: "01 Git"
+      chapters:
+        - 01-git/slides.qmd
+        - 01-git/lab.qmd
+        - 01-git/hello-world.qmd
+        - 01-git/quarto.qmd
+    - part: "02 Essentials"
+      chapters:
+        - 02-essentials/slides.qmd
+        - 02-essentials/lab.qmd
+        - 02-essentials/01-essentialsSimulations.qmd
+    - part: "03 Debugging And Profiling"
+      chapters:
+        - 03-debugging-and-profiling/slides.qmd
+        - 03-debugging-and-profiling/lab.qmd
+    - part: "04 More Functions And Data Table"
+      chapters:
+        - 04-more-functions-and-datatable/slides.qmd
+        - 04-more-functions-and-datatable/lab.qmd
+        - 04-more-functions-and-datatable/homework.qmd
+    - part: "05 Cpp"
+      chapters:
+        - 05-cpp/slides.qmd
+        - 05-cpp/lab.qmd
+    - part: "06 Rcpp"
+      chapters:
+        - 06-rcpp/slides.qmd
+        - 06-rcpp/lab.qmd
+        - 06-rcpp/02-vectorizing-rcpp.qmd
+    - part: "07 Parallel Computing"
+      chapters:
+        - 07-parallel-computing/slides.qmd
+        - 07-parallel-computing/lab.qmd
+    - part: "09 Midterm"
+      chapters:
+        - 09-midterm/homework.qmd
+    - part: "10 Slurm Practice"
+      chapters:
+        - 10-slurm-practice/lab.qmd
+        - 10-slurm-practice/04-slurm.qmd
+    - part: "11 Slurm Week 1"
+      chapters:
+        - 11-slurm-week1/slides.qmd
+    - part: "12 Slurm Week 2"
+      chapters:
+        - 12-slurm-week2/slides.qmd
+        - 12-slurm-week2/12-slurm-hw.qmd
+    - part: "13 Rpkgs I"
+      chapters:
+        - 13-rpkgs-i/slides.qmd
+        - 13-rpkgs-i/lab.qmd
+    - part: "15 Autoreport"
+      chapters:
+        - 15-autoreport/slides.qmd
+        - 15-autoreport/README.qmd
+
+format:
+  html:
+    toc: true
+    number-sections: false
