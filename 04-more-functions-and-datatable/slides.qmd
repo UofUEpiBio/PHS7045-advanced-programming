@@ -31,8 +31,7 @@ slides_eval <- TRUE
 Throughout the session, we will see examples using: 
 
 - [**data.table**](https://cran.r-project.org/package=data.table) in R,
-- [**dtplyr**](https://cran.r-project.org/package=dplyr) in R, and
-- [**pydatatable**](https://github.com/h2oai/datatable)
+- [**dtplyr**](https://cran.r-project.org/package=dplyr) in R
 
 Using the [MET](https://github.com/USCbiostats/data-science-data/) dataset.
 
@@ -246,7 +245,7 @@ if (!file.exists(tmp)) {
 
 ---
 
-Now we can load the data using the `fread()` function. In R
+Now we can load the data using the `fread()` function.
 
 ```{r}
 #| label: reading-data
@@ -255,14 +254,6 @@ Now we can load the data using the `fread()` function. In R
 # Reading the data
 dat <- fread(tmp)
 head(dat)
-```
-
-In Python
-
-```{python reading-py, eval = TRUE, echo = TRUE, results='hide'}
-import datatable as dt
-dat = dt.fread("met.gz")
-dat.head(5)
 ```
 
 Before we continue, let's learn a bit more on `data.table` and `dtplyr`
@@ -374,7 +365,7 @@ What happens if instead of `list()` you used `c()`?
 :::
 
 
-## Selecting columns (cont. 1) 
+## Selecting columns (cont.) 
 
 Using the **dplyr::select** verb:
 
@@ -384,24 +375,6 @@ Using the **dplyr::select** verb:
 #| echo: true
 dat_ldt |>  select(USAFID, lat, lon)
 ```
-
-## Selecting columns (cont. 2) {.small}
-
-In the case of `pydatatable`
-
-```{python}
-#| label: select1-py
-#| eval: !expr slides_eval
-#| echo: true
-dat[:,["USAFID", "lat", "lon"]]
-```
-
-::: {style="font-size: 20pt"}
-
-What happens if instead of `["USAFID", "lat", "lon"]` you used `{"USAFID", "lat", "lon"}` (vector vs set).
-
-:::
-
 
 ---
 
@@ -507,54 +480,7 @@ cbind(
 
 ---
 
-::: {.smaller}
-
-Or in python
-
-```{python}
-#| label: xor-py
-#| echo: true
-# Loading the libraries
-import numpy as np
-import pandas as pa
-
-# Defining the data
-x = [True, True, False, False]
-y = [False, True, True, False]
-ans = {
-    'x'   : x,
-    'y'   : y,
-    'and' : np.logical_and(x, y),
-    'or'  : np.logical_or(x, y),
-    'xor' : np.logical_xor(x, y)
-    }
-pa.DataFrame(ans)
-```
-
-:::
-
----
-
-<!-- ::: {.r-fit-text} -->
-
-Or in python (bis)
-
-```{python}
-#| label: xor-py-bis
-#| echo: true
-def myxor(x,y):
-    return np.logical_or(
-        np.logical_and(x, np.logical_not(y)),
-        np.logical_and(np.logical_not(x), y)
-    )
-
-ans['myxor'] = myxor(x,y)
-pa.DataFrame(ans)
-```
-
 We will now see applications using the `met` dataset.
-
-<!-- ::: -->
 
 ## Filtering (subsetting) the data
 
@@ -601,35 +527,6 @@ dat_ldt %>%
   collect() %>% # Notice this line!
   nrow() 
 ```
-
----
-
-::: {.r-fit-text}
-
-In Python
-
-```{python}
-#| label: filter1-py-load
-#| eval: !expr slides_eval
-#| echo: true
-import datatable as dt
-dat = dt.fread("met.gz")
-```
-
-
-```{python}
-#| label: filter1-py
-#| eval: !expr slides_eval
-#| echo: true
-dat[(dt.f.day == 1) & (dt.f.lat > 40) & ((dt.f.elev < 500) | (dt.f.elev > 1000)), :].nrows
-# dat[dt.f.day == 1,:][dt.f.lat > 40,:][(dt.f.elev < 500) | (dt.f.elev > 1000),:].nrows
-```
-
-In the case of pydatatable we use `dt.f.` to refer to a column. `df.` is what we use to refer to datatable's [namespace](https://en.wikipedia.org/wiki/Namespace).
-
-The [`f.` is a symbol](https://datatable.readthedocs.io/en/latest/manual/f-expressions.html) that allows accessing column names in a datatable's `Frame`.
-
-:::
 
 ## Questions 2
 
@@ -687,7 +584,7 @@ ggplot(map_data("state"), aes(x = long, y = lat)) +
 
 - **double**: Numeric variable with decimals (continuous), *e.g.*, distance, expression level, time.
 
-In C (and other languages), strings, integers, and doubles may be specified with size, *e.g.*, in `python` integers can be of 9, 16, and 32 bits. This is relevant when managing large datasets, where saving space can be fundamental ([more info](https://en.wikipedia.org/wiki/C_data_types#Main_types)).
+In C and other languages, strings, integers, and doubles may be specified with size. This is relevant when managing large datasets, where saving space can be fundamental ([more info](https://en.wikipedia.org/wiki/C_data_types#Main_types)).
 
 :::
 
@@ -1104,4 +1001,96 @@ Notice the **keyby** option here: "Group by STATE and order by STATE".
 - [RStudio's](https://rstudio.com) benchmark ([link](https://cran.r-project.org/web/packages/vroom/vignettes/benchmarks.html)):
   Designed as part of the benchmarks with the [vroom](https://cran.r-package.org/package=vroom) package.
 
+# Appendix
 
+## Python appendix: Loading the data
+
+```python
+#| label: reading-py
+#| eval: true
+#| echo: true
+#| results: hide
+import datatable as dt
+dat = dt.fread("met.gz")
+dat.head(5)
+```
+
+## Python appendix: Selecting columns {.small}
+
+In the case of `pydatatable`
+
+```python
+#| label: select1-py
+#| eval: !expr slides_eval
+#| echo: true
+dat[:,["USAFID", "lat", "lon"]]
+```
+
+::: {style="font-size: 20pt"}
+
+What happens if instead of `["USAFID", "lat", "lon"]` you used `{"USAFID", "lat", "lon"}` (vector vs set).
+
+:::
+
+## Python appendix: XOR {.smaller}
+
+```python
+#| label: xor-py
+#| echo: true
+# Loading the libraries
+import numpy as np
+import pandas as pa
+
+# Defining the data
+x = [True, True, False, False]
+y = [False, True, True, False]
+ans = {
+    'x'   : x,
+    'y'   : y,
+    'and' : np.logical_and(x, y),
+    'or'  : np.logical_or(x, y),
+    'xor' : np.logical_xor(x, y)
+    }
+pa.DataFrame(ans)
+```
+
+---
+
+```python
+#| label: xor-py-bis
+#| echo: true
+def myxor(x,y):
+    return np.logical_or(
+        np.logical_and(x, np.logical_not(y)),
+        np.logical_and(np.logical_not(x), y)
+    )
+
+ans['myxor'] = myxor(x,y)
+pa.DataFrame(ans)
+```
+
+## Python appendix: Filtering
+
+::: {.r-fit-text}
+
+```python
+#| label: filter1-py-load
+#| eval: !expr slides_eval
+#| echo: true
+import datatable as dt
+dat = dt.fread("met.gz")
+```
+
+```python
+#| label: filter1-py
+#| eval: !expr slides_eval
+#| echo: true
+dat[(dt.f.day == 1) & (dt.f.lat > 40) & ((dt.f.elev < 500) | (dt.f.elev > 1000)), :].nrows
+# dat[dt.f.day == 1,:][dt.f.lat > 40,:][(dt.f.elev < 500) | (dt.f.elev > 1000),:].nrows
+```
+
+In the case of pydatatable we use `dt.f.` to refer to a column. `df.` is what we use to refer to datatable's [namespace](https://en.wikipedia.org/wiki/Namespace).
+
+The [`f.` is a symbol](https://datatable.readthedocs.io/en/latest/manual/f-expressions.html) that allows accessing column names in a datatable's `Frame`.
+
+:::
