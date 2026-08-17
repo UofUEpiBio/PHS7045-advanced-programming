@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.35">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="George G. Vega Yon, Ph.D.">
+<meta name="dcterms.date" content="2024-08-20">
+
+<title>Version control and reproducible research – PHS 7045: Advanced Programming</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../01-git/lab.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-12eeb4b20e9f5a2b0bfc604bfaf942bb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../01-git/slides.html">01 Git</a></li><li class="breadcrumb-item"><a href="../01-git/slides.html"><span class="chapter-title">Version control and reproducible research</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">PHS 7045: Advanced Programming</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">PHS 7045: Advanced Programming</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">01 Git</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-git/slides.html" class="sidebar-item-text sidebar-link active"><span class="chapter-title">Version control and reproducible research</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-git/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 01 - GitHub</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-git/hello-world.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Hello World</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01-git/quarto.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">PHS 7045 Advanced Programming<br>Example with Quarto</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">02 Essentials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-essentials/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">R Essentials for advanced computing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-essentials/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 02 - R Essentials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02-essentials/01-essentialsSimulations.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Homework 01 - R Essentials: loops, functions, and *apply functions</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">03 Debugging And Profiling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-debugging-and-profiling/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Debugging and Profiling</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03-debugging-and-profiling/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 04 - Debugging and Profiling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">04 More Functions And Data Table</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04-more-functions-and-datatable/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Functions and data.table</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04-more-functions-and-datatable/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 03 - Functions and data.table</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../04-more-functions-and-datatable/homework.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Homework 1b (bonus) - Data Wrangling</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">05 Cpp</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05-cpp/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intro to C++</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../05-cpp/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 05 - C++</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">06 Rcpp</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06-rcpp/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Intro to Rcpp</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06-rcpp/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 05 - Rcpp and C++</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../06-rcpp/02-vectorizing-rcpp.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Homework 02 - Functions, Profiling, and Rcpp</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">07 Parallel Computing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07-parallel-computing/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">A Brief Introduction to High-Performance Computing</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../07-parallel-computing/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 06 - Parallel computing</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+ <span class="menu-text">09 Midterm</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../09-midterm/homework.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Homework 03 - Functions, Profiling, and Rcpp</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">10 Slurm Practice</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../10-slurm-practice/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 09 - Slurm practice</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../10-slurm-practice/04-slurm.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Homework 4 – Working with Slurm</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true">
+ <span class="menu-text">11 Slurm Week 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../11-slurm-week1/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Bash and HPC Essentials</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true">
+ <span class="menu-text">12 Slurm Week 2</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12-slurm-week2/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">CHPC Parallelization</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../12-slurm-week2/12-slurm-hw.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Homework 04 - Slurm</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true">
+ <span class="menu-text">13 Rpkgs I</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13-rpkgs-i/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Building R packages (part I)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../13-rpkgs-i/lab.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Lab 07 - R packages</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
+ <span class="menu-text">15 Autoreport</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../15-autoreport/slides.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Automatic reports with Github Actions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../15-autoreport/README.html" class="sidebar-item-text sidebar-link"><span class="chapter-title">Latest papers on Agent-Based Modeling in PubMed</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#preamble" id="toc-preamble" class="nav-link active" data-scroll-target="#preamble">Preamble</a>
+  <ul class="collapse">
+  <li><a href="#welcome-to-phs-7045-advanced-programming" id="toc-welcome-to-phs-7045-advanced-programming" class="nav-link" data-scroll-target="#welcome-to-phs-7045-advanced-programming">Welcome to “PHS 7045: Advanced Programming”</a></li>
+  <li><a href="#todays-lesson" id="toc-todays-lesson" class="nav-link" data-scroll-target="#todays-lesson">Today’s lesson</a></li>
+  </ul></li>
+  <li><a href="#part-i-intro" id="toc-part-i-intro" class="nav-link" data-scroll-target="#part-i-intro">Part I: intro</a>
+  <ul class="collapse">
+  <li><a href="#brief-review-of-technologies" id="toc-brief-review-of-technologies" class="nav-link" data-scroll-target="#brief-review-of-technologies">Brief review of technologies</a></li>
+  <li><a href="#what-is-version-control." id="toc-what-is-version-control." class="nav-link" data-scroll-target="#what-is-version-control.">What is ‘version control.’</a></li>
+  <li><a href="#why-do-we-care" id="toc-why-do-we-care" class="nav-link" data-scroll-target="#why-do-we-care">Why do we care</a></li>
+  <li><a href="#why-do-we-care-1" id="toc-why-do-we-care-1" class="nav-link" data-scroll-target="#why-do-we-care-1">Why do we care</a></li>
+  <li><a href="#why-do-we-care-contd" id="toc-why-do-we-care-contd" class="nav-link" data-scroll-target="#why-do-we-care-contd">Why do we care (cont’d)</a></li>
+  <li><a href="#a-very-short-history-of-git" id="toc-a-very-short-history-of-git" class="nav-link" data-scroll-target="#a-very-short-history-of-git">A (Very) Short History of Git</a></li>
+  <li><a href="#a-very-short-history-of-git-contd" id="toc-a-very-short-history-of-git-contd" class="nav-link" data-scroll-target="#a-very-short-history-of-git-contd">A (Very) Short History of Git (cont’d)</a></li>
+  <li><a href="#git-the-stupid-content-tracker" id="toc-git-the-stupid-content-tracker" class="nav-link" data-scroll-target="#git-the-stupid-content-tracker">Git: The stupid content tracker</a></li>
+  <li><a href="#how-can-i-use-git" id="toc-how-can-i-use-git" class="nav-link" data-scroll-target="#how-can-i-use-git">How can I use Git</a></li>
+  <li><a href="#a-common-workflow" id="toc-a-common-workflow" class="nav-link" data-scroll-target="#a-common-workflow">A Common workflow</a></li>
+  <li><a href="#a-common-workflow-1" id="toc-a-common-workflow-1" class="nav-link" data-scroll-target="#a-common-workflow-1">A Common workflow</a></li>
+  </ul></li>
+  <li><a href="#part-2-hands-on-local-git-repo" id="toc-part-2-hands-on-local-git-repo" class="nav-link" data-scroll-target="#part-2-hands-on-local-git-repo">Part 2: Hands-on local git repo</a>
+  <ul class="collapse">
+  <li><a href="#hands-on-0-introduce-yourself" id="toc-hands-on-0-introduce-yourself" class="nav-link" data-scroll-target="#hands-on-0-introduce-yourself">Hands-on 0: Introduce yourself</a></li>
+  <li><a href="#hands-on-1-local-repository" id="toc-hands-on-1-local-repository" class="nav-link" data-scroll-target="#hands-on-1-local-repository">Hands-on 1: Local repository</a></li>
+  <li><a href="#hands-on-1-local-repository-solution" id="toc-hands-on-1-local-repository-solution" class="nav-link" data-scroll-target="#hands-on-1-local-repository-solution">Hands-on 1: Local repository (solution)</a></li>
+  <li><a href="#hands-on-1-local-repository-1" id="toc-hands-on-1-local-repository-1" class="nav-link" data-scroll-target="#hands-on-1-local-repository-1">Hands-on 1: Local repository</a></li>
+  </ul></li>
+  <li><a href="#part-3-hands-on-cloud" id="toc-part-3-hands-on-cloud" class="nav-link" data-scroll-target="#part-3-hands-on-cloud">Part 3: Hands-on cloud</a>
+  <ul class="collapse">
+  <li><a href="#hands-on-2-remote-repository" id="toc-hands-on-2-remote-repository" class="nav-link" data-scroll-target="#hands-on-2-remote-repository">Hands-on 2: Remote repository</a></li>
+  <li><a href="#hands-on-2-remote-repository-solutions-a" id="toc-hands-on-2-remote-repository-solutions-a" class="nav-link" data-scroll-target="#hands-on-2-remote-repository-solutions-a">Hands-on 2: Remote repository (solutions a)</a></li>
+  <li><a href="#hands-on-2-remote-repository-solutions-a-1" id="toc-hands-on-2-remote-repository-solutions-a-1" class="nav-link" data-scroll-target="#hands-on-2-remote-repository-solutions-a-1">Hands-on 2: Remote repository (solutions a)</a></li>
+  <li><a href="#hands-on-2-remote-repository-solutions-b" id="toc-hands-on-2-remote-repository-solutions-b" class="nav-link" data-scroll-target="#hands-on-2-remote-repository-solutions-b">Hands-on 2: Remote repository (solutions b)</a></li>
+  <li><a href="#hands-on-2-remote-repository-solutions-c" id="toc-hands-on-2-remote-repository-solutions-c" class="nav-link" data-scroll-target="#hands-on-2-remote-repository-solutions-c">Hands-on 2: Remote repository (solutions c)</a></li>
+  <li><a href="#example-for-.gitignore" id="toc-example-for-.gitignore" class="nav-link" data-scroll-target="#example-for-.gitignore">Example for .gitignore</a></li>
+  </ul></li>
+  <li><a href="#resources" id="toc-resources" class="nav-link" data-scroll-target="#resources">Resources</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../01-git/slides.html">01 Git</a></li><li class="breadcrumb-item"><a href="../01-git/slides.html"><span class="chapter-title">Version control and reproducible research</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-title">Version control and reproducible research</span></h1>
+<p class="subtitle lead">PHS 7045: Advanced Programming</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>George G. Vega Yon, Ph.D. </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 20, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+.filelist {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  background-color: #f5f7fa;
+  padding: 0.75em 1em;
+}
+</style>
+<section id="preamble" class="level1">
+<h1>Preamble</h1>
+<section id="welcome-to-phs-7045-advanced-programming" class="level2">
+<h2 class="anchored" data-anchor-id="welcome-to-phs-7045-advanced-programming">Welcome to “PHS 7045: Advanced Programming”</h2>
+<div class="r-fit-text">
+<p>Before we start with the class:</p>
+<div class="fragment fade-up">
+<ul>
+<li>Who are you, and what do you expect to get from the class?</li>
+</ul>
+</div>
+<div class="fragment fade-up">
+<ul>
+<li>Who am I, and what do I expect to get from you?</li>
+</ul>
+</div>
+<div class="fragment fade-up">
+<ul>
+<li><p>Workflow:</p>
+<ul>
+<li><p>All submissions (labs, assignments, midterm, and final) through <a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming">GitHub</a>.</p></li>
+<li><p>Submissions must be using <a href="https://quarto.org">quarto</a>, <a href="https://rmarkdown.rstudio.com/">Rmarkdown</a>, or similar (like <a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd">this presentation</a>!).</p></li>
+<li><p>Weekly readings.</p></li>
+<li><p>Two weekly sessions: Lecture + Lab.</p></li>
+<li><p>One big project to be completed: Midterm and Final.</p></li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment fade-up">
+<ul>
+<li>More details on the syllabus.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="todays-lesson" class="level2">
+<h2 class="anchored" data-anchor-id="todays-lesson">Today’s lesson</h2>
+<ol type="1">
+<li><p>We will learn about version control and GitHub.</p></li>
+<li><p>Set up git and GitHub (make sure it works).</p></li>
+</ol>
+</section>
+</section>
+<section id="part-i-intro" class="level1">
+<h1>Part I: intro</h1>
+<section id="brief-review-of-technologies" class="level2">
+<h2 class="anchored" data-anchor-id="brief-review-of-technologies">Brief review of technologies</h2>
+<div class="r-fit-text">
+<p>Throughout the course, we will be using the following tools:</p>
+<div class="fragment fade-right">
+<ul>
+<li><a href="https://r-project.org">R</a> (duh!)</li>
+</ul>
+</div>
+<div class="fragment fade-right">
+<ul>
+<li><a href="https://git-scm.com/">Git</a> (software) and <a href="https://github.com">GitHub</a> (website).</li>
+</ul>
+</div>
+<div class="fragment fade-right">
+<ul>
+<li><a href="https://github.com/gvegayon/cli">Command line tools</a>.</li>
+</ul>
+</div>
+<div class="fragment fade-right">
+<ul>
+<li>Some R GUI, e.g., <a href="https://posit.co/products/open-source/rstudio/">RStudio</a> or <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</li>
+</ul>
+</div>
+<div class="fragment fade-right">
+<ul>
+<li><a href="https://github.com/features/copilot">GitHub co-pilot</a>: An AI-powered pair programmer (when OK; more on this later).</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="what-is-version-control." class="level2">
+<h2 class="anchored" data-anchor-id="what-is-version-control.">What is ‘version control.’</h2>
+<div class="columns" style="text-align: center">
+<div class="column" style="width:80%;">
+<p>[I]s the <strong>management of changes</strong> to documents […] <strong>Changes are usually identified</strong> by a number or letter code, termed the “revision number”, “revision level”, or simply “revision”. For example, an initial set of files is “revision 1”. When the first change is made, the resulting set is “revision 2”, and so on. <strong>Each revision is associated with a timestamp and the person making the change</strong>. Revisions can be <strong>compared</strong>, <strong>restored</strong>, and with some types of files, <strong>merged</strong>. – <a href="https://en.wikipedia.org/w/index.php?title=Version_control&amp;oldid=948839536" target="_blank">Wiki</a></p>
+</div><div class="column" style="width:20%;">
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg" class="img-fluid" alt="Diagram of version-controlled project history showing branching and merging of revisions over time"> <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Revision_controlled_project_visualization-2010-24-02.svg" alt="Diagram of version control" width="100%"> --></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-do-we-care" class="level2">
+<h2 class="anchored" data-anchor-id="why-do-we-care">Why do we care</h2>
+<div class="columns">
+<div class="column fragment" style="width:50%;">
+<p>You might have seen this…</p>
+<pre class="filelist"><code>mydocument.txt
+mydocumentversion2.txt
+mydocumentwithrevision.txt
+mydocumentfinal.txt</code></pre>
+</div><div class="column fragment" style="width:50%;">
+<p>Or even this…</p>
+<pre class="filelist"><code>mydocument2016-01-06.txt
+mydocument2016-01-08.txt</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-do-we-care-1" class="level2">
+<h2 class="anchored" data-anchor-id="why-do-we-care-1">Why do we care</h2>
+<p>Have you ever:</p>
+<div class="r-fit-text">
+<div class="fragment fade-in">
+<ul>
+<li>Made a <strong>change to code</strong>, realised it was a <strong>mistake</strong> and wanted to <strong>revert</strong> back?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li><strong>Lost code</strong> or had a backup that was too old?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Had to <strong>maintain multiple versions</strong> of a product?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to see the <strong>difference between</strong> two (or more) <strong>versions</strong> of your code?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to prove that a particular <strong>change broke or fixed</strong> a piece of code?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to <strong>review the history</strong> of some code?</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-do-we-care-contd" class="level2">
+<h2 class="anchored" data-anchor-id="why-do-we-care-contd">Why do we care (cont’d)</h2>
+<div class="r-fit-text">
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to submit a <strong>change</strong> to <strong>someone else’s code</strong>?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to <strong>share your code</strong>, or let other people work on your code?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to see <strong>how much work</strong> is being done, where, when, and by whom?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>Wanted to <strong>experiment</strong> with a new feature <strong>without interfering</strong> with working code?</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<p>In these cases, and no doubt others, a version control system should make your life easier.</p>
+<p>– <a href="https://stackoverflow.com/a/1408464/2097171">Stackoverflow</a> (by <a href="https://stackoverflow.com/users/44540/si618">si618</a>)</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="a-very-short-history-of-git" class="level2">
+<h2 class="anchored" data-anchor-id="a-very-short-history-of-git">A (Very) Short History of Git</h2>
+<ul>
+<li><strong>1991–2002</strong>: Linux kernel developed via emailed patches, no formal version control</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode email code-with-copy"><code class="sourceCode email"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">From:</span> <span class="va">torvalds@klaava.Helsinki.FI</span> <span class="co">(Linus Benedict Torvalds)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Newsgroups: </span>comp.os.minix</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">Subject:</span> What would you like to see most in minix?</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Summary: </span>small poll for my new operating system</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">Date:</span> 25 Aug 91 20:57:08 GMT</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">Organization:</span> University of Helsinki</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>Hello everybody out there using minix -</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>I'm doing a (free) operating system (just a hobby, won't be big and</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>professional like gnu) for 386(486) AT clones. This has been brewing</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>since april, and is starting to get ready. I'd like any feedback on</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>things people like/dislike in minix, as my OS resembles it somewhat</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>(same physical layout of the file-system (due to practical reasons)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>among other things).</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>I've currently ported bash(1.08) and gcc(1.40), and things seem to work.</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>This implies that I'll get something practical within a few months, and</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>I'd like to know what features most people would want. Any suggestions</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>are welcome, but I won't promise I'll implement them :-)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>Linus (torvalds@kruuna.helsinki.fi)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>PS. Yes - it's free of any minix code, and it has a multi-threaded fs.</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>It is NOT protable (uses 386 task switching etc), and it probably never</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>will support anything other than AT-harddisks, as that's all I have :-(.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="a-very-short-history-of-git-contd" class="level2">
+<h2 class="anchored" data-anchor-id="a-very-short-history-of-git-contd">A (Very) Short History of Git (cont’d)</h2>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>2002</strong>: Kernel team adopts <strong>BitKeeper</strong>, a proprietary DVCS, free to use for open source projects</li>
+<li><strong>April 2005</strong>: Free license revoked after a licensing dispute</li>
+<li><strong>April 2005</strong>: Torvalds writes <strong>Git</strong> from scratch in ~two weeks</li>
+<li><strong>July 2005</strong>: Torvalds hands maintenance to <strong>Junio Hamano</strong>, who still leads Git development today</li>
+<li><strong>2008 onward</strong>: <strong>GitHub</strong> launches, making distributed workflows (fork/branch/PR) mainstream far beyond kernel hacking</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="git-the-stupid-content-tracker" class="level2">
+<h2 class="anchored" data-anchor-id="git-the-stupid-content-tracker">Git: The stupid content tracker</h2>
+<div class="r-fit-text">
+<p>During this class (and perhaps, the entire program,) we will be using <!-- <a href="" target="_blank"> --> <a href="https://commons.wikimedia.org/wiki/File:Git-logo.svg"><img style="width: 100px;vertical-align: middle;" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg" alt="Git logo"></a></p>
+<div class="fragment fade-in">
+<ul>
+<li>Git is used by <a href="https://insights.stackoverflow.com/survey/2018#work-_-version-control">most developers in the world</a>.</li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>A great reference about the tool can be found <a href="https://git-scm.com/book">here</a></li>
+</ul>
+</div>
+<div class="fragment fade-in">
+<ul>
+<li>More on what’s stupid about Git <a href="https://en.wikipedia.org/wiki/Git#Naming">here</a>.</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="how-can-i-use-git" class="level2">
+<h2 class="anchored" data-anchor-id="how-can-i-use-git">How can I use Git</h2>
+<p>There are several ways to include Git in your work pipeline. A few are:</p>
+<ul>
+<li><p>Through the command line</p></li>
+<li><p>Through one of the available Git GUIs:</p>
+<ul>
+<li><p>RStudio <a href="https://rstudio.com/products/rstudio/features/">(link)</a></p></li>
+<li><p>Git-Cola <a href="https://git-cola.github.io/">(link)</a></p></li>
+<li><p>GitHub Desktop <a href="https://desktop.github.com/">(Link)</a></p></li>
+</ul></li>
+</ul>
+<p>More alternatives <a href="https://git-scm.com/download/gui">here</a>.</p>
+<hr>
+</section>
+<section id="a-common-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="a-common-workflow">A Common workflow</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="fig/git.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Git workflow"></p>
+</figure>
+</div>
+<div style="font-size: 80%">
+<p>Git has a ton of features, but the daily workflow only features a handful of commands: <code>git pull</code>, <code>git add</code>, <code>git commit</code>, and <code>git push</code>:</p>
+</div>
+<hr>
+</section>
+<section id="a-common-workflow-1" class="level2">
+<h2 class="anchored" data-anchor-id="a-common-workflow-1">A Common workflow</h2>
+<div style="font-size: 30px">
+<div class="fragment fade-in">
+<ol type="1">
+<li>Start the session by pulling (possible) updates: <code>git pull</code></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="2" type="1">
+<li><p>Make changes</p>
+<ol type="a">
+<li><p>(optional) Add untracked/new files: <code>git add [target file]</code></p></li>
+<li><p>(optional) Stage modified files: <code>git add [target file]</code></p></li>
+<li><p>(optional) Revert changes: <code>git checkout [target file]</code></p></li>
+</ol></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="3" type="1">
+<li>Move changes to the staging area (optional): <code>git add</code></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="4" type="1">
+<li><p>Commit:</p>
+<ol type="a">
+<li><p>If nothing pending: <code>git commit -m "Your comments go here."</code></p></li>
+<li><p>If modifications are not staged: <code>git commit -a -m "Your comments go here."</code></p></li>
+</ol></li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="5" type="1">
+<li>Upload the commit to the remote repo: <code>git push</code>.</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="part-2-hands-on-local-git-repo" class="level1">
+<h1>Part 2: Hands-on local git repo</h1>
+<section id="hands-on-0-introduce-yourself" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-0-introduce-yourself">Hands-on 0: Introduce yourself</h2>
+<p>Set up your git install with <code>git config</code>, start by telling who you are</p>
+<pre class="ssh"><code>$ git config --global user.name "Juan Perez"
+$ git config --global user.email "jperez@treschanchitos.edu"</code></pre>
+<p>Try it yourself (5 minutes) (more on how to configure git <a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration" target="_blank">here</a>)</p>
+<hr>
+</section>
+<section id="hands-on-1-local-repository" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-1-local-repository">Hands-on 1: Local repository</h2>
+<div class="r-fit-text">
+<p>We will start by working on our very first project. To do so, you are required to start using Git and GitHub so you can share your code with your team. For now, you can keep things local and skip Github. For this exercise, you need to</p>
+<div class="fragment fade-in">
+<ol type="a">
+<li>Create a new folder with the name of your project (you can try <code>PHS7045-first-project</code>)</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="2" type="a">
+<li>Initialize git with <code>git init</code> command.</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="3" type="a">
+<li>Create a <a href="https://en.wikipedia.org/wiki/README"><code>README.md</code></a> file and write a brief description of your project.</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="4" type="a">
+<li>Add the file to the tree using the <code>git add</code> command, and check the status.</li>
+</ol>
+</div>
+<div class="fragment fade-in">
+<ol start="5" type="a">
+<li><p>Make the first commit using the <code>git commit</code> command adding a message, e.g.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git commit <span class="at">-m</span> <span class="st">"My first commit ever!"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>And use <code>git log</code> to see the history.</p></li>
+</ol>
+</div>
+<p>Note 1: We are assuming that you already <a href="https://git-scm.com">installed git in your system</a>.</p>
+<p>Note 2: Need a text editor? Check out this website <a href="https://alternativeto.net/software/vim/">link</a>.</p>
+</div>
+<hr>
+</section>
+<section id="hands-on-1-local-repository-solution" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-1-local-repository-solution">Hands-on 1: Local repository (solution)</h2>
+<p>The following code is fully executable (copy-pastable)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (a) Creating the folder for the project (and getting in there)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> ~/PHS7045-first-project</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/PHS7045-first-project</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># (b) Initializing git, creating a file, and adding the file</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> init</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># (c) Creating the Readme file</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> An empty line <span class="op">&gt;</span> README.md</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># (d) Adding the file to the tree</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add README.md</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># (e) Committing and check out the history</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"My first commit ever!"</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> log</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="hands-on-1-local-repository-1" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-1-local-repository-1">Hands-on 1: Local repository</h2>
+<p>Ups! It seems that I added the wrong file to the tree, you can remove files from the tree using <code>git rm --cached</code>, for example, imagine that you added the file <code>class-notes.docx</code> (which you are not supposed to track), then you can remove it using</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git rm <span class="at">--cached</span> class-notes.docx</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This will remove the file from the tree <strong>but not from your computer</strong>. You can go further and ask git to avoid adding Docx files using the <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring">.gitignore file</a></p>
+</section>
+</section>
+<section id="part-3-hands-on-cloud" class="level1">
+<h1>Part 3: Hands-on cloud</h1>
+<section id="hands-on-2-remote-repository" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-2-remote-repository">Hands-on 2: Remote repository</h2>
+<div class="r-fit-text">
+<p>Now that you have something to share, your teammates are asking you to share the code with them. Since you are smart, you know you can do this using something like Gitlab or Github. So you now need to:</p>
+<ol type="a">
+<li><p>Create an online repository (empty) for your project using <a href="https://github.com">Github</a>.</p></li>
+<li><p>Add the remote using <code>git remote add</code>, in particular</p></li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git remote add origin https://github.com/[your user name]/PHS7045-first-project.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then, use the commands <code>git status</code> and <code>git remote -v</code> to see what’s going on.</p>
+<ol start="3" type="a">
+<li>Push the changes to the remote using <code>git push</code> like this:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git push <span class="at">-u</span> origin master</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should also check the status of the project using <code>git status</code> to see what Git tells you about it. Origin is the tag associated with the remote repo setup, while ‘master’ is the tag associated with the current branch of your repo.</p>
+<p><strong>Recommended</strong>: Complete GitHub’s Training team <a href="https://lab.github.com/githubtraining/uploading-your-project-to-github">“Uploading your project to GitHub”</a></p>
+</div>
+<hr>
+</section>
+<section id="hands-on-2-remote-repository-solutions-a" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-2-remote-repository-solutions-a">Hands-on 2: Remote repository (solutions a)</h2>
+<div style="text-align: center;">
+<figure class="figure">
+<img style="width: 800px;vertical-align: middle;" hspace="20px" src="fig/new-github-repo-step1.png" alt="New GitHub repo" class="figure-img">
+</figure>
+<p><!-- <figcaption><b>A common git workflow</b></figcaption> --></p>
+</div>
+<hr>
+</section>
+<section id="hands-on-2-remote-repository-solutions-a-1" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-2-remote-repository-solutions-a-1">Hands-on 2: Remote repository (solutions a)</h2>
+<div style="text-align: center;">
+<figure class="figure">
+<img style="width: 600px;vertical-align: middle;" hspace="20px" src="fig/new-github-repo-step2.png" alt="New GitHub repo 2" class="figure-img">
+</figure>
+<p><!-- <figcaption><b>A common git workflow</b></figcaption> --></p>
+</div>
+<hr>
+</section>
+<section id="hands-on-2-remote-repository-solutions-b" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-2-remote-repository-solutions-b">Hands-on 2: Remote repository (solutions b)</h2>
+<p>For part (b), there are a couple of solutions, first, you could try using your ssh-key (if you set it up)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (b)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add origin git@github.com:gvegayon/PHS7045-first-project.git</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote <span class="at">-v</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Otherwise, you can use the simple URL (this will prompt user+password) every time you want to push (and pull, if private).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (b)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add origin https://github.com/gvegayon/PHS7045-first-project.git</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote <span class="at">-v</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<hr>
+</section>
+<section id="hands-on-2-remote-repository-solutions-c" class="level2">
+<h2 class="anchored" data-anchor-id="hands-on-2-remote-repository-solutions-c">Hands-on 2: Remote repository (solutions c)</h2>
+<p>For the first <code>git push</code>, you need to specify the source (master) and target (origin) and set the upstream (the <code>-u</code> option):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (c)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin master</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The <code>--set-upstream</code>, which was invoked with <code>-u</code>, will set the tracking reference for <code>pull</code> and <code>push</code>.</p>
+<hr>
+</section>
+<section id="example-for-.gitignore" class="level2">
+<h2 class="anchored" data-anchor-id="example-for-.gitignore">Example for .gitignore</h2>
+<p>Example extracted directly from Pro-Git <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring">(link)</a>.</p>
+<pre style="font-size: 12pt;"># ignore all .a files
+*.a
+
+# but do track lib.a, even though you're ignoring .a files above
+!lib.a
+
+# only ignore the TODO file in the current directory, not subdir/TODO
+/TODO
+
+# ignore all files in any directory named build
+build/
+
+# ignore doc/notes.txt, but not doc/server/arch.txt
+doc/*.txt
+
+# ignore all .pdf files in the doc/ directory and any of its subdirectories
+doc/**/*.pdf
+</pre>
+</section>
+</section>
+<section id="resources" class="level1">
+<h1>Resources</h1>
+<div class="r-fit-text">
+<ul>
+<li><p>Git’s everyday commands, type <code>man giteveryday</code> in your terminal/command line. and the very nice <a href="https://github.github.com/training-kit/">cheatsheet</a>.</p></li>
+<li><p>My personal choice for nightstand book: The Pro-git book (free online) <a href="https://git-scm.com/book">(link)</a></p></li>
+<li><p>Github’s website of resources <a href="https://try.github.io/">(link)</a></p></li>
+<li><p>The “Happy Git with R” book <a href="https://happygitwithr.com/">(link)</a></p></li>
+<li><p>Roger Peng’s Mastering Software Development Book Section 3.9 Version control and Github <a href="https://bookdown.org/rdpeng/RProgDA/version-control-and-github.html">(link)</a></p></li>
+<li><p>Git exercises by Wojciech Frącz and Jacek Dajda <a href="https://gitexercises.fracz.com/">(link)</a></p></li>
+<li><p>Checkout GitHub’s Training YouTube Channel <a href="https://www.youtube.com/user/GitHubGuides">(link)</a></p></li>
+</ul>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="PHS 7045: Advanced Programming">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-title">PHS 7045: Advanced Programming</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../01-git/lab.html" class="pagination-link" aria-label="Lab 01 - GitHub">
+        <span class="nav-page-text"><span class="chapter-title">Lab 01 - GitHub</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
