@@ -1,4 +1,5 @@
 ---
+title: "PHS 7045: Advanced Programming"
 format: gfm
 embed-resources: true
 ---
