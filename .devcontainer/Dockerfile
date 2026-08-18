@@ -11,22 +11,28 @@ RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.35/quar
 RUN install2.r -n4 --error \
     renv \
     pander \
+    data.table \
     igraph \
     igraphdata \
     netplot \
     reticulate \
     microbenchmark \
     bench \
+    beepr \
+    covr \
     R.utils \
-    maps
-    
-RUN \
-Rscript --vanilla -e 'reticulate::install_python()' && \
-Rscript --vanilla -e 'reticulate::virtualenv_create("r-reticulate")' && \
-Rscript --vanilla -e 'reticulate::py_install("datatable")'
+    RcppArmadillo \
+    ggplot2 \
+    dplyr \
+    dtplyr \
+    maps \
+    readr \
+    slurmR \
+    texreg \
+    memisc \
+    tm \
+    wordcloud2
 
-RUN \
-Rscript --vanilla -e 'reticulate::py_install("pandas")'
 
 RUN apt-get update && apt-get install -y --no-install-recommends gdb 
     

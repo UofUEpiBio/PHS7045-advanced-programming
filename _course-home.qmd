@@ -1,4 +1,6 @@
-Welcome to Advanced Programming in R and HPC! You can find the syllabus [here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/syllabus.md). Readings for each session can be found in the GitHub issues associated with them.
+# PHS 7045: Advanced Programming — Fall 2026
+
+Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the [Fall 2026 syllabus](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md){target="_blank" rel="noopener"}. Readings for each session can be found in the GitHub issues associated with them.
 
 ## Contents
 
@@ -29,11 +31,15 @@ make_material <- function(link_text, link, source) {
     return("")
   }
 
-  out <- sprintf("[%s](%s)", link_text, make_url(link, urlraw))
+  out <- sprintf(
+    "[%s](%s){target=\"_blank\" rel=\"noopener\"}",
+    link_text,
+    make_url(link, urlraw)
+  )
 
   if (!is.na(source) && source != "") {
     out <- sprintf(
-      "%s ([source](%s))",
+      "%s ([source](%s){target=\"_blank\" rel=\"noopener\"})",
       out,
       make_url(source, paste0(urlgit, "tree/main"))
     )
@@ -44,7 +50,13 @@ make_material <- function(link_text, link, source) {
 
 dat[, title := fifelse(
   !is.na(issue),
-  sprintf("%s (Issue [%i](%s/issues/%i))", name, issue, urlgit, issue),
+  sprintf(
+    "%s (Issue [%i](%s/issues/%i){target=\"_blank\" rel=\"noopener\"})",
+    name,
+    issue,
+    urlgit,
+    issue
+  ),
   name
 )]
 
@@ -58,6 +70,18 @@ dat[
     materials == "",
     extra,
     paste0(materials, "<br>", extra)
+  )
+]
+
+# Some supplemental materials are authored directly in pages.csv rather than
+# built by make_material(). Give those links the same standalone-page behavior.
+dat[
+  materials != "",
+  materials := gsub(
+    "(\\[[^]]+\\]\\([^)]*\\))(?!\\{target=)",
+    "\\1{target=\"_blank\" rel=\"noopener\"}",
+    materials,
+    perl = TRUE
   )
 ]
 
@@ -75,7 +99,7 @@ knitr::kable(tab, row.names = FALSE, escape = FALSE)
 ## Assignment workflow
 
 Assignment materials will be distributed in a single compressed file (usually zip) for each assignment. Once the assignment materials are
-available, the students are required to do the following: 
+available, the students are required to do the following:
 
 1. Download the compressed file and extract its contents into an empty folder.
 
@@ -87,12 +111,12 @@ available, the students are required to do the following:
 You can start working on your assignment! We recommend pushing your changes as much as possible (it is good practice). As soon as you finish your assignment, you will have to ping one of the instructors in your commit message, for example:
 
 ```sh
-git commit -a -m "Assignment done @gvegayon and @chipmanj"
+git commit -a -m "Assignment done @gvegayon and @tm-pham"
 ```
 
-This way @gvegayon and @chipmanj will receive a notification about this assignment. Furthermore, we encourage you to use other GitHub resources, such as adding the URL of [GitHub issue]() regarding that assignment, for example, if you include the following link in your commit message:
+This way the course instructors, George G. Vega Yon (`@gvegayon`) and Thi-Mui Pham (`@tm-pham`), will receive a notification about this assignment. Furthermore, we encourage you to use other GitHub resources, such as adding the URL of [GitHub issue]() regarding that assignment, for example, if you include the following link in your commit message:
 
-```
+```text
 git commit -a -m "Assignment done https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/17"
 ```
 

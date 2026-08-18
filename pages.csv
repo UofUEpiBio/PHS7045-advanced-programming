@@ -3,12 +3,12 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who
 8/27/26,1,Lab,How to use AI in the class,,slides,01-git/slides.html,01-git/slides.qmd,,,George
 9/1/26,2,Lecture,Intro to Git,,slides,01-git/slides.html,01-git/slides.qmd,,,Mui
 9/3/26,2,Lab,Intro to classes,,lab,01-git/lab.html,01-git/lab.qmd,+ [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd)),,Mui
-9/8/26,2,Lecture,Functional programming,,slides,_slides/04-more-functions-and-datatable/slides.html,04-more-functions-and-datatable/slides.qmd,,,Mui
+9/8/26,2,Lecture,Functional programming,,slides,04-more-functions-and-datatable/slides.html,04-more-functions-and-datatable/slides.qmd,,,Mui
 9/10/26,2,Lab,Functional programming,,lab,04-more-functions-and-datatable/lab.html,04-more-functions-and-datatable/lab.qmd,+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/homework.html) ([source](04-more-functions-and-datatable/homework.qmd)),,Mui
 9/15/26,3,Lecture,Debugging and profiling,,slides,03-debugging-and-profiling/slides.html,03-debugging-and-profiling/slides.qmd,,Mui out,George
 9/17/26,3,Lab,Debugging and profiling,,lab,03-debugging-and-profiling/lab.html,03-debugging-and-profiling/lab.qmd,,Mui out,George
 9/22/26,4,Lecture,Introduction to C++,,slides,05-cpp/slides.html,05-cpp/slides.qmd,,,Mui
-9/24/26,4,Lab,Introduction to C++,,lab,05-cpp/lab.html,05-cpp/lab.qmd,,,Mui
+9/24/26,4,Lab,Introduction to C++,,lab,05-cpp/lab.html,05-cpp/lab.qmd,,"Ask students to ""declare"" what their midterm project will be. This could be a sort of an abstract and title to be shared.",Mui
 9/29/26,5,Lecture,C++ in R,,slides,06-rcpp/slides.html,06-rcpp/slides.qmd,,,George
 10/1/26,5,Lab,C++ in R,,lab,06-rcpp/lab.html,06-rcpp/lab.qmd,Deliver a paragraph in abstract mode describing their projects for the midterm.,,George
 10/6/26,6,Lecture,Parallel Computing,,slides,07-parallel-computing/slides.html,07-parallel-computing/slides.qmd,,,George
@@ -17,8 +17,8 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who
 10/15/26,7,Break,Fall Break,,,,,,,
 10/20/26,8,Lecture and Lab,Bonus Track 1: More on AI,,,,,,,"Mui, George"
 10/22/26,8,Lecture and Lab,Bunus Track 2: Ollama,,,,,,,"Mui, George"
-10/27/26,9,Lecture,Midterm project,,,,,,,"Mui, George"
-10/29/26,9,Lab,Midterm project,,Homework 3,09-midterm/homework.html,09-midterm/homework.qmd,,,"Mui, George"
+10/27/26,9,Lecture,Midterm project: Hackathon,,,,,,,"Mui, George"
+10/29/26,9,Lab,Midterm project: Presentations (lightning talk),,Homework 3,09-midterm/homework.html,09-midterm/homework.qmd,,,"Mui, George"
 11/3/26,10,Lecture and Lab,UofU's CHPC intro,,CHPC overview,10-chpc-week/chpc_overview.pdf,,"[Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf)",,CHPC
 11/5/26,10,Lecture and Lab,UofU's CHPC coding agents,,lab,10-slurm-practice/lab.html,10-slurm-practice/lab.qmd,,,CHPC
 11/10/26,11,Lecture,Slurm,,slides,11-slurm-week1/slides.html,11-slurm-week1/slides.qmd,,,Mui
@@ -28,10 +28,8 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who
 11/24/26,13,Lecture,TBD,,,,,,,Mui
 11/26/26,13,Lab,Thanksgiving recess,,,,,,,
 12/1/26,14,Lecture,Automatic Reports with GitHub Actions,,slides,15-autoreport/slides.html,15-autoreport/slides.qmd,,,George
-12/3/26,14,Off,TBD,,,,,,,Mui
+12/3/26,14,Off,TBD (maybe something about agents orchestration or whatnot),,,,,,,Mui
 12/8/26,15,Lecture,Final Prep (Hackathon),,,,,,,"Mui, George"
 12/10/26,15,Lab,Final Prep (Hackathon),,,,,,,"Mui, George"
 12/15/26,16,Lecture,Final,,,,,,,"Mui, George"
 12/17/26,16,Lecture,Final,,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html,,,,"Mui, George"
-,,,,,,,,,,
-,,,,,,,,,,

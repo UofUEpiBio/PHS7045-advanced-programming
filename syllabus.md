@@ -1,111 +1,126 @@
-# Syllabus Advanced Programming<br>(Spring 2024)
+# PHS 7045: Advanced Programming
 
-ALERT: This syllabus is a draft and is subject to change.
+## Fall 2026 syllabus
 
-## Description
+## Course description
 
-This course develops students’ ability to write R code to address complex questions that cannot be effectively or efficiently solved with existing R packages. Dealing with such problems often requires using computationally intensive algorithms, requiring sophistication to debug and reduce computing time. Topics covered include writing functions and vectorized programming, debugging, code optimization, parallel computing, C/C++ to R coding, R package creation, command-line programming using Linux, and running jobs on the university’s high-performance computing nodes. Students will learn through seeing (lectures), doing (homework), and teaching (helping one another improve coding). This course is aimed at students with at least moderate proficiency in R programming and/or strong proficiency in another programming language, such as Julia, Python, or C/C++.
+This course develops students' ability to write R code to address complex questions that cannot be effectively or efficiently solved with existing R packages. Dealing with such problems often requires computationally intensive algorithms and the ability to debug code and reduce computing time. Topics include functional and object-oriented programming, debugging and profiling, C/C++ integration with R, parallel computing, command-line programming in Linux, high-performance computing with Slurm, R package development, automated reporting, and the efficient and ethical use of artificial intelligence (AI) in coding and research. Students will learn through seeing (lectures), doing (labs and homework), and teaching (helping one another improve code).
 
-## Professors
+## Course outcomes and objectives
 
-Jonathan Chipman, Ph.D.  
-Assistant Professor  
-Division of Biostatistics, Department of Population Health Sciences  
-Cancer Biostatistics, Huntsman Cancer Institute  
-Email: jonathan.chipman@hci.utah.edu
+By the end of this course, students will be able to:
 
-George Vega Yon, Ph.D.  
-Research Assistant Professor  
-Division of Epidemiology, Department of Internal Medicine  
-Email: george.vegayon@utah.edu
+- Use Git, GitHub, Quarto, or R Markdown to develop and communicate reproducible computational work.
+- Design, write, document, and evaluate R programs using functions, classes, and functional programming techniques.
+- Debug and profile code, identify performance bottlenecks, and make evidence-based improvements.
+- Integrate C++ with R and select appropriate serial or parallel approaches for computationally intensive problems.
+- Use Linux, the University of Utah's high-performance computing resources, and Slurm to run and manage computational jobs.
+- Develop reusable R packages and automated research-reporting workflows.
+- Direct AI tools effectively and ethically, critically evaluate their output, and document their use transparently while retaining the ability to write and reason about code independently.
 
-## Locations and Times
+## Instructors
 
-Lectures: T/Th 11:30 AM - 1:00 PM  
-In-person: 295 CH 3C650  
-JC Office hours (WB 1N452): Th 10:15 AM - 11:15 AM  
-GVY Office hours: By appointment
+| Instructor | Contact | Office hours |
+|---|---|---|
+| George G. Vega Yon, Ph.D. | [george.vegayon@utah.edu](mailto:george.vegayon@utah.edu) | By appointment |
+| Thi-Mui Pham, Ph.D. | [u6045188@utah.edu](mailto:u6045188@utah.edu) | By appointment |
 
-## Grading and evaluation
+## Meeting information
 
-The course will depend heavily on the version control software Git and GitHub for sharing course material and work submissions. We expect students to use dynamic reporting tools such as rmarkdown and quarto. Git, GitHub, and dynamic reporting tools will all be taught during the first sessions of the course.
+| Meeting information | Details |
+|---|---|
+| Days | Tuesdays and Thursdays |
+| Time | 11:30AM -- 1:00PM |
+| Location | Williams building, Room 295 |
 
-The course evaluation has four components: class participation, homework assignments, a project midterm (examples [here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1)), and a final. <span class="underline">Class participation</span> will be measured by lab completion. Students must submit completed labs via GitHub by the Sunday of the instruction week. <span class="underline">Homework assignments</span> will consist of programming problems the student will have to solve and submit as rmarkdown or quarto reports via GitHub. Finally, <span class="underline">midterm and final evaluations</span> will consist of a project where the students should address a programming or computational problem using the tools and methods instructed in this course. Each component weighs into the final grade as follows:
+## Prerequisites
 
-  - Weekly Labs : 15%.
+Students must be able to write functions and submit solutions using an R dynamic-reporting tool such as R Markdown or Quarto. Students should have at least moderate proficiency in R and/or strong proficiency in another programming language, such as Julia, Python, C, or C++. Before the course, students may ask either instructor for an example problem to assess their readiness.
 
-  - Homework Assignments (5) : 9% each for a total of 45%.
+## Course requirements and evaluation
 
-  - Midterm project : 20%.
+The course will depend heavily on Git and GitHub for sharing course material and submitting work. Students will also use dynamic-reporting tools such as R Markdown and Quarto. These tools will be introduced during the first sessions of the course.
 
-  - Final project : 20%.
+Evaluation has four components: weekly labs, homework assignments, a midterm project, and a final project. Class participation will be measured through lab completion. Unless an assignment states otherwise, completed labs must be submitted through GitHub by the Sunday of the corresponding instructional week. Homework will consist of programming problems submitted as R Markdown or Quarto reports. For the midterm and final projects, students will address a programming or computational problem using methods taught in the course. [Example programming projects are available here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1).
 
-Students will present their lab work at least once during the course. There will be <span class="underline">six homework assignments, of which only the top five will be used for the final grade</span>. Besides the written report, <span class="underline">students will present their final project during class</span>. As a general principle, we will grade labs, homework assignments, and projects considering the quality of code documentation, code proficiency and correctness (speed, simplicity, etc.,) and written and oral presentation quality. Details regarding specific evaluation aspects of homework assignments, the midterm project, and the final project will be provided in time. Finally, the grading scale is set as follows:
+| Component | Weight |
+|---|---:|
+| Weekly labs | 15% |
+| Homework assignments (highest five of six, 9% each) | 45% |
+| Midterm project | 20% |
+| Final project | 20% |
 
-  - A : 93-100
+Students will present their lab work at least once during the course and will present their final project in class. Work will be evaluated based on code documentation, proficiency and correctness (including speed and simplicity where applicable), and the quality of written and oral presentations. Assignment-specific criteria and rubrics will be provided with each assignment.
 
-  - A- : 90-92.9
+### Midterm and final scheduling
 
-  - B+ : 88-89.9
+The preliminary schedule below includes planned dates for the midterm and final activities. A student who anticipates a conflict or needs to request a change should contact the instructors as early as possible. Any adjustment must be discussed with and confirmed by **both instructors** before it takes effect.
 
-  - B : 83-87.9
+## Use of artificial intelligence
 
-  - B- : 80-82.9
+The use of AI is encouraged and required in this course. We will explore efficient and ethical ways to use AI for both programming and research. Because this is a programming course, students must also be able to write and explain code on their own, reason critically about computational problems, and independently evaluate AI-generated output for correctness, quality, bias, security, reproducibility, and appropriate attribution.
 
-  - Grades in C - D range are similar to grades in the B range.
+Students are fully responsible for any work they submit, including work produced with AI assistance. They must be transparent about how they use AI throughout the course. Assignment or evaluation instructions may require students to submit the prompts, relevant AI outputs, revisions, and/or a brief description of how AI contributed to the work. AI use is authorized only within the boundaries of the applicable course and assignment instructions; undisclosed or misrepresented AI use may be treated as academic misconduct.
 
-  - F : 0-59.9
+## Grading scale
 
-## Pre-Requisites
+| Grade | Percentage |
+|---|---:|
+| A | 93 to 100 |
+| A- | 90 to <93 |
+| B+ | 87 to <90 |
+| B | 83 to <87 |
+| B- | 80 to <83 |
+| C+ | 77 to <80 |
+| C | 73 to <77 |
+| C- | 70 to <73 |
+| D+ | 67 to <70 |
+| D | 63 to <67 |
+| D- | 60 to <63 |
+| E | Below 60 |
 
-Students must be able to write functions and submit homework solutions using R dynamic reporting tools like rmarkdown or quarto. Before the course, students may ask the professor for an example problem to assess their comfort with R programming.
+## Required and recommended readings
 
-## Contents
+No required textbook is currently specified. Recommended readings include:
 
-The weekly contents are available on the GitHub website of the course [here](README.md#contents).
+- Roger Peng, *R Programming for Data Science* (2019): [https://bookdown.org/rdpeng/rprogdatascience/](https://bookdown.org/rdpeng/rprogdatascience/)
+- Norman Matloff, *The Art of R Programming* (2009): [PDF](https://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
+- Garrett Grolemund and Hadley Wickham, *R for Data Science* (2017): [https://r4ds.had.co.nz/](https://r4ds.had.co.nz/)
+- Roger Peng, *Exploratory Data Analysis with R* (2020): [https://bookdown.org/rdpeng/exdata/](https://bookdown.org/rdpeng/exdata/)
+- Roger Peng, Sean Kross, and Brooke Anderson, *Mastering Software Development in R* (2017): [https://bookdown.org/rdpeng/RProgDA/](https://bookdown.org/rdpeng/RProgDA/)
 
-<!-- TBD
-### Part 1 (Weeks 1-8)
+In addition, the following books by Dr. Vega Yon are recommended:
 
-  - **Collaboration and reporting tools**: Students will learn how to use version control software (Git) and generate dynamic reports using Rmarkdown. (Week 1)
+- Vega Yon, *AI for the Scientist in a Hurry* (2026): [https://book-ai.ggvy.cl](https://book-ai.ggvy.cl)
+- Vega Yon, *Applied HPC with R* (2026): [https://book-hpc.ggvy.cl](https://book-hpc.ggvy.cl)
 
-  - **Fundamentals of R**: We will review data structures, control-flow statements, and large data handling from the software development point of view. (Weeks 2 and 3)
+## Course schedule
 
-  - **Code debugging and profiling**: Programmers will also learn to debug code (find errors) and identify bottlenecks to speed up their programs. (Week 4)
+The current course schedule is subject to change. Students will be notified of any changes in class and via email. The schedule below includes planned dates for the midterm and final activities. A student who anticipates a conflict or needs to request a change should contact the instructors as early as possible. Any adjustment must be discussed with and confirmed by **both instructors** before it takes effect.
 
-  - **Incorporating C++ into R**: We will learn how to incorporate C++ code into our R programs to deal with computationally intensive tasks using Rcpp or equivalent. (Week 5)
+| Dates | Meetings and topics |
+|---|---|
+| Aug. 25 and 27 | Course introduction and AI; how to use AI in the course |
+| Sept. 1 and 3 | Introduction to Git; introduction to R classes |
+| Sept. 8 and 10 | Functional programming |
+| Sept. 15 and 17 | Debugging and profiling |
+| Sept. 22 and 24 | Introduction to C++ |
+| Sept. 29 and Oct. 1 | C++ in R |
+| Oct. 6 and 8 | Parallel computing |
+| Oct. 13 and 15 | Fall Break - no class |
+| Oct. 20 and 22 | Bonus AI topics; Ollama |
+| Oct. 27 and 29 | Midterm project hackathon and lightning presentations |
+| Nov. 3 and 5 | University of Utah CHPC introduction and coding agents |
+| Nov. 10 and 12 | Slurm and additional Slurm practice |
+| Nov. 17 and 19 | R packages I |
+| Nov. 24 and 26 | Topic TBD; Thanksgiving recess on Nov. 26 |
+| Dec. 1 and 3 | Automatic reports with GitHub Actions; Dec. 3 topic TBD |
+| Dec. 8 and 10 | Final project preparation hackathon |
+| Dec. 15 and 17 | Final project activities |
 
-  - **Simulation and parallel computing**: The program also involves writing simulations and learning to leverage parallel computing for computationally intensive tasks, including embarrassingly parallel computing methods. (Week 6)
+# University and course policies
 
-  - **R package development**: Students will learn how to write R packages to efficiently encapsulate their functions and routines to facilitate code sharing and stability. (Weeks 7 and 8)
-
-### Midterm (Week 9)
-
-  - You can find some example projects [here]([https://github.com/UofUEpiBio/PHS7045-advanced-programming](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1)).
-
-### Part 2 (Weeks 10-16)
-
-  - **Command-line in Linux**: Part of the course involves becoming familiar with the fundamentals of command-line usage. This involves managing data, using ssh, and other basic operations to work on Linux-based systems. (TBD)
-
-  - **High-performance computing on Slurm cluster**: Students will be taught how to work with the University of Utah’s high-performance computing cluster through the job scheduler Slurm. We will also review alternatives to submit jobs, including the R package slurmR. (TBD)
-  
--->
-
-## Readings
-
-  - R Programming for Data Science, 2019. Roger Peng. [<span class="underline">https://bookdown.org/rdpeng/rprogdatascience/</span>](https://bookdown.org/rdpeng/rprogdatascience/)
-
-  - The Art of R Programming, 2009. Norman Matloff. [<span class="underline">https://heather.cs.ucdavis.edu/\~matloff/132/NSPpart.pdf</span>](https://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
-
-### Supplementary References
-
-  - R for Data Science, 2017 Garrett Grolemund and Hadley Wickham. [<span class="underline">http://r4ds.had.co.nz/</span>](http://r4ds.had.co.nz/)
-
-  - Exploratory Data Analysis with R, 2020 Roger Peng [<span class="underline">https://bookdown.org/rdpeng/exdata/</span>](https://bookdown.org/rdpeng/exdata/)
-
-  - Mastering Software Development in R, 2017 Roger Peng, Sean Kross, Brooke Anderson [<span class="underline">https://bookdown.org/rdpeng/RProgDA/</span>](https://bookdown.org/rdpeng/RProgDA/)
-
-# University and Course Policies
+The current University of Utah mandatory syllabus policies are maintained by the [Martha Bradley Evans Center for Teaching Excellence](https://cte.utah.edu/instructor-education/syllabus/institutional-policies.php). The summaries and contact information below should be read together with that official source.
 
 ## Americans With Disabilities Act (ADA)
 
@@ -119,7 +134,7 @@ If you will need accommodations in this class, or for more information about wha
 
 > **Center for Disability & Access**  
 >   801-581-5020  
->   [<span class="underline">disability.utah.edu</span>](disability.utah.edu)  
+>   [disability.utah.edu](https://disability.utah.edu/)<br>
 >   65 Student Services Building  
 >   201 S 1460 E  
 >   Salt Lake City, UT 84112  
@@ -132,7 +147,7 @@ To report suspicious activity or to request a courtesy escort, contact:
 
 > **Campus Police & Department of Public Safety**  
 > 801-585-COPS (801-585-2677)  
-> [<span class="underline">Dps.utah.edu</span>](https://dps.utah.edu/)  
+> [dps.utah.edu](https://dps.utah.edu/)<br>
 > 1735 E. S. Campus Dr.  
 > Salt Lake City, UT 84112
 
@@ -144,14 +159,14 @@ If you or someone you know has been harassed or assaulted, you are encouraged to
 
 > **Title IX Coordinator & Office of Equal Opportunity and Affirmative Action**  
 >   801-581-8365  
->   [<span class="underline">oeo.utah.edu</span>](oeo.utah.edu)  
+>   [oeo.utah.edu](https://oeo.utah.edu/)<br>
 >   135 Park Building  
 >   201 Presidents' Cir.  
 >   Salt Lake City, UT 84112  
 
 > **Office of the Dean of Students**  
 >   801-581-7066  
->   [<span class="underline">deanofstudents.utah.edu</span>](deanofstudents.utah.edu)  
+>   [deanofstudents.utah.edu](https://deanofstudents.utah.edu/)<br>
 >   270 Union Building  
 >   200 S. Central Campus Dr.  
 >   Salt Lake City, UT 84112  
@@ -160,7 +175,7 @@ To file a police report, contact:
 
 > **Campus Police & Department of Public Safety**  
 >   801-585-COPS (801-585-2677)  
->   [<span class="underline">dps.utah.edu</span>](dps.utah.edu)  
+>   [dps.utah.edu](https://dps.utah.edu/)<br>
 >   1735 E. S. Campus Dr.  
 >   Salt Lake City, UT 84112  
 
@@ -170,7 +185,7 @@ To privately explore options and resources available to you with an advocate, co
 
 > **Center for Student Wellness**  
 >   801-581-7776  
->   [<span class="underline">wellness.utah.edu</span>](wellness.utah.edu)  
+>   [wellness.utah.edu](https://wellness.utah.edu/)<br>
 >   328 Student Services Building  
 >   201 S. 1460 E.  
 >   Salt Lake City, UT 84112  
@@ -183,7 +198,7 @@ Plagiarism and cheating are serious offenses and may be punished by failure on a
 
 “...Includes, but is not limited to, cheating, misrepresenting one’s work, inappropriately collaborating, plagiarism, and fabrication or falsification of information…It also includes facilitating academic misconduct by intentionally helping or attempting to help another to commit an act of academic misconduct.”
 
-For details on plagiarism and other important course conduct issues, see the U's [<span class="underline">Code of Student Rights and Responsibilities<\span>](http://regulations.utah.edu/academics/6-400.php).
+For details on plagiarism and other important course conduct issues, see the U's [Code of Student Rights and Responsibilities](https://regulations.utah.edu/academics/6-400.php).
 
 
 ## Drop/Withdrawal Policies
