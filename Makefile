@@ -1,5 +1,5 @@
 build:
-	podman build -t uofuepibio/phs7045-advanced-programming:fall2024 .
+	podman build -f .devcontainer/Dockerfile -t uofuepibio/phs7045-advanced-programming:fall2024 .
 
 push:
 	podman tag uofuepibio/phs7045-advanced-programming:fall2024 ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
