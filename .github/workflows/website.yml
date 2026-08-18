@@ -10,6 +10,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The :fall2024 image predates several packages the book now needs, and
+      # nothing in this repo rebuilds it. Install whatever is missing so a
+      # stale image cannot break the render.
+      - name: Install packages missing from the container image
+        run: |
+          Rscript -e '
+            pkgs <- c("dplyr", "gapminder", "purrr", "rvest", "xml2", "usethis")
+            missing <- setdiff(pkgs, rownames(installed.packages()))
+            if (length(missing)) {
+              cran <- getOption("repos")["CRAN"]
+              if (is.na(cran) || !nzchar(cran) || cran == "@CRAN@") {
+                options(repos = c(CRAN = "https://cloud.r-project.org"))
+              }
+              message("Installing: ", paste(missing, collapse = ", "))
+              install.packages(missing)
+            } else {
+              message("Nothing to install.")
+            }
+          '
+
       - name: Render Quarto book
         run: quarto render
 

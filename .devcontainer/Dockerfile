@@ -25,6 +25,11 @@ RUN install2.r -n4 --error \
     ggplot2 \
     dplyr \
     dtplyr \
+    gapminder \
+    purrr \
+    rvest \
+    xml2 \
+    usethis \
     maps \
     readr \
     slurmR \
