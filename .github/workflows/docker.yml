@@ -17,9 +17,10 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 env:
-  IMAGE_NAME: uofuepibio/phs7045-advanced-programming
+  IMAGE_NAME: ghcr.io/uofuepibio/phs7045-advanced-programming
 
 jobs:
   publish:
@@ -29,11 +30,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v4
         with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
