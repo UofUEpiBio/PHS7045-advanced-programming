@@ -1,50 +1,148 @@
 
 
-# PHS 7045: Advanced Programming
+# PHS 7045: Advanced Programming — Fall 2026
 
-Welcome to Advanced Programming in R and HPC! You can find the syllabus
-[here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/syllabus.md).
-Readings for each session can be found in the GitHub issues associated
-with them.
+Welcome to Advanced Programming in R and HPC! The instructors are
+[George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui
+Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the <a
+href="https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md"
+target="_blank" rel="noopener">Fall 2026 syllabus</a>. Readings for each
+session can be found in the GitHub issues associated with them.
 
 ## Contents
 
 | Week | Date | Session | Title | Materials |
 |---:|:---|:---|:---|:---|
-| 1 | 8/25/26 | Lecture | Intro to Git | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd)) |
-| 1 | 8/27/26 | Lab | Intro to classes | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/lab.qmd))<br>+ [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd)) |
-| 2 | 9/1/26 | Lecture | R Essentials | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/02-essentials/slides.qmd)) |
-| 2 | 9/3/26 | Lab | R Essentials | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/02-essentials/lab.qmd))<br>+ [Homework 1](https://UofUEpiBio.github.io/PHS7045-advanced-programming/02-essentials/01-essentialsSimulations.html) ([source](02-essentials/01-essentialsSimulations.qmd)) |
-| 3 | 9/8/26 | Lecture | Debugging and profiling | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-debugging-and-profiling/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/03-debugging-and-profiling/slides.qmd)) |
-| 3 | 9/10/26 | Lab | Debugging and profiling | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-debugging-and-profiling/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/03-debugging-and-profiling/lab.qmd)) |
-| 4 | 9/15/26 | Lecture | Functions and data.table | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/04-more-functions-and-datatable/slides.qmd)) |
-| 4 | 9/17/26 | Lab | Functions and data.table | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/04-more-functions-and-datatable/lab.qmd))<br>+ [Homework 2](https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/homework.html) ([source](04-more-functions-and-datatable/homework.qmd)) |
-| 5 | 9/22/26 | Lecture | Introduction to C++ | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/05-cpp/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/05-cpp/slides.qmd)) |
-| 5 | 9/24/26 | Lab | Introduction to C++ | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/05-cpp/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/05-cpp/lab.qmd)) |
-| 6 | 9/29/26 | Lecture | C++ in R | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/06-rcpp/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/06-rcpp/slides.qmd)) |
-| 6 | 10/1/26 | Lab | C++ in R | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/06-rcpp/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/06-rcpp/lab.qmd))<br>Deliver a paragraph in abstract mode describing their projects for the midterm. |
-| 7 | 10/6/26 | Break | Fall Break |  |
-| 7 | 10/8/26 | Break | Fall Break |  |
-| 8 | 10/13/26 | Lecture | Parallel Computing | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/07-parallel-computing/slides.qmd)) |
-| 8 | 10/15/26 | Lab | Parallel Computing | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/07-parallel-computing/lab.qmd)) |
-| 9 | 10/20/26 | Lecture | Midterm project |  |
-| 9 | 10/22/26 | Presentations | Midterm project | [Homework 3](https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/09-midterm/homework.qmd)) |
-| 10 | 10/27/26 | Lecture | UofU’s CHPC | [CHPC overview](https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-chpc-week/chpc_overview.pdf)<br>[Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf) |
-| 10 | 10/29/26 | Lab | Slurm practice | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-slurm-practice/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/10-slurm-practice/lab.qmd)) |
-| 11 | 11/3/26 | Lecture | Slurm | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-slurm-week1/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/11-slurm-week1/slides.qmd)) |
-| 11 | 11/5/26 | Lab | Slurm | \+ Homework 4 (Slurm) |
-| 12 | 11/10/26 | Lecture | More practice with slurm | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/12-slurm-week2/slides.qmd)) |
-| 12 | 11/12/26 | Lab | More practice with slurm | [Homework 4](https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/12-slurm-hw.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/12-slurm-week2/12-slurm-hw.qmd)) |
-| 13 | 11/17/26 | Lecture | R packages I | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/13-rpkgs-i/slides.qmd)) |
-| 13 | 11/19/26 | Lab | R packages I | [lab](https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/13-rpkgs-i/lab.qmd)) |
-| 14 | 11/24/26 | Lecture | R packages II |  |
-| 14 | 11/26/26 | Off | Thanksgiving recess |  |
-| 15 | 12/1/26 | Lecture | Automatic Reports with GitHub Actions | [slides](https://UofUEpiBio.github.io/PHS7045-advanced-programming/15-autoreport/slides.html) ([source](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/15-autoreport/slides.qmd)) |
-| 15 | 12/3/26 | Lab | R packages II |  |
-| 16 | 12/8/26 | Hybrid | Final Prep (Hackathon) |  |
-| 16 | 12/10/26 | Hybrid | Final Prep (Hackathon) |  |
-| 17 | 12/15/26 | Package | Final |  |
-| 17 | 12/17/26 | Talk | Final | [Requirements](https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html) |
+| 1 | 8/25/26 | Lecture | Intro classes AI | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 1 | 8/27/26 | Lab | How to use AI in the class | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 2 | 9/1/26 | Lecture | Intro to Git | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 2 | 9/3/26 | Lab | Intro to classes | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/lab.qmd"
+target="_blank" rel="noopener">source</a>)<br>+ <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html"
+target="_blank" rel="noopener">quarto</a> (<a href="01-git/quarto.qmd" target="_blank" rel="noopener">source</a>) |
+| 2 | 9/8/26 | Lecture | Functional programming | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/04-more-functions-and-datatable/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 2 | 9/10/26 | Lab | Functional programming | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/04-more-functions-and-datatable/lab.qmd"
+target="_blank" rel="noopener">source</a>)<br>+ <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/homework.html"
+target="_blank" rel="noopener">Homework 2</a> (<a href="04-more-functions-and-datatable/homework.qmd" target="_blank"
+rel="noopener">source</a>) |
+| 3 | 9/15/26 | Lecture | Debugging and profiling | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-debugging-and-profiling/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/03-debugging-and-profiling/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 3 | 9/17/26 | Lab | Debugging and profiling | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-debugging-and-profiling/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/03-debugging-and-profiling/lab.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 4 | 9/22/26 | Lecture | Introduction to C++ | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/05-cpp/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/05-cpp/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 4 | 9/24/26 | Lab | Introduction to C++ | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/05-cpp/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/05-cpp/lab.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 5 | 9/29/26 | Lecture | C++ in R | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/06-rcpp/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/06-rcpp/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 5 | 10/1/26 | Lab | C++ in R | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/06-rcpp/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/06-rcpp/lab.qmd"
+target="_blank" rel="noopener">source</a>)<br>Deliver a paragraph in abstract mode describing their projects for the midterm. |
+| 6 | 10/6/26 | Lecture | Parallel Computing | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/07-parallel-computing/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 6 | 10/8/26 | Lab | Parallel Computing | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/07-parallel-computing/lab.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 7 | 10/13/26 | Break | Fall Break |  |
+| 7 | 10/15/26 | Break | Fall Break |  |
+| 8 | 10/20/26 | Lecture and Lab | Bonus Track 1: More on AI |  |
+| 8 | 10/22/26 | Lecture and Lab | Bunus Track 2: Ollama |  |
+| 9 | 10/27/26 | Lecture | Midterm project: Hackathon |  |
+| 9 | 10/29/26 | Lab | Midterm project: Presentations (lightning talk) | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html"
+target="_blank" rel="noopener">Homework 3</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/09-midterm/homework.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 10 | 11/3/26 | Lecture and Lab | UofU’s CHPC intro | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-chpc-week/chpc_overview.pdf"
+target="_blank" rel="noopener">CHPC overview</a><br><a href="10-chpc-week/IntroLinux-RClass.pdf" target="_blank"
+rel="noopener">Linux slides</a>, <a href="10-chpc-week/using_r_at_chpc.pdf" target="_blank"
+rel="noopener">using R slides</a>, <a href="10-chpc-week/RClass-Slurm.pdf" target="_blank"
+rel="noopener">Slurm slides</a> |
+| 10 | 11/5/26 | Lecture and Lab | UofU’s CHPC coding agents | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-slurm-practice/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/10-slurm-practice/lab.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 11 | 11/10/26 | Lecture | Slurm | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-slurm-week1/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/11-slurm-week1/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 11 | 11/12/26 | Lab | More practice with slurm | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/12-slurm-week2/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 12 | 11/17/26 | Lecture | R packages I | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/13-rpkgs-i/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 12 | 11/19/26 | Lab | R packages I | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html"
+target="_blank" rel="noopener">lab</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/13-rpkgs-i/lab.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 13 | 11/24/26 | Lecture | TBD |  |
+| 13 | 11/26/26 | Lab | Thanksgiving recess |  |
+| 14 | 12/1/26 | Lecture | Automatic Reports with GitHub Actions | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/15-autoreport/slides.html"
+target="_blank" rel="noopener">slides</a> (<a
+href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/15-autoreport/slides.qmd"
+target="_blank" rel="noopener">source</a>) |
+| 14 | 12/3/26 | Off | TBD (maybe something about agents orchestration or whatnot) |  |
+| 15 | 12/8/26 | Lecture | Final Prep (Hackathon) |  |
+| 15 | 12/10/26 | Lab | Final Prep (Hackathon) |  |
+| 16 | 12/15/26 | Lecture | Final |  |
+| 16 | 12/17/26 | Lecture | Final | <a
+href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html"
+target="_blank" rel="noopener">Requirements</a> |
 
 ## Assignment workflow
 
@@ -68,15 +166,18 @@ your assignment, you will have to ping one of the instructors in your
 commit message, for example:
 
 ``` sh
-git commit -a -m "Assignment done @gvegayon and @chipmanj"
+git commit -a -m "Assignment done @gvegayon and @tm-pham"
 ```
 
-This way @gvegayon and @chipmanj will receive a notification about this
+This way the course instructors, George G. Vega Yon (`@gvegayon`) and
+Thi-Mui Pham (`@tm-pham`), will receive a notification about this
 assignment. Furthermore, we encourage you to use other GitHub resources,
 such as adding the URL of [GitHub issue]() regarding that assignment,
 for example, if you include the following link in your commit message:
 
-    git commit -a -m "Assignment done https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/17"
+``` text
+git commit -a -m "Assignment done https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/17"
+```
 
 Issue \#17 in the PHS7045 website will now include a link to your
 commit. A similar thing can be done by cross-referencing an issue; this
