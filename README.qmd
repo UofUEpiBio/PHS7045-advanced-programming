@@ -1,7 +1,9 @@
 ---
-title: "PHS 7045: Advanced Programming"
-format: gfm
-embed-resources: true
+# The H1 comes from _course-home.qmd; setting `title` here would duplicate it.
+# `wrap: none` is required: GFM tables break if a row is wrapped across lines.
+format:
+  gfm:
+    wrap: none
 ---
 
 {{< include _course-home.qmd >}}
