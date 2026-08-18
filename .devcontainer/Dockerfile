@@ -31,6 +31,7 @@ RUN install2.r -n4 --error \
     texreg \
     memisc \
     tm \
+    gapminder \
     wordcloud2
 
 
