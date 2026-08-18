@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   upload:
     runs-on: Ubuntu-latest
-    container: ghcr.io/uofuepibio/phs7045-advanced-programming:fall2024
+    container: ghcr.io/uofuepibio/phs7045-advanced-programming:latest
 
     steps:
       - uses: actions/checkout@v4
