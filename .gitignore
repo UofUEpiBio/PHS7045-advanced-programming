@@ -14,4 +14,9 @@ _site
 /.quarto/
 _book/
 
+# Output of the slides project (_quarto-slides.yml); not deployed by CI.
+/_slides/
+# Rendered locally when previewing _course-home.qmd.
+/_course-home.html
+
 **/*.quarto_ipynb
