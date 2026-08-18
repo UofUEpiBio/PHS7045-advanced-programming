@@ -10,3 +10,8 @@ libs
 *.docx
 *.xlsx
 _site
+
+/.quarto/
+_book/
+
+**/*.quarto_ipynb

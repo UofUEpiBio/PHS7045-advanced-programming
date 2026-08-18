@@ -1,0 +1,146 @@
+# PHS 7045: Advanced Programming — Fall 2026
+
+Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the [Fall 2026 syllabus](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md){target="_blank" rel="noopener"}. Readings for each session can be found in the GitHub issues associated with them.
+
+## Contents
+
+```{r}
+#| echo: false
+#| warning: false
+#| results: "asis"
+library(data.table)
+dat <- fread("pages.csv")
+
+urlgit <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming/"
+urlraw <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
+
+make_url <- function(path, base) {
+  if (is.na(path) || path == "") {
+    return(NA_character_)
+  }
+
+  if (grepl("^https?://", path)) {
+    return(path)
+  }
+
+  sprintf("%s/%s", base, path)
+}
+
+make_material <- function(link_text, link, source) {
+  if (is.na(link) || link == "") {
+    return("")
+  }
+
+  out <- sprintf(
+    "[%s](%s){target=\"_blank\" rel=\"noopener\"}",
+    link_text,
+    make_url(link, urlraw)
+  )
+
+  if (!is.na(source) && source != "") {
+    out <- sprintf(
+      "%s ([source](%s){target=\"_blank\" rel=\"noopener\"})",
+      out,
+      make_url(source, paste0(urlgit, "tree/main"))
+    )
+  }
+
+  out
+}
+
+dat[, title := fifelse(
+  !is.na(issue),
+  sprintf(
+    "%s (Issue [%i](%s/issues/%i){target=\"_blank\" rel=\"noopener\"})",
+    name,
+    issue,
+    urlgit,
+    issue
+  ),
+  name
+)]
+
+dat[, materials := mapply(
+  make_material, link_text, link, source, USE.NAMES = FALSE
+)]
+
+dat[
+  !is.na(extra) & extra != "",
+  materials := fifelse(
+    materials == "",
+    extra,
+    paste0(materials, "<br>", extra)
+  )
+]
+
+# Some supplemental materials are authored directly in pages.csv rather than
+# built by make_material(). Give those links the same standalone-page behavior.
+dat[
+  materials != "",
+  materials := gsub(
+    "(\\[[^]]+\\]\\([^)]*\\))(?!\\{target=)",
+    "\\1{target=\"_blank\" rel=\"noopener\"}",
+    materials,
+    perl = TRUE
+  )
+]
+
+tab <- dat[, .(
+  Week = week,
+  Date = date,
+  Session = session,
+  Title = title,
+  Materials = materials
+)]
+
+knitr::kable(tab, row.names = FALSE, escape = FALSE)
+```
+
+## Assignment workflow
+
+Assignment materials will be distributed in a single compressed file (usually zip) for each assignment. Once the assignment materials are
+available, the students are required to do the following:
+
+1. Download the compressed file and extract its contents into an empty folder.
+
+2. Initialize the folder as a git repository, add its contents, and make
+   the first commit.
+
+3. Create a new repository in Github.com (under your account) and push your local repo into it. The name of the repository should be [name of the compressed file]-[your GitHub username]
+
+You can start working on your assignment! We recommend pushing your changes as much as possible (it is good practice). As soon as you finish your assignment, you will have to ping one of the instructors in your commit message, for example:
+
+```sh
+git commit -a -m "Assignment done @gvegayon and @tm-pham"
+```
+
+This way the course instructors, George G. Vega Yon (`@gvegayon`) and Thi-Mui Pham (`@tm-pham`), will receive a notification about this assignment. Furthermore, we encourage you to use other GitHub resources, such as adding the URL of [GitHub issue]() regarding that assignment, for example, if you include the following link in your commit message:
+
+```text
+git commit -a -m "Assignment done https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/17"
+```
+
+Issue #17 in the PHS7045 website will now include a link to your commit. A similar thing can be done by cross-referencing an issue; this is, if you create a new issue in your repository and include the same link (https://github.com/UofUEpiBio/PM566/issues/17), the issue will be shown in #17 as cross-referenced.
+
+## Example
+
+For week #3, we will distribute a zip file named `week3-assignment.zip`. Using the command line, you can do all the previous steps as follows:
+
+```sh
+cd ~
+wget github.com/UofUEpiBio/PHS7045-advanced-programming/raw/master/assignments/week3-assignment.zip
+unzip week3-assignment.zip -d week3-assignment-gvegayon
+cd week3-assignment-gvegayon
+git init
+git add .
+git commit -a -m "Initial commit"
+```
+
+You still need to go to Github.com to create the new repository. Assuming you do that successfully, we continue:
+
+```sh
+git remote add origin git@github.com:gvegayon/week3-assignment-gvegayon.git
+git push -u origin master
+```
+
+And you are done!

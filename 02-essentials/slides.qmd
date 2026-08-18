@@ -1,20 +1,6 @@
 ---
 title: 'R Essentials for advanced computing'
 author: 'Jonathan Chipman, Ph.D.'
-format: 
-  html:
-    toc: TRUE
-    toc-depth: 2
-    toc-location: left
-    highlight: pygments
-    font_adjustment: -1
-    css: styles.css
-    # code-fold: true
-    code-tools: true
-    smooth-scroll: true
-    embed-resources: true
-  revealjs: default
-  pdf: default
 ---
 
 # Introduction

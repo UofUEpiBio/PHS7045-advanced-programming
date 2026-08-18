@@ -10,14 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: preping
-        run: |
-          quarto render README.qmd --to=html
-          mv README.html index.html
+      - name: Render Quarto book
+        run: quarto render
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "./"
+          path: "./_book"
 
   website:
     if: ${{ github.event_name != 'pull_request' }}
@@ -38,4 +36,3 @@ jobs:
         uses: actions/deploy-pages@v4
 
       
-

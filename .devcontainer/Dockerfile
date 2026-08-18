@@ -1,38 +1,40 @@
-FROM rocker/tidyverse:4.4.1
+FROM ghcr.io/rocker-org/devcontainer/r-ver:4.5
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    pandoc \
-    pandoc-citeproc \
-    curl \
-    gdebi-core \
-    && rm -rf /var/lib/apt/lists/*
+# Architecture-specific variable (built in Docker BuildKit)
+ARG TARGETARCH
 
-RUN install2.r -n4 \
+# Install quarto-cli and the orange-book extension
+RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.9.35/quarto-1.9.35-linux-${TARGETARCH}.deb && \
+    dpkg -i quarto-1.9.35-linux-${TARGETARCH}.deb && \
+    rm quarto-1.9.35-linux-${TARGETARCH}.deb
+
+RUN install2.r -n4 --error \
     renv \
     pander \
+    data.table \
     igraph \
     igraphdata \
     netplot \
     reticulate \
     microbenchmark \
     bench \
+    beepr \
+    covr \
     R.utils \
-    maps
-    
-RUN \
-Rscript --vanilla -e 'reticulate::install_python()' && \
-Rscript --vanilla -e 'reticulate::virtualenv_create("r-reticulate")' && \
-Rscript --vanilla -e 'reticulate::py_install("datatable")'
+    RcppArmadillo \
+    ggplot2 \
+    dplyr \
+    dtplyr \
+    maps \
+    readr \
+    slurmR \
+    texreg \
+    memisc \
+    tm \
+    wordcloud2
 
-RUN \
-Rscript --vanilla -e 'reticulate::py_install("pandas")'
-
-RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb
-RUN gdebi --non-interactive quarto-linux-amd64.deb
-RUN apt-get install --no-install-recommends -y git
 
 RUN apt-get update && apt-get install -y --no-install-recommends gdb 
     
-RUN install2.r languageserver
 
 CMD ["bash"]

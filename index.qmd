@@ -1,0 +1,5 @@
+---
+title: "PHS 7045: Advanced Programming — Fall 2026"
+---
+
+{{< include _course-home.qmd >}}
