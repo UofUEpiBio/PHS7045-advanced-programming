@@ -32,10 +32,10 @@ RUN install2.r -n4 --error \
     memisc \
     tm \
     gapminder \
-    wordcloud2
+    wordcloud2 \
+    rvest
 
 
-RUN apt-get update && apt-get install -y --no-install-recommends gdb 
-    
+RUN apt-get update && apt-get install -y --no-install-recommends gdb libglpk-dev
 
 CMD ["bash"]
