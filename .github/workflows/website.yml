@@ -30,6 +30,18 @@ jobs:
             }
           '
 
+      # 01-git/quarto.qmd has one Python chunk (stdlib only). reticulate embeds Python, so it needs libpython, not
+      # just the interpreter. RETICULATE_PYTHON skips virtualenv discovery.
+      - name: Provide Python for the reticulate demo chunk
+        run: |
+          set -eu
+          if ! ldconfig -p | grep -q 'libpython3\..*\.so'; then
+            apt-get update
+            apt-get install -y --no-install-recommends python3 libpython3-dev
+          fi
+          echo "RETICULATE_PYTHON=$(command -v python3)" >> "$GITHUB_ENV"
+          python3 --version
+
       - name: Render Quarto book
         run: quarto render
 

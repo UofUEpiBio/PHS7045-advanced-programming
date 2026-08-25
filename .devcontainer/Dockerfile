@@ -39,7 +39,9 @@ RUN install2.r -n4 --error \
     wordcloud2
 
 
-RUN apt-get update && apt-get install -y --no-install-recommends gdb 
+# libpython3-dev (not just python3) is what reticulate needs: it embeds Python
+# in the R process, so the shared library must be present.
+RUN apt-get update && apt-get install -y --no-install-recommends gdb python3 libpython3-dev
     
 
 CMD ["bash"]
