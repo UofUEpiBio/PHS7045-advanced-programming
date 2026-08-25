@@ -21,6 +21,10 @@ book:
         rel: noopener
   chapters:
     - index.qmd
+    - part: "Intro + Artificial Intelligence"
+      chapters:
+        - file: 00-ai/slides.qmd
+          rel: noopener
     - part: "01 Git"
       chapters:
         - file: 01-git/slides.qmd
