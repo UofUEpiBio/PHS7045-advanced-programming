@@ -23,7 +23,7 @@ By the end of this course, students will be able to:
 | Instructor | Contact | Office hours |
 |---|---|---|
 | George G. Vega Yon, Ph.D. | [george.vegayon@utah.edu](mailto:george.vegayon@utah.edu) | By appointment |
-| Thi-Mui Pham, Ph.D. | [u6045188@utah.edu](mailto:u6045188@utah.edu) | By appointment |
+| Thi Mui Pham, Ph.D. | [u6045188@utah.edu](mailto:u6045188@utah.edu) | By appointment |
 
 ## Meeting information
 
