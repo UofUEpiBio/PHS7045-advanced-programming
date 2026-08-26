@@ -2,7 +2,7 @@
 title: "Version control and reproducible research"
 subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
-date: August 20, 2024
+date: August 16, 2026
 format:
   revealjs:
     embed-resources: true
@@ -35,21 +35,39 @@ Before we start with the class:
 :::
 
 ::: {.fragment .fade-up}
-- Workflow:
-
-  - All submissions (labs, assignments, midterm, and final) through [GitHub](https://github.com/UofUEpiBio/PHS7045-advanced-programming).
-
-  - Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar (like [this presentation](https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd)!).
-
-  - Weekly readings.
-
-  - Two weekly sessions: Lecture + Lab.
-
-  - One big project to be completed: Midterm and Final.
+- How the class will work (next slide).
 :::
 
 ::: {.fragment .fade-up}
 - More details on the syllabus.
+:::
+
+:::
+
+---
+
+## Workflow
+
+::: {style="font-size: 80%"}
+
+::: {.fragment .fade-up}
+- All submissions (labs, assignments, midterm, and final) through [GitHub](https://github.com/UofUEpiBio/PHS7045-advanced-programming).
+:::
+
+::: {.fragment .fade-up}
+- Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar (like [this presentation](https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd)!).
+:::
+
+::: {.fragment .fade-up}
+- Weekly readings.
+:::
+
+::: {.fragment .fade-up}
+- Two weekly sessions: Lecture + Lab.
+:::
+
+::: {.fragment .fade-up}
+- One big project to be completed: Midterm and Final.
 :::
 
 :::
@@ -161,17 +179,17 @@ Have you ever:
 - Wanted to prove that a particular **change broke or fixed** a piece of code?
 :::
 
-::: {.fragment .fade-in}
-- Wanted to **review the history** of some code?
-:::
-
 :::
 
 ---
 
-## Why do we care (cont'd) 
+## Why do we care (cont'd)
 
 ::: {.r-fit-text}
+
+::: {.fragment .fade-in}
+- Wanted to **review the history** of some code?
+:::
 
 ::: {.fragment .fade-in}
 - Wanted to submit a **change** to **someone else's code**?
@@ -189,12 +207,69 @@ Have you ever:
 - Wanted to **experiment** with a new feature **without interfering** with working code?
 :::
 
-::: {.fragment .fade-in}
+:::
+
+---
+
+## Why do we care: in short
+
+::: {.r-fit-text}
+
 In these cases, and no doubt others, a version control system should make your life easier.
 
 -- [Stackoverflow](https://stackoverflow.com/a/1408464/2097171) (by [si618](https://stackoverflow.com/users/44540/si618))
+
 :::
 
+---
+
+## A (Very) Short History of Git 
+
+- **1991–2002**: Linux kernel developed via emailed patches, no formal version control
+
+::: {style="font-size: 45%"}
+
+```{.email}
+From: torvalds@klaava.Helsinki.FI (Linus Benedict Torvalds)
+Newsgroups: comp.os.minix
+Subject: What would you like to see most in minix?
+Summary: small poll for my new operating system
+Date: 25 Aug 91 20:57:08 GMT
+Organization: University of Helsinki
+
+Hello everybody out there using minix -
+
+I'm doing a (free) operating system (just a hobby, won't be big and
+professional like gnu) for 386(486) AT clones. This has been brewing
+since april, and is starting to get ready. I'd like any feedback on
+things people like/dislike in minix, as my OS resembles it somewhat
+(same physical layout of the file-system (due to practical reasons)
+among other things).
+
+I've currently ported bash(1.08) and gcc(1.40), and things seem to work.
+This implies that I'll get something practical within a few months, and
+I'd like to know what features most people would want. Any suggestions
+are welcome, but I won't promise I'll implement them :-)
+
+Linus (torvalds@kruuna.helsinki.fi)
+
+PS. Yes - it's free of any minix code, and it has a multi-threaded fs.
+It is NOT protable (uses 386 task switching etc), and it probably never
+will support anything other than AT-harddisks, as that's all I have :-(.
+```
+
+:::
+
+---
+
+## A (Very) Short History of Git (cont'd)
+
+::: {.incremental}
+- **2002**: Kernel team adopts **BitKeeper**, a proprietary DVCS, free to use for open source projects
+- **April 2005**: Free license revoked after a licensing dispute
+- **April 2005**: Torvalds writes **Git** from scratch in ~two weeks
+- **July 2005**: Torvalds hands maintenance to **Junio Hamano**, who still leads Git development today
+- **2008 onward**: **GitHub** launches, making distributed workflows (fork/branch/PR) mainstream far beyond kernel hacking
 :::
 
 ---
@@ -271,19 +346,29 @@ During this class (and perhaps, the entire program,) we will be using
 
 ## How can I use Git
 
+::: {style="font-size: 80%"}
+
 There are several ways to include Git in your work pipeline. A few are:
 
-- Through the command line
+- Through the **command line**:
 
-- Through one of the available Git GUIs:
+  - `git` itself -- works everywhere, including on remote servers like CHPC.
+
+  - The **GitHub CLI** [(link)](https://cli.github.com), `gh`, for everything that touches GitHub.
+
+- Through a **standalone Git GUI**:
+
+  - GitHub Desktop [(link)](https://desktop.github.com/)
+
+- Through the Git support **built into your editor**:
 
   - RStudio [(link)](https://rstudio.com/products/rstudio/features/)
-  
-  - Git-Cola [(link)](https://git-cola.github.io/)
-  
-  - GitHub Desktop [(Link)](https://desktop.github.com/)
+
+  - Visual Studio Code [(link)](https://code.visualstudio.com/docs/sourcecontrol/overview)
 
 More alternatives [here](https://git-scm.com/download/gui).
+
+:::
 
 ---
 
@@ -298,9 +383,9 @@ Git has a ton of features, but the daily workflow only features a handful of com
 
 ---
 
-## A Common workflow 
+## A Common workflow
 
-::: {style="font-size: 30px"}
+::: {style="font-size: 26px"}
 
 ::: {.fragment .fade-in}
 1. Start the session by pulling (possible) updates: `git pull`
@@ -372,20 +457,27 @@ c.  Create a [`README.md`](https://en.wikipedia.org/wiki/README) file and write 
     brief description of your project.
 :::
    
+:::
+
+---
+
+## Hands-on 1: Local repository (cont'd)
+
+::: {.r-fit-text}
+
 ::: {.fragment .fade-in}
 d.  Add the file to the tree using the `git add` command, and check the status.
 :::
 
 ::: {.fragment .fade-in}
 e.  Make the first commit using the `git commit` command adding a message, e.g.
-    
+
     ```sh
     $ git commit -m "My first commit ever!"
     ```
-  
+
     And use `git log` to see the history.
 :::
-    
 
 Note 1: We are assuming that you already [installed git in your system](https://git-scm.com).
 
@@ -398,6 +490,8 @@ Note 2: Need a text editor? Check out this website [link](https://alternativeto.
 ## Hands-on 1: Local repository (solution)
 
 The following code is fully executable (copy-pastable)
+
+::: {style="font-size: 80%"}
 
 ```sh
 # (a) Creating the folder for the project (and getting in there)
@@ -419,6 +513,8 @@ git commit -m "My first commit ever!"
 git log
 ```
 
+:::
+
 ---
 
 ## Hands-on 1: Local repository
@@ -434,9 +530,212 @@ This will remove the file from the tree **but not from your computer**. You can 
 
 # Part 3: Hands-on cloud
 
+## Git is not GitHub
+
+::: {style="font-size: 80%"}
+
+So far, everything we have done is **local**: `git init`, `git add`, `git commit`. No account,
+no internet, no company involved. That is the whole point of a *distributed* version control
+system -- your `.git` folder is a complete repository.
+
+::: {.fragment .fade-in}
+| | |
+|---|---|
+| **Git** | The software. Free, open source, runs on your laptop. |
+| **GitHub** | A *website* that hosts Git repositories and adds collaboration tools on top. |
+:::
+
+::: {.fragment .fade-in}
+GitHub is not the only option -- [GitLab](https://gitlab.com), [Bitbucket](https://bitbucket.org),
+and [Codeberg](https://codeberg.org) do the same thing, and universities often self-host GitLab.
+We use GitHub because that is where the scientific software community lives.
+:::
+
+::: {.fragment .fade-in}
+Nothing you have learned so far changes. GitHub is just **another copy of your repository that
+happens to live on someone else's computer**.
+:::
+
+:::
+
+---
+
+## What does GitHub add?
+
+::: {style="font-size: 80%"}
+
+::: {.fragment .fade-in}
+- **A backup and a central copy**: your laptop dies, your work does not.
+:::
+
+::: {.fragment .fade-in}
+- **Collaboration**: issues (to-do lists that anyone can file), pull requests (proposed changes),
+  and code review -- this is how you will submit your work in this class.
+:::
+
+::: {.fragment .fade-in}
+- **Visibility**: a public record of what you have built. For better or worse, this is a
+  professional portfolio.
+:::
+
+:::
+
+---
+
+## What does GitHub add? (cont'd)
+
+::: {style="font-size: 80%"}
+
+::: {.fragment .fade-in}
+- **Automation** ([GitHub Actions](https://github.com/features/actions)): run your tests, or
+  re-render a report, every time you push.
+:::
+
+::: {.fragment .fade-in}
+- **Publishing** ([GitHub Pages](https://pages.github.com)): free websites straight from a repo.
+  The website for this course is one.
+:::
+
+::: {.fragment .fade-in}
+- **Reproducibility**: a repo can be archived with a permanent DOI (e.g. via
+  [Zenodo](https://zenodo.org)) so a paper can cite the *exact* code that produced its results.
+:::
+
+:::
+
+---
+
+## The vocabulary you need
+
+::: {style="font-size: 80%"}
+
+::: {.fragment .fade-in}
+- **Remote**: a copy of your repository somewhere else. It has a short name; by convention the
+  main one is called **`origin`**.
+:::
+
+::: {.fragment .fade-in}
+- **`git clone`**: download a full copy of an existing repository (history included).
+:::
+
+::: {.fragment .fade-in}
+- **`git push`**: send *your* commits to the remote.
+:::
+
+::: {.fragment .fade-in}
+- **`git pull`**: bring the remote's commits down to you.
+:::
+
+:::
+
+---
+
+## The vocabulary you need (cont'd)
+
+::: {style="font-size: 80%"}
+
+::: {.fragment .fade-in}
+- **Fork**: *your* copy of somebody else's repo, living on GitHub under your account.
+:::
+
+::: {.fragment .fade-in}
+- **Pull request (PR)**: "please pull my changes into your repository" -- a proposal, plus a
+  place to discuss it.
+:::
+
+::: {.fragment .fade-in}
+A repo can have several remotes. Local and remote history are separate until you `push` or `pull`.
+:::
+
+:::
+
+---
+
+## Before we continue: get an account
+
+::: {style="font-size: 80%"}
+
+If you do not have one yet, sign up at [github.com](https://github.com).
+
+::: {.fragment .fade-in}
+- Pick a username you would be happy to put on a CV. It is hard to change later, and it will
+  appear in every URL you share.
+:::
+
+::: {.fragment .fade-in}
+- Use an email you will keep after graduation (you can add your university address as a
+  secondary one).
+:::
+
+::: {.fragment .fade-in}
+- GitHub **requires two-factor authentication** for accounts that contribute code. Set it up now
+  rather than at the deadline.
+:::
+
+::: {.fragment .fade-in}
+- As a student, apply for the [GitHub Education](https://education.github.com) benefits --
+  free Copilot, among other things.
+:::
+
+:::
+
+---
+
+## First: how does GitHub know it is you?
+
+::: {style="font-size: 80%"}
+
+Before pushing anything, we need to talk about credentials. Since **August 2021**, GitHub no
+longer accepts your account password for Git operations. You have two options:
+
+::: {.fragment .fade-in}
+1. **HTTPS + Personal Access Token (PAT)**: you generate a token on GitHub
+   (Settings > Developer settings > Personal access tokens) and paste it *where the password
+   used to go*.
+:::
+
+::: {.fragment .fade-in}
+2. **SSH keys**: you generate a key pair once, give GitHub the public half, and never type
+   anything again.
+:::
+
+::: {.fragment .fade-in}
+**Good news**: the GitHub CLI sets all of this up for you -- we will get there right after
+doing it the hard way.
+:::
+
+:::
+
+---
+
+## Credential helpers
+
+::: {style="font-size: 80%"}
+
+A **credential helper** stores your token so you are not asked every single time:
+
+```sh
+# macOS
+git config --global credential.helper osxkeychain
+
+# Windows (installed with Git for Windows)
+git config --global credential.helper manager
+
+# Linux
+git config --global credential.helper libsecret
+```
+
+::: {.fragment .fade-in}
+With SSH keys you do not need one -- the key *is* the credential.
+:::
+
+:::
+
+---
+
 ## Hands-on 2: Remote repository
 
-::: {.r-fit-text}
+::: {style="font-size: 70%"}
 
 Now that you have something to share, your teammates are asking you to share the code with them. Since you are smart, you know you can do this using something like Gitlab or Github. So you now need to:
 
@@ -489,6 +788,8 @@ c. Push the changes to the remote using `git push` like this:
 
 ## Hands-on 2: Remote repository (solutions b)
 
+::: {style="font-size: 85%"}
+
 For part (b), there are a couple of solutions, first, you could try using your ssh-key (if you set it up)
 
 ```sh
@@ -508,6 +809,8 @@ git remote -v
 git status
 ```
 
+:::
+
 ---
 
 ## Hands-on 2: Remote repository (solutions c)
@@ -521,6 +824,187 @@ git status
 ```
 
 The `--set-upstream`, which was invoked with `-u`, will set the tracking reference for `pull` and `push`.
+
+---
+
+## The GitHub CLI (`gh`)
+
+::: {style="font-size: 80%"}
+
+`git` knows nothing about GitHub -- it only knows about *remotes*. Everything else
+(creating repos, pull requests, issues) usually means opening a browser.
+
+[`gh`](https://cli.github.com) is GitHub's official command line tool: it puts the *website*
+part of GitHub in your terminal.
+
+::: {.fragment .fade-in}
+Installing it:
+
+```sh
+# macOS
+brew install gh
+
+# Windows
+winget install --id GitHub.cli
+
+# Linux (Debian/Ubuntu)
+sudo apt install gh
+```
+:::
+
+::: {.fragment .fade-in}
+Why we care in this class: it works over SSH on a remote server (like CHPC), where a
+GUI is not an option.
+:::
+
+:::
+
+---
+
+## `gh auth login`
+
+::: {style="font-size: 80%"}
+
+Run it **once** per machine:
+
+```sh
+gh auth login
+```
+
+::: {.fragment .fade-in}
+It asks you a handful of questions and then:
+
+- authenticates you through the browser (no token copy-pasting),
+- offers to **generate an SSH key and upload it** to your GitHub account,
+- runs `gh auth setup-git`, so plain `git push`/`git pull` are authenticated too.
+:::
+
+::: {.fragment .fade-in}
+To check what is going on (your first debugging step whenever a push is rejected):
+
+```sh
+gh auth status
+```
+:::
+
+:::
+
+---
+
+## Hands-on 2, redux: the one-line version
+
+::: {style="font-size: 80%"}
+
+Everything we just did by hand in Hands-on 2 -- create the repo on the website,
+`git remote add`, `git push -u` -- is a single command from **inside** your local repo:
+
+```sh
+cd ~/PHS7045-first-project
+gh repo create PHS7045-first-project --public --source=. --remote=origin --push
+```
+
+::: {.fragment .fade-in}
+- `--source=.` tells `gh` to use the repo in the current folder (instead of creating an empty one)
+- `--remote=origin` adds the remote for you
+- `--push` pushes and sets the upstream
+- use `--private` if you would rather not share it with the world
+:::
+
+::: {.fragment .fade-in}
+Do the manual version at least once. Then never do it again.
+:::
+
+:::
+
+---
+
+## Other `gh` commands worth knowing
+
+::: {style="font-size: 80%"}
+
+```sh
+# Clone one of your repos (no URL typing)
+gh repo clone UofUEpiBio/PHS7045-advanced-programming
+
+# Fork someone else's repo and clone your fork in one step
+gh repo fork UofUEpiBio/PHS7045-advanced-programming --clone
+
+# Open the current repo in your browser
+gh browse
+```
+
+::: {.fragment .fade-in}
+Pull requests -- how you will be submitting your work:
+
+```sh
+gh pr create --title "Lab 1" --body "My solution"
+gh pr status              # what is waiting on me?
+gh pr checkout 42         # check out someone else's PR locally
+gh pr view 42 --web
+```
+:::
+
+::: {.fragment .fade-in}
+`gh pr checkout 42` is worth the install on its own -- doing that by hand means
+fetching a branch from a fork you have not configured.
+:::
+
+:::
+
+---
+
+## Not a terminal person? GitHub Desktop
+
+::: {style="font-size: 80%"}
+
+[GitHub Desktop](https://desktop.github.com) is a free GUI that covers the everyday workflow.
+
+::: {.fragment .fade-in}
+- *Add > Create new repository* or *Add existing repository* -- this is `git init`.
+:::
+
+::: {.fragment .fade-in}
+- The **Publish repository** button = create the repo on GitHub + `git remote add` + `git push -u`,
+  in one click (the same thing `gh repo create` did).
+:::
+
+::: {.fragment .fade-in}
+- It is good at two things the command line makes awkward: **reading diffs before you commit**,
+  and **staging individual lines**.
+:::
+
+::: {.fragment .fade-in}
+Caveats: **no official Linux version** (so it is not an option on CHPC), and it hides what Git is
+actually doing.
+:::
+
+:::
+
+---
+
+## So which one should I use?
+
+::: {style="font-size: 70%"}
+
+| | Terminal (`git` + `gh`) | GitHub Desktop | RStudio / VS Code |
+|---|---|---|---|
+| Create + publish a repo | `gh repo create` | one click | limited |
+| Daily add/commit/push | yes | yes | yes |
+| Reading diffs, staging lines | awkward | **best** | good |
+| Works on CHPC | **only option** | no | no |
+| Pull requests, issues | `gh pr`, `gh issue` | partial | via extensions |
+
+::: {.fragment .fade-in}
+There is no wrong answer -- they all drive the same `.git` folder, and you can switch between them
+in the same repository, even on the same day.
+:::
+
+::: {.fragment .fade-in}
+My advice: **learn the command line**, because it is the only one that works everywhere. Use a GUI
+for reviewing your changes before committing.
+:::
+
+:::
 
 ---
 
@@ -548,6 +1032,140 @@ doc/*.txt
 doc/**/*.pdf
 </pre>
 
+# Bonus: Git under the hood {visibility="uncounted"}
+
+::: {style="font-size: 80%"}
+Everything so far was *how to drive* Git. These three slides are *what it is doing* --
+we will only cover them if we have time to spare.
+:::
+
+---
+
+## What `git init` actually creates
+
+::: {style="font-size: 55%"}
+
+`git init` creates exactly one thing: a hidden folder.
+
+```sh
+$ git init my-project && ls -A my-project/.git
+HEAD  config  description  hooks/  info/  objects/  refs/
+```
+
+::: {.fragment .fade-in}
+- `objects/` -- **the database**: every version of every file, every commit.
+:::
+
+::: {.fragment .fade-in}
+- `refs/` -- names for commits. **A branch is not a copy of anything**: `refs/heads/main`
+  is a file holding one 40-character hash.
+:::
+
+::: {.fragment .fade-in}
+- `HEAD` -- one line saying *where you are*: `ref: refs/heads/main`. You are always standing
+  somewhere in the graph; this is the file that remembers where.
+:::
+
+::: {.fragment .fade-in}
+- `config` -- repo settings, including your remotes (what `git remote add` writes).
+:::
+
+::: {.fragment .fade-in}
+- `index` -- **the staging area**, as a file (appears after your first `git add`).
+:::
+
+::: {.fragment .fade-in}
+Copy `.git/` and you have copied the entire history. That is what "distributed" means:
+your clone is not a checkout, it is the whole repository.
+:::
+
+:::
+
+---
+
+## Three kinds of objects
+
+::: {style="font-size: 55%"}
+
+Everything in `objects/` is one of three things:
+
+::: {.fragment .fade-in}
+- **blob** -- the *contents* of a file. No name, no path, no timestamp. Just bytes.
+:::
+
+::: {.fragment .fade-in}
+- **tree** -- a *directory listing*: names + permissions pointing at blobs and other trees.
+:::
+
+::: {.fragment .fade-in}
+- **commit** -- a snapshot: one tree, the parent commit(s), author, date, and your message.
+:::
+
+::: {.fragment .fade-in}
+Read them yourself with `git cat-file`:
+
+```sh
+$ git cat-file -p HEAD           # the commit
+tree 0f1d3b...
+parent 8f2c1a...
+author Juan Perez <jperez@treschanchitos.edu> 1755302400 -0600
+
+My first commit ever!
+
+$ git cat-file -p HEAD^{tree}    # its directory listing
+100644 blob ed4b46d...    README.md
+```
+:::
+
+::: {.fragment .fade-in}
+A commit is **not a diff** -- it points at a full snapshot. The diffs in `git log -p` are
+computed on the fly by comparing two trees.
+:::
+
+:::
+
+---
+
+## Content hashing
+
+::: {style="font-size: 55%"}
+
+An object's name **is** the SHA-1 hash of its contents: same input, same 40 characters, every
+time -- and you cannot go backwards from the hash to the file.
+
+```sh
+$ echo "An empty line" | git hash-object --stdin
+ed4b46dc10026c8bfe58aad14387e038a41f32ca
+```
+
+::: {.fragment .fade-in}
+Same content $\Rightarrow$ same hash $\Rightarrow$ **stored once**. Copy a file into ten folders and
+Git stores one blob; the ten trees just point at it.
+:::
+
+::: {.fragment .fade-in}
+Change one byte $\Rightarrow$ new blob $\Rightarrow$ new tree $\Rightarrow$ new commit hash. Git does
+not watch your files -- it re-hashes them and compares.
+:::
+
+::: {.fragment .fade-in}
+A commit's hash covers its tree *and* its parent's hash, so it covers all the history behind it.
+Rewriting anything old (`git rebase`, `git commit --amend`) changes every hash after it -- which
+is why rewriting *pushed* history causes trouble for collaborators.
+:::
+
+::: {.fragment .fade-in}
+The hash is also a checksum: corrupt a file in `.git/objects` and Git will notice.
+:::
+
+::: {.fragment .fade-in}
+Two likely questions: *could two files hash to the same name?* In principle yes, in practice
+never (and Git now also supports SHA-256). *Must I type 40 characters?* No -- the first 7 do:
+`git show ed4b46d`.
+:::
+
+:::
+
 # Resources
 
 ::: {.r-fit-text}
@@ -564,6 +1182,10 @@ doc/**/*.pdf
 - Roger Peng's Mastering Software Development Book Section 3.9 Version control and Github [(link)](https://bookdown.org/rdpeng/RProgDA/version-control-and-github.html)
 
 - Git exercises by Wojciech Frącz and Jacek Dajda [(link)](https://gitexercises.fracz.com/)
+
+- Learn Git Branching -- visualizes the commit graph as you type commands [(link)](https://learngitbranching.js.org/)
+
+- Oh My Git\! -- an open-source game for learning git [(link)](https://ohmygit.org)
 
 - Checkout GitHub's Training YouTube Channel [(link)](https://www.youtube.com/user/GitHubGuides)
 
