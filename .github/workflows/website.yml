@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Post rendered website artifact
-        uses: CDCgov/cfa-actions/post-artifact@1.2.0
+        uses: CDCgov/cfa-actions/post-artifact@v1.6.0
         with:
           artifact-name: github-pages
           gh-token: ${{ secrets.GITHUB_TOKEN }}
