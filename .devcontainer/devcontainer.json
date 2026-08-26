@@ -23,7 +23,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"quarto.quarto"
+				"quarto.quarto",
+				"openai.chatgpt",
+				"google.geminicodeassist"
 			]
 		}
 	},

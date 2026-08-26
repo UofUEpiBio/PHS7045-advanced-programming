@@ -12,6 +12,7 @@ book:
     - "Thi-Mui Pham, Ph.D."
   page-navigation: true
   sidebar:
+    collapse-level: 1
     tools:
       - icon: file-text
         text: "Fall 2026 syllabus"
@@ -21,11 +22,11 @@ book:
         rel: noopener
   chapters:
     - index.qmd
-    - part: "Intro + Artificial Intelligence"
+    - part: "Introduction to Classes and AI"
       chapters:
         - file: 00-ai/slides.qmd
           rel: noopener
-    - part: "01 Git"
+    - part: "Introduction to Git"
       chapters:
         - file: 01-git/slides.qmd
           target: _blank
@@ -39,7 +40,7 @@ book:
         - file: 01-git/quarto.qmd
           target: _blank
           rel: noopener
-    - part: "02 Essentials"
+    - part: "R Essentials"
       chapters:
         - file: 02-essentials/slides.qmd
           target: _blank
@@ -50,7 +51,7 @@ book:
         - file: 02-essentials/01-essentialsSimulations.qmd
           target: _blank
           rel: noopener
-    - part: "03 Debugging And Profiling"
+    - part: "Debugging and Profiling"
       chapters:
         - file: 03-debugging-and-profiling/slides.qmd
           target: _blank
@@ -58,7 +59,7 @@ book:
         - file: 03-debugging-and-profiling/lab.qmd
           target: _blank
           rel: noopener
-    - part: "04 More Functions And Data Table"
+    - part: "Functional Programming"
       chapters:
         - file: 04-more-functions-and-datatable/slides.qmd
           target: _blank
@@ -69,7 +70,7 @@ book:
         - file: 04-more-functions-and-datatable/homework.qmd
           target: _blank
           rel: noopener
-    - part: "05 Cpp"
+    - part: "Introduction to C++"
       chapters:
         - file: 05-cpp/slides.qmd
           target: _blank
@@ -77,7 +78,7 @@ book:
         - file: 05-cpp/lab.qmd
           target: _blank
           rel: noopener
-    - part: "06 Rcpp"
+    - part: "C++ in R"
       chapters:
         - file: 06-rcpp/slides.qmd
           target: _blank
@@ -88,7 +89,7 @@ book:
         - file: 06-rcpp/02-vectorizing-rcpp.qmd
           target: _blank
           rel: noopener
-    - part: "07 Parallel Computing"
+    - part: "Parallel Computing"
       chapters:
         - file: 07-parallel-computing/slides.qmd
           target: _blank
@@ -96,12 +97,12 @@ book:
         - file: 07-parallel-computing/lab.qmd
           target: _blank
           rel: noopener
-    - part: "09 Midterm"
+    - part: "Midterm Project"
       chapters:
         - file: 09-midterm/homework.qmd
           target: _blank
           rel: noopener
-    - part: "10 Slurm Practice"
+    - part: "UofU's CHPC Coding Agents"
       chapters:
         - file: 10-slurm-practice/lab.qmd
           target: _blank
@@ -109,12 +110,12 @@ book:
         - file: 10-slurm-practice/04-slurm.qmd
           target: _blank
           rel: noopener
-    - part: "11 Slurm Week 1"
+    - part: "Slurm"
       chapters:
         - file: 11-slurm-week1/slides.qmd
           target: _blank
           rel: noopener
-    - part: "12 Slurm Week 2"
+    - part: "More Practice with Slurm"
       chapters:
         - file: 12-slurm-week2/slides.qmd
           target: _blank
@@ -122,7 +123,7 @@ book:
         - file: 12-slurm-week2/12-slurm-hw.qmd
           target: _blank
           rel: noopener
-    - part: "13 Rpkgs I"
+    - part: "R Packages I"
       chapters:
         - file: 13-rpkgs-i/slides.qmd
           target: _blank
@@ -130,7 +131,7 @@ book:
         - file: 13-rpkgs-i/lab.qmd
           target: _blank
           rel: noopener
-    - part: "15 Autoreport"
+    - part: "Automatic Reports with GitHub Actions"
       chapters:
         - file: 15-autoreport/slides.qmd
           target: _blank
