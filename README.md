@@ -1,15 +1,13 @@
 
 
-# PHS 7045: Advanced Programming — Fall 2026
-
-Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi Mui Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the <a href="https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md" target="_blank" rel="noopener">Fall 2026 syllabus</a>. Readings for each session can be found in the GitHub issues associated with them.
+Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the <a href="https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md" target="_blank" rel="noopener">Fall 2026 syllabus</a>. Readings for each session can be found in the GitHub issues associated with them.
 
 ## Contents
 
 | Week | Date | Session | Title | Materials |
 |---:|:---|:---|:---|:---|
-| 1 | 8/25/26 | Lecture | Intro classes AI | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd" target="_blank" rel="noopener">source</a>) |
-| 1 | 8/27/26 | Lab | How to use AI in the class | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd" target="_blank" rel="noopener">source</a>) |
+| 1 | 8/25/26 | Lecture | Intro classes AI | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/00-ai/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/00-ai/slides.qmd" target="_blank" rel="noopener">source</a>) |
+| 1 | 8/27/26 | Lab | How to use AI in the class | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/00-ai/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/00-ai/slides.qmd" target="_blank" rel="noopener">source</a>) |
 | 2 | 9/1/26 | Lecture | Intro to Git | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/slides.qmd" target="_blank" rel="noopener">source</a>) |
 | 2 | 9/3/26 | Lab | Intro to classes | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/lab.html" target="_blank" rel="noopener">lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/01-git/lab.qmd" target="_blank" rel="noopener">source</a>)<br>+ <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html" target="_blank" rel="noopener">quarto</a> (<a href="01-git/quarto.qmd" target="_blank" rel="noopener">source</a>) |
 | 2 | 9/8/26 | Lecture | Functional programming | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/04-more-functions-and-datatable/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/04-more-functions-and-datatable/slides.qmd" target="_blank" rel="noopener">source</a>) |
