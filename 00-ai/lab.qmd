@@ -28,9 +28,10 @@ We will start by creating an empty folder we will be using during the semester. 
 
 The logit log likelihood is
 
-```math
-\ell(\beta) = \sum_{i=1}^n \left[ y_i \log(p_i) + (1-y_i) \log(1-p_i) \right]
-```
+$$
+\ell(\beta) = \sum_{i=1}^n \left[ y_i \log(p_i) + (1-y_i) \log(1-p_i) \right],
+\quad p_i = \frac{1}{1 + \exp(-x_i^\top \beta)}
+$$
 
 Implement a function in R that fits a logit model using MLE. You can use the `optim` function in R to perform the optimization. Let's avoid any AI use for this.
 
