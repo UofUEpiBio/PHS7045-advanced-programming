@@ -30,14 +30,14 @@ make_material <- function(link_text, link, source) {
   }
 
   out <- sprintf(
-    "[%s](%s){target=\"_blank\" rel=\"noopener\"}",
-    link_text,
-    make_url(link, urlraw)
+    "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">%s</a>",
+    make_url(link, urlraw),
+    link_text
   )
 
   if (!is.na(source) && source != "") {
     out <- sprintf(
-      "%s ([source](%s){target=\"_blank\" rel=\"noopener\"})",
+      "%s (<a href=\"%s\" target=\"_blank\" rel=\"noopener\">source</a>)",
       out,
       make_url(source, paste0(urlgit, "tree/main"))
     )
@@ -49,10 +49,10 @@ make_material <- function(link_text, link, source) {
 dat[, title := fifelse(
   !is.na(issue),
   sprintf(
-    "%s (Issue [%i](%s/issues/%i){target=\"_blank\" rel=\"noopener\"})",
+    "%s (Issue <a href=\"%s/issues/%i\" target=\"_blank\" rel=\"noopener\">%i</a>)",
     name,
-    issue,
     urlgit,
+    issue,
     issue
   ),
   name
@@ -91,7 +91,7 @@ tab <- dat[, .(
   Materials = materials
 )]
 
-knitr::kable(tab, row.names = FALSE, escape = FALSE)
+knitr::kable(tab, row.names = FALSE, escape = FALSE, format = "html")
 ```
 
 ## Assignment workflow
