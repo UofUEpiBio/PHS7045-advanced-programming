@@ -15,3 +15,9 @@ _site
 _book/
 
 **/*.quarto_ipynb
+
+# Quarto render artifacts
+_course-home.html
+_slides/
+*.knit.md
+
