@@ -1,6 +1,6 @@
 date,week,session,name,issue,link_text,link,source,extra,notes,who
 8/25/26,1,Lecture,Intro classes AI,,slides,00-ai/slides.html,00-ai/slides.qmd,,,George
-8/27/26,1,Lab,How to use AI in the class,,slides,00-ai/slides.html,00-ai/slides.qmd,,,George
+8/27/26,1,Lab,How to use AI in the class,,slides,00-ai/slides.html,00-ai/lab.qmd,,,George
 9/1/26,2,Lecture,Intro to Git,,slides,01-git/slides.html,01-git/slides.qmd,,,Mui
 9/3/26,2,Lab, Git and Github exercises,,lab,01-git/lab.html,01-git/lab.qmd,+ [quarto](https://UofUEpiBio.github.io/PHS7045-advanced-programming/01-git/quarto.html) ([source](01-git/quarto.qmd)),,Mui
 9/8/26,2,Lecture,Functional programming,,slides,04-more-functions-and-datatable/slides.html,04-more-functions-and-datatable/slides.qmd,,,Mui
