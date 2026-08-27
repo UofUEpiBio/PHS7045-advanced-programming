@@ -42,8 +42,8 @@ jobs:
           gh-token: ${{ secrets.GITHUB_TOKEN }}
           message: "The rendered website for this pull request is ready: [download { artifact-name }]({ artifact-url })."
 
-  website:
-    if: ${{ github.event_name == 'push' }}
+  deploy:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     needs: upload
     runs-on: ubuntu-latest
     permissions:
