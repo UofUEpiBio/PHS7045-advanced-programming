@@ -1,8 +1,8 @@
 ---
 title: "Version control and reproducible research"
 subtitle: "PHS 7045: Advanced Programming"
-author: "George G. Vega Yon, Ph.D."
-date: August 16, 2026
+author: "George G. Vega Yon, Ph.D.<br>Thi Mui Pham, Ph.D."
+date: Sept 1, 2026
 format:
   revealjs:
     embed-resources: true
@@ -20,67 +20,13 @@ format:
 
 # Preamble
 
-## Welcome to "PHS 7045: Advanced Programming"
-
-::: {.r-fit-text}
-
-Before we start with the class:
-
-::: {.fragment .fade-up}
-- Who are you, and what do you expect to get from the class?
-:::
-
-::: {.fragment .fade-up}
-- Who am I, and what do I expect to get from you?
-:::
-
-::: {.fragment .fade-up}
-- How the class will work (next slide).
-:::
-
-::: {.fragment .fade-up}
-- More details on the syllabus.
-:::
-
-:::
-
----
-
-## Workflow
-
-::: {style="font-size: 80%"}
-
-::: {.fragment .fade-up}
-- All submissions (labs, assignments, midterm, and final) through [GitHub](https://github.com/UofUEpiBio/PHS7045-advanced-programming).
-:::
-
-::: {.fragment .fade-up}
-- Submissions must be using [quarto](https://quarto.org), [Rmarkdown](https://rmarkdown.rstudio.com/), or similar (like [this presentation](https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/629f4654a6288a305261b5c7b8e51ddfed354256/lectures/01-git/slides.qmd)!).
-:::
-
-::: {.fragment .fade-up}
-- Weekly readings.
-:::
-
-::: {.fragment .fade-up}
-- Two weekly sessions: Lecture + Lab.
-:::
-
-::: {.fragment .fade-up}
-- One big project to be completed: Midterm and Final.
-:::
-
-:::
-
-
 ## Today's lesson
 
 1. We will learn about version control and GitHub.
 
 2. Set up git and GitHub (make sure it works).
 
-
-# Part I: intro
+# Part I: Intro
 
 ## Brief review of technologies
 
@@ -207,119 +153,13 @@ Have you ever:
 - Wanted to **experiment** with a new feature **without interfering** with working code?
 :::
 
-:::
-
----
-
-## Why do we care: in short
-
-::: {.r-fit-text}
-
+::: {.fragment .fade-in}
 In these cases, and no doubt others, a version control system should make your life easier.
 
 -- [Stackoverflow](https://stackoverflow.com/a/1408464/2097171) (by [si618](https://stackoverflow.com/users/44540/si618))
-
 :::
 
----
-
-## A (Very) Short History of Git 
-
-- **1991–2002**: Linux kernel developed via emailed patches, no formal version control
-
-::: {style="font-size: 45%"}
-
-```{.email}
-From: torvalds@klaava.Helsinki.FI (Linus Benedict Torvalds)
-Newsgroups: comp.os.minix
-Subject: What would you like to see most in minix?
-Summary: small poll for my new operating system
-Date: 25 Aug 91 20:57:08 GMT
-Organization: University of Helsinki
-
-Hello everybody out there using minix -
-
-I'm doing a (free) operating system (just a hobby, won't be big and
-professional like gnu) for 386(486) AT clones. This has been brewing
-since april, and is starting to get ready. I'd like any feedback on
-things people like/dislike in minix, as my OS resembles it somewhat
-(same physical layout of the file-system (due to practical reasons)
-among other things).
-
-I've currently ported bash(1.08) and gcc(1.40), and things seem to work.
-This implies that I'll get something practical within a few months, and
-I'd like to know what features most people would want. Any suggestions
-are welcome, but I won't promise I'll implement them :-)
-
-Linus (torvalds@kruuna.helsinki.fi)
-
-PS. Yes - it's free of any minix code, and it has a multi-threaded fs.
-It is NOT protable (uses 386 task switching etc), and it probably never
-will support anything other than AT-harddisks, as that's all I have :-(.
-```
-
 :::
-
----
-
-## A (Very) Short History of Git (cont'd)
-
-::: {.incremental}
-- **2002**: Kernel team adopts **BitKeeper**, a proprietary DVCS, free to use for open source projects
-- **April 2005**: Free license revoked after a licensing dispute
-- **April 2005**: Torvalds writes **Git** from scratch in ~two weeks
-- **July 2005**: Torvalds hands maintenance to **Junio Hamano**, who still leads Git development today
-- **2008 onward**: **GitHub** launches, making distributed workflows (fork/branch/PR) mainstream far beyond kernel hacking
-:::
-
----
-
-## A (Very) Short History of Git 
-
-- **1991–2002**: Linux kernel developed via emailed patches, no formal version control
-
-```{.email}
-From: torvalds@klaava.Helsinki.FI (Linus Benedict Torvalds)
-Newsgroups: comp.os.minix
-Subject: What would you like to see most in minix?
-Summary: small poll for my new operating system
-Date: 25 Aug 91 20:57:08 GMT
-Organization: University of Helsinki
-
-Hello everybody out there using minix -
-
-I'm doing a (free) operating system (just a hobby, won't be big and
-professional like gnu) for 386(486) AT clones. This has been brewing
-since april, and is starting to get ready. I'd like any feedback on
-things people like/dislike in minix, as my OS resembles it somewhat
-(same physical layout of the file-system (due to practical reasons)
-among other things).
-
-I've currently ported bash(1.08) and gcc(1.40), and things seem to work.
-This implies that I'll get something practical within a few months, and
-I'd like to know what features most people would want. Any suggestions
-are welcome, but I won't promise I'll implement them :-)
-
-Linus (torvalds@kruuna.helsinki.fi)
-
-PS. Yes - it's free of any minix code, and it has a multi-threaded fs.
-It is NOT protable (uses 386 task switching etc), and it probably never
-will support anything other than AT-harddisks, as that's all I have :-(.
-```
-
----
-
-## A (Very) Short History of Git (cont'd)
-
-::: {.incremental}
-- **2002**: Kernel team adopts **BitKeeper**, a proprietary DVCS, free to use for open source projects
-- **April 2005**: Free license revoked after a licensing dispute
-- **April 2005**: Torvalds writes **Git** from scratch in ~two weeks
-- **July 2005**: Torvalds hands maintenance to **Junio Hamano**, who still leads Git development today
-- **2008 onward**: **GitHub** launches, making distributed workflows (fork/branch/PR) mainstream far beyond kernel hacking
-:::
-
----
 
 ## Git: The stupid content tracker 
 
@@ -343,6 +183,7 @@ During this class (and perhaps, the entire program,) we will be using
 :::
 
 ---
+
 
 ## How can I use Git
 
@@ -419,7 +260,7 @@ Git has a ton of features, but the daily workflow only features a handful of com
 
 :::
 
-# Part 2: Hands-on local git repo
+# Part II: Hands-on local git repo
 
 ## Hands-on 0: Introduce yourself
 
@@ -528,7 +369,68 @@ $ git rm --cached class-notes.docx
 This will remove the file from the tree **but not from your computer**. You can go further and ask git to avoid adding Docx files using the [.gitignore file](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring)
 
 
-# Part 3: Hands-on cloud
+---
+
+# Part III: A (Very) Short History of Git 
+
+## Version control is 50+ years old
+- SCCS (1972) → RCS (1982) → CVS (1986) → Subversion (2000) moved from single files to whole projects to multiple developers to atomic commits.
+- Git's major change: Every clone holds the full history, not only a working copy. This makes it a **distributed** version control system (DVCS).
+
+---
+
+## Origin story 
+
+- **1991–2002**: Linux kernel developed via emailed patches, no formal version control
+
+::: {style="font-size: 45%"}
+
+```{.email}
+From: torvalds@klaava.Helsinki.FI (Linus Benedict Torvalds)
+Newsgroups: comp.os.minix
+Subject: What would you like to see most in minix?
+Summary: small poll for my new operating system
+Date: 25 Aug 91 20:57:08 GMT
+Organization: University of Helsinki
+
+Hello everybody out there using minix -
+
+I'm doing a (free) operating system (just a hobby, won't be big and
+professional like gnu) for 386(486) AT clones. This has been brewing
+since april, and is starting to get ready. I'd like any feedback on
+things people like/dislike in minix, as my OS resembles it somewhat
+(same physical layout of the file-system (due to practical reasons)
+among other things).
+
+I've currently ported bash(1.08) and gcc(1.40), and things seem to work.
+This implies that I'll get something practical within a few months, and
+I'd like to know what features most people would want. Any suggestions
+are welcome, but I won't promise I'll implement them :-)
+
+Linus (torvalds@kruuna.helsinki.fi)
+
+PS. Yes - it's free of any minix code, and it has a multi-threaded fs.
+It is NOT protable (uses 386 task switching etc), and it probably never
+will support anything other than AT-harddisks, as that's all I have :-(.
+```
+
+:::
+
+---
+
+## Origin story (cont'd)
+
+::: {.incremental}
+- **2002**: Kernel team adopts **BitKeeper**, a proprietary Distributed Version Control System, free to use for open source projects
+- **April 2005**: Free license revoked after a licensing dispute
+- **April 2005**: Torvalds writes **Git** from scratch in ~one week
+- **2008 onward**: **GitHub** launches – a web-based hosting service for Git repositories, with additional features like bug tracking, feature requests, task management, and wikis for every project.
+:::
+
+---
+
+
+# Part IV: Hands-on cloud
 
 ## Git is not GitHub
 
@@ -610,12 +512,12 @@ happens to live on someone else's computer**.
 ::: {style="font-size: 80%"}
 
 ::: {.fragment .fade-in}
-- **Remote**: a copy of your repository somewhere else. It has a short name; by convention the
-  main one is called **`origin`**.
+- **`git clone`**: download a full copy of an existing repository (history included).
 :::
 
 ::: {.fragment .fade-in}
-- **`git clone`**: download a full copy of an existing repository (history included).
+- **Remote**: a copy of your repository somewhere else. Each remote has has a short name, so you don't have to retype the URL. By convention the
+  main one is called **`origin`**.
 :::
 
 ::: {.fragment .fade-in}
@@ -758,8 +660,6 @@ c. Push the changes to the remote using `git push` like this:
   You should also check the status of the project using `git status` to see what Git tells you about it. Origin is the tag associated with the remote repo setup, while 'master' is the tag associated with the current branch of your repo.
 
 
-**Recommended**: Complete GitHub's Training team ["Uploading your project to GitHub"](https://lab.github.com/githubtraining/uploading-your-project-to-github)
-
 :::
 
 ---
@@ -799,8 +699,7 @@ git remote -v
 git status
 ```
 
-Otherwise, you can use the simple URL (this will prompt user+password)
-every time you want to push (and pull, if private).
+Otherwise, you can use the HTTPS URL. The first push will ask for your username and a **personal access token** (not your GitHub password). Your credential helper stores it after that.
 
 ```sh
 # (b)
@@ -819,11 +718,12 @@ For the first `git push`, you need to specify the source (master) and target (or
 
 ```sh
 # (c)
-git push -u origin master
+git push -u origin main
 git status
 ```
-
 The `--set-upstream`, which was invoked with `-u`, will set the tracking reference for `pull` and `push`.
+
+**Note**: Older repos may use `master` instead of `main` — GitHub switched the default in 2020.
 
 ---
 
