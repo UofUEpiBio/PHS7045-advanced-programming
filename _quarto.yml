@@ -10,6 +10,7 @@ book:
   author:
     - "George G. Vega Yon, Ph.D."
     - "Thi-Mui Pham, Ph.D."
+    - "Jonathan Chipman, Ph.D."
   page-navigation: true
   sidebar:
     collapse-level: 1
@@ -25,6 +26,8 @@ book:
     - part: "Introduction to Classes and AI"
       chapters:
         - file: 00-ai/slides.qmd
+          rel: noopener
+        - file: 00-ai/lab.qmd
           rel: noopener
     - part: "Introduction to Git"
       chapters:
@@ -144,3 +147,5 @@ format:
   html:
     toc: true
     number-sections: false
+    theme: simplex
+

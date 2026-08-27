@@ -1,4 +1,6 @@
-Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the [Fall 2026 syllabus](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md){target="_blank" rel="noopener"}. Readings for each session can be found in the GitHub issues associated with them.
+Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu).[^history] You can find the [Fall 2026 syllabus](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md){target="_blank" rel="noopener"}. Readings for each session can be found in the GitHub issues associated with them.
+
+[^history]: This course was first offered in Spring 2023 by George G. Vega Yon and Jonathan Chipman.
 
 ## Contents
 
