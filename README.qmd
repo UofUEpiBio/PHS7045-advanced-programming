@@ -1,5 +1,7 @@
 ---
-format: gfm
+format:
+  gfm:
+    wrap: none
 embed-resources: true
 ---
 
