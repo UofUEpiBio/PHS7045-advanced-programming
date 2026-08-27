@@ -1,0 +1,44 @@
+---
+title: Lab 00 - AI
+---
+
+## Learning goals
+
+For this lab, we will ensure that students have a proper setup for using AI throughout the course and do a little experimentation with different AI tools and techniques. Particularly:
+
+- Setup: Install VS Code and the Codex, Claude, and Antigravity extensions.
+- Solve a simple programming problem using AI assistance using different approaches.
+
+
+## Tasks
+
+For each one of the tasks, and for the learning of all students, ensure to keep a record of the prompts used and the responses received.
+
+### Setup (30 minutes)
+
+We will start by creating an empty folder we will be using during the semester. This folder will contain all the code that will be submitted to our assignments.
+
+1. Install VS Code in your computer.
+2. Install the Codex, Claude, and Antigravity extensions and login.
+3. Create an `AGENTS.md` file with the following content:
+
+{{< include ../AGENTS-template.md >}}
+
+### Task 1: Implement a simple GLM for the logit (10 minutes)
+
+The logit log likelihood is
+
+```math
+\ell(\beta) = \sum_{i=1}^n \left[ y_i \log(p_i) + (1-y_i) \log(1-p_i) \right]
+```
+
+Implement a function in R that fits a logit model using MLE. You can use the `optim` function in R to perform the optimization. Let's avoid any AI use for this.
+
+### Task 2: Experiment with different AI tools (20 minutes)
+
+Give it a go with the Codex, Claude, and Antigravity extensions, and ask them to implement the model in R. Each should save the results in a separate file.
+
+### Task 3: Planning mode (10 minutes)
+
+Now, instead of generating full solutions, we will focus on planning and outlining the steps needed to implement the logit model using AI assistance. Pick one of the AI tools (hopefully different from your peers), and ask it to help you plan the implementation; use one of the more advanced AI models for this task. Once the plan is done, use a simpler AI model to execute the plan.
+

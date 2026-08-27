@@ -19,7 +19,7 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who
 10/22/26,8,Lecture and Lab,Bunus Track 2: Ollama,,,,,,,"Mui, George"
 10/27/26,9,Lecture,Midterm project: Hackathon,,,,,,,"Mui, George"
 10/29/26,9,Lab,Midterm project: Presentations (lightning talk),,Homework 3,09-midterm/homework.html,09-midterm/homework.qmd,,,"Mui, George"
-11/3/26,10,Lecture and Lab,UofU's CHPC intro,,CHPC overview,10-chpc-week/chpc_overview.pdf,,"[Linux slides](10-chpc-week/IntroLinux-RClass.pdf), [using R slides](10-chpc-week/using_r_at_chpc.pdf), [Slurm slides](10-chpc-week/RClass-Slurm.pdf)",,CHPC
+11/3/26,10,Lecture and Lab,UofU's CHPC intro,,CHPC overview,10-chpc-week/chpc_overview.pdf,,"<a href=""10-chpc-week/IntroLinux-RClass.pdf"">Linux slides</a>, <a href=""10-chpc-week/using_r_at_chpc.pdf"">using R slides</a>, <a href=""10-chpc-week/RClass-Slurm.pdf"">Slurm slides</a>",,CHPC
 11/5/26,10,Lecture and Lab,UofU's CHPC coding agents,,lab,10-slurm-practice/lab.html,10-slurm-practice/lab.qmd,,,CHPC
 11/10/26,11,Lecture,Slurm,,slides,11-slurm-week1/slides.html,11-slurm-week1/slides.qmd,,,Mui
 11/12/26,11,Lab,More practice with slurm,,slides,12-slurm-week2/slides.html,12-slurm-week2/slides.qmd,,,George

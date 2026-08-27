@@ -1,4 +1,6 @@
-Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu). You can find the [Fall 2026 syllabus](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md){target="_blank" rel="noopener"}. Readings for each session can be found in the GitHub issues associated with them.
+Welcome to Advanced Programming in R and HPC! The instructors are [George G. Vega Yon, Ph.D.](mailto:george.vegayon@utah.edu) and [Thi-Mui Pham, Ph.D.](mailto:u6045188@utah.edu).[^history] You can find the [Fall 2026 syllabus](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/syllabus.md){target="_blank" rel="noopener"}. Readings for each session can be found in the GitHub issues associated with them.
+
+[^history]: This course was first offered in Spring 2023 by George G. Vega Yon and Jonathan Chipman.
 
 ## Contents
 
@@ -30,14 +32,14 @@ make_material <- function(link_text, link, source) {
   }
 
   out <- sprintf(
-    "[%s](%s){target=\"_blank\" rel=\"noopener\"}",
-    link_text,
-    make_url(link, urlraw)
+    "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">%s</a>",
+    make_url(link, urlraw),
+    link_text
   )
 
   if (!is.na(source) && source != "") {
     out <- sprintf(
-      "%s ([source](%s){target=\"_blank\" rel=\"noopener\"})",
+      "%s (<a href=\"%s\" target=\"_blank\" rel=\"noopener\">source</a>)",
       out,
       make_url(source, paste0(urlgit, "tree/main"))
     )
@@ -49,10 +51,10 @@ make_material <- function(link_text, link, source) {
 dat[, title := fifelse(
   !is.na(issue),
   sprintf(
-    "%s (Issue [%i](%s/issues/%i){target=\"_blank\" rel=\"noopener\"})",
+    "%s (Issue <a href=\"%s/issues/%i\" target=\"_blank\" rel=\"noopener\">%i</a>)",
     name,
-    issue,
     urlgit,
+    issue,
     issue
   ),
   name
@@ -91,7 +93,7 @@ tab <- dat[, .(
   Materials = materials
 )]
 
-knitr::kable(tab, row.names = FALSE, escape = FALSE)
+knitr::kable(tab, row.names = FALSE, escape = FALSE, format = "html")
 ```
 
 ## Assignment workflow
