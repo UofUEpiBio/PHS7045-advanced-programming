@@ -53,6 +53,12 @@ Throughout the course, we will be using the following tools:
 ::: {.fragment .fade-right}
 - [GitHub co-pilot](https://github.com/features/copilot): An AI-powered pair programmer (when OK; more on this later). 
 :::
+::: {.fragment .fade-right}
+- [Codex](https://chatgpt.com/codex)
+:::
+::: {.fragment .fade-right}
+- [Claude](https://claude.ai)
+:::
 :::
 
 ## What is 'version control.'
@@ -131,6 +137,8 @@ Have you ever:
 
 ## Why do we care (cont'd)
 
+Have you ever:
+
 ::: {.r-fit-text}
 
 ::: {.fragment .fade-in}
@@ -164,7 +172,7 @@ In these cases, and no doubt others, a version control system should make your l
 ## Git: The stupid content tracker 
 
 ::: {.r-fit-text}
-During this class (and perhaps, the entire program,) we will be using
+During this class (and perhaps, the entire program), we will be using
  <!-- <a href="" target="_blank"> -->
 [<img style="width: 100px;vertical-align: middle;" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Git-logo.svg" alt="Git logo">](https://commons.wikimedia.org/wiki/File:Git-logo.svg) 
 
@@ -187,19 +195,16 @@ During this class (and perhaps, the entire program,) we will be using
 
 ## How can I use Git
 
-::: {style="font-size: 80%"}
-
-There are several ways to include Git in your work pipeline. A few are:
+::: {style="font-size: 90%"}
+There are several ways to include Git in your work pipeline:
 
 - Through the **command line**:
 
   - `git` itself -- works everywhere, including on remote servers like CHPC.
 
-  - The **GitHub CLI** [(link)](https://cli.github.com), `gh`, for everything that touches GitHub.
+  - **GitHub CLI** [(link)](https://cli.github.com), `gh`, for everything related to GitHub.
 
-- Through a **standalone Git GUI**:
-
-  - GitHub Desktop [(link)](https://desktop.github.com/)
+- Through a **standalone Git GUI**: GitHub Desktop [(link)](https://desktop.github.com/)
 
 - Through the Git support **built into your editor**:
 
@@ -208,7 +213,6 @@ There are several ways to include Git in your work pipeline. A few are:
   - Visual Studio Code [(link)](https://code.visualstudio.com/docs/sourcecontrol/overview)
 
 More alternatives [here](https://git-scm.com/download/gui).
-
 :::
 
 ---
@@ -218,7 +222,7 @@ More alternatives [here](https://git-scm.com/download/gui).
 ![](fig/git.svg){fig-alt="Git workflow" fig-align="center" width="auto"}
 
 ::: {style="font-size: 80%"}
-Git has a ton of features, but the daily workflow only features a handful of commands: `git pull`, `git add`, `git commit`, and `git push`:
+Git has a ton of features, but the daily workflow only features a handful of commands: `git pull`, `git add`, `git commit`, and `git push`. 
 :::
 
 
@@ -226,11 +230,9 @@ Git has a ton of features, but the daily workflow only features a handful of com
 
 ## A Common workflow
 
-::: {style="font-size: 26px"}
+::: {style="font-size: 80%"}
 
-::: {.fragment .fade-in}
 1. Start the session by pulling (possible) updates: `git pull`
-:::
 
 ::: {.fragment .fade-in}
 2. Make changes
@@ -251,7 +253,7 @@ Git has a ton of features, but the daily workflow only features a handful of com
 
    a. If nothing pending: `git commit -m "Your comments go here."`
   
-   b. If modifications are not staged: `git commit -a -m "Your comments go here."`
+   b. If modifications are not staged: `git commit -a -m "Your comments."`
 :::
 
 ::: {.fragment .fade-in}
@@ -260,11 +262,15 @@ Git has a ton of features, but the daily workflow only features a handful of com
 
 :::
 
+---
+
 # Part II: Hands-on local git repo
 
 ## Hands-on 0: Introduce yourself
 
-Set up your git install with `git config`, start by telling who you are
+First, install git in your system (if you haven't done so already). You can find instructions [here](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+
+Next, set up your git install with `git config`, start by telling who you are
 
 
 ```ssh
@@ -272,17 +278,17 @@ $ git config --global user.name "Juan Perez"
 $ git config --global user.email "jperez@treschanchitos.edu"
 ```
 
-Try it yourself (5 minutes) (more on how to configure git <a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration" target="_blank">here</a>)
+Try it yourself (5 minutes). 
+
+More on how to configure git <a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration" target="_blank">here</a>. 
 
 ---
 
 ## Hands-on 1: Local repository
 
-::: {.r-fit-text}
+::: {style="font-size: 80%"}
 
-We will start by working on our very first project. To do so, you are required
-to start using Git and GitHub so you can share your code with your team. For now,
-you can keep things local and skip Github. For this exercise, you need to
+We will start by working on our very first project. To do so, you are required to start using Git and GitHub so you can share your code with your team. For now, you can skip Github. For this exercise, you need to
 
 ::: {.fragment .fade-in}
 a.  Create a new folder with the name of your project (you can try
@@ -298,17 +304,20 @@ c.  Create a [`README.md`](https://en.wikipedia.org/wiki/README) file and write 
     brief description of your project.
 :::
    
-:::
+You can find more information about the `README.md` file [here](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-readmes)
 
+Note: Need a text editor? Check out this website [link](https://alternativeto.net/software/vim/).
+
+:::
 ---
 
 ## Hands-on 1: Local repository (cont'd)
 
 ::: {.r-fit-text}
 
-::: {.fragment .fade-in}
+
 d.  Add the file to the tree using the `git add` command, and check the status.
-:::
+
 
 ::: {.fragment .fade-in}
 e.  Make the first commit using the `git commit` command adding a message, e.g.
@@ -319,10 +328,6 @@ e.  Make the first commit using the `git commit` command adding a message, e.g.
 
     And use `git log` to see the history.
 :::
-
-Note 1: We are assuming that you already [installed git in your system](https://git-scm.com).
-
-Note 2: Need a text editor? Check out this website [link](https://alternativeto.net/software/vim/).
 
 :::
 
@@ -420,8 +425,9 @@ will support anything other than AT-harddisks, as that's all I have :-(.
 
 ## Origin story (cont'd)
 
-::: {.incremental}
 - **2002**: Kernel team adopts **BitKeeper**, a proprietary Distributed Version Control System, free to use for open source projects
+
+::: {.incremental}
 - **April 2005**: Free license revoked after a licensing dispute
 - **April 2005**: Torvalds writes **Git** from scratch in ~one week
 - **2008 onward**: **GitHub** launches – a web-based hosting service for Git repositories, with additional features like bug tracking, feature requests, task management, and wikis for every project.
@@ -438,7 +444,7 @@ will support anything other than AT-harddisks, as that's all I have :-(.
 
 So far, everything we have done is **local**: `git init`, `git add`, `git commit`. No account,
 no internet, no company involved. That is the whole point of a *distributed* version control
-system -- your `.git` folder is a complete repository.
+system -- you have the complete history of your project on your laptop (`.git` folder).
 
 ::: {.fragment .fade-in}
 | | |
@@ -449,7 +455,8 @@ system -- your `.git` folder is a complete repository.
 
 ::: {.fragment .fade-in}
 GitHub is not the only option -- [GitLab](https://gitlab.com), [Bitbucket](https://bitbucket.org),
-and [Codeberg](https://codeberg.org) do the same thing, and universities often self-host GitLab.
+and [Codeberg](https://codeberg.org) do the same thing. 
+
 We use GitHub because that is where the scientific software community lives.
 :::
 
@@ -466,9 +473,8 @@ happens to live on someone else's computer**.
 
 ::: {style="font-size: 80%"}
 
-::: {.fragment .fade-in}
 - **A backup and a central copy**: your laptop dies, your work does not.
-:::
+
 
 ::: {.fragment .fade-in}
 - **Collaboration**: issues (to-do lists that anyone can file), pull requests (proposed changes),
@@ -488,10 +494,10 @@ happens to live on someone else's computer**.
 
 ::: {style="font-size: 80%"}
 
-::: {.fragment .fade-in}
+
 - **Automation** ([GitHub Actions](https://github.com/features/actions)): run your tests, or
   re-render a report, every time you push.
-:::
+
 
 ::: {.fragment .fade-in}
 - **Publishing** ([GitHub Pages](https://pages.github.com)): free websites straight from a repo.
@@ -654,10 +660,10 @@ b. Add the remote using `git remote add`, in particular
 c. Push the changes to the remote using `git push` like this:
    
   ```sh
-  $ git push -u origin master
+  $ git push -u origin main
   ```
   
-  You should also check the status of the project using `git status` to see what Git tells you about it. Origin is the tag associated with the remote repo setup, while 'master' is the tag associated with the current branch of your repo.
+  You should also check the status of the project using `git status` to see what Git tells you about it. Origin is the tag associated with the remote repo setup, while 'main' is the tag associated with the current branch of your repo.
 
 
 :::
@@ -714,7 +720,7 @@ git status
 
 ## Hands-on 2: Remote repository (solutions c)
 
-For the first `git push`, you need to specify the source (master) and target (origin) and set the upstream (the `-u` option):
+For the first `git push`, you need to specify the source (main) and target (origin) and set the upstream (the `-u` option):
 
 ```sh
 # (c)
@@ -780,7 +786,7 @@ It asks you a handful of questions and then:
 :::
 
 ::: {.fragment .fade-in}
-To check what is going on (your first debugging step whenever a push is rejected):
+To check what is going on:
 
 ```sh
 gh auth status
@@ -810,17 +816,12 @@ gh repo create PHS7045-first-project --public --source=. --remote=origin --push
 - use `--private` if you would rather not share it with the world
 :::
 
-::: {.fragment .fade-in}
-Do the manual version at least once. Then never do it again.
-:::
-
 :::
 
 ---
 
 ## Other `gh` commands worth knowing
 
-::: {style="font-size: 80%"}
 
 ```sh
 # Clone one of your repos (no URL typing)
@@ -849,13 +850,12 @@ gh pr view 42 --web
 fetching a branch from a fork you have not configured.
 :::
 
-:::
 
 ---
 
-## Not a terminal person? GitHub Desktop
+## Not a terminal person?
 
-::: {style="font-size: 80%"}
+::: {style="font-size: 90%"}
 
 [GitHub Desktop](https://desktop.github.com) is a free GUI that covers the everyday workflow.
 
@@ -874,8 +874,7 @@ fetching a branch from a fork you have not configured.
 :::
 
 ::: {.fragment .fade-in}
-Caveats: **no official Linux version** (so it is not an option on CHPC), and it hides what Git is
-actually doing.
+Caveats: **no official Linux version** (so it is not an option on CHPC). 
 :::
 
 :::
@@ -932,6 +931,31 @@ doc/*.txt
 doc/**/*.pdf
 </pre>
 
+# Resources
+
+::: {.r-fit-text}
+
+- Git's everyday commands, type `man giteveryday` in your terminal/command line.
+  and the very nice [cheatsheet](https://github.github.com/training-kit/).
+
+- My personal choice for nightstand book: The Pro-git book (free online) [(link)](https://git-scm.com/book)
+
+- Github's website of resources [(link)](https://try.github.io/)
+
+- The "Happy Git with R" book [(link)](https://happygitwithr.com/)
+
+- Roger Peng's Mastering Software Development Book Section 3.9 Version control and Github [(link)](https://bookdown.org/rdpeng/RProgDA/version-control-and-github.html)
+
+- Git exercises by Wojciech Frącz and Jacek Dajda [(link)](https://gitexercises.fracz.com/)
+
+- Learn Git Branching -- visualizes the commit graph as you type commands [(link)](https://learngitbranching.js.org/)
+
+- Oh My Git\! -- an open-source game for learning git [(link)](https://ohmygit.org)
+
+- Checkout GitHub's Training YouTube Channel [(link)](https://www.youtube.com/user/GitHubGuides)
+
+:::
+
 # Bonus: Git under the hood {visibility="uncounted"}
 
 ::: {style="font-size: 80%"}
@@ -943,7 +967,6 @@ we will only cover them if we have time to spare.
 
 ## What `git init` actually creates
 
-::: {style="font-size: 55%"}
 
 `git init` creates exactly one thing: a hidden folder.
 
@@ -979,7 +1002,6 @@ Copy `.git/` and you have copied the entire history. That is what "distributed" 
 your clone is not a checkout, it is the whole repository.
 :::
 
-:::
 
 ---
 
@@ -1066,27 +1088,3 @@ never (and Git now also supports SHA-256). *Must I type 40 characters?* No -- th
 
 :::
 
-# Resources
-
-::: {.r-fit-text}
-
-- Git's everyday commands, type `man giteveryday` in your terminal/command line.
-  and the very nice [cheatsheet](https://github.github.com/training-kit/).
-
-- My personal choice for nightstand book: The Pro-git book (free online) [(link)](https://git-scm.com/book)
-
-- Github's website of resources [(link)](https://try.github.io/)
-
-- The "Happy Git with R" book [(link)](https://happygitwithr.com/)
-
-- Roger Peng's Mastering Software Development Book Section 3.9 Version control and Github [(link)](https://bookdown.org/rdpeng/RProgDA/version-control-and-github.html)
-
-- Git exercises by Wojciech Frącz and Jacek Dajda [(link)](https://gitexercises.fracz.com/)
-
-- Learn Git Branching -- visualizes the commit graph as you type commands [(link)](https://learngitbranching.js.org/)
-
-- Oh My Git\! -- an open-source game for learning git [(link)](https://ohmygit.org)
-
-- Checkout GitHub's Training YouTube Channel [(link)](https://www.youtube.com/user/GitHubGuides)
-
-:::
