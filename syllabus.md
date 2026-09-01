@@ -31,7 +31,7 @@ By the end of this course, students will be able to:
 |---|---|
 | Days | Tuesdays and Thursdays |
 | Time | 11:30AM -- 1:00PM |
-| Location | Williams building, Room 295 |
+| Location | Williams building, Lupine conference room |
 
 ## Prerequisites
 

@@ -4,9 +4,10 @@ subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D.<br>Thi Mui Pham, Ph.D."
 date: Sept 1, 2026
 format:
+  html: default
   revealjs:
     embed-resources: true
-  html: default
+    output-file: slides_presentation.html
 ---
 
 ```{=html}
