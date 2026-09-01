@@ -6,6 +6,7 @@ date: Sept 1, 2026
 format:
   revealjs:
     embed-resources: true
+  html: default
 ---
 
 ```{=html}

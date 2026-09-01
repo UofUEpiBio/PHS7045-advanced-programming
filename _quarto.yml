@@ -148,4 +148,5 @@ format:
     toc: true
     number-sections: false
     theme: simplex
+    css: book.css
 
