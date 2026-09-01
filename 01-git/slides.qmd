@@ -335,6 +335,37 @@ e.  Make the first commit using the `git commit` command adding a message, e.g.
 
 ---
 
+---
+
+## Looking at history: `git log`
+
+::: {.r-fit-text}
+
+```bash
+git log --oneline
+```
+
+```{.default}
+a3f9c21 Add sensitivity analysis for PM2.5 lag
+7b2e0d4 Fix column names in cleaning script
+e91c5aa Add data cleaning script
+c0d8f13 Initial commit
+```
+
+::: {.incremental}
+- One line per commit, **newest first**
+- `a3f9c21` = short hash, a unique ID for that commit (like a DOI)
+- Full `git log` shows author, date, and full message — press `q` to exit
+:::
+
+**Note**: Every commit gets a unique ID computed from its contents, so it's a fingerprint
+rather than a sequential number. The first 7 characters are enough to refer to it.
+
+:::
+
+---
+
+
 ## Hands-on 1: Local repository (solution)
 
 The following code is fully executable (copy-pastable)
@@ -524,7 +555,7 @@ happens to live on someone else's computer**.
 :::
 
 ::: {.fragment .fade-in}
-- **Remote**: a copy of your repository somewhere else. Each remote has has a short name, so you don't have to retype the URL. By convention the
+- **Remote**: a copy of your repository somewhere else. Each remote has a short name, so you don't have to retype the URL. By convention the
   main one is called **`origin`**.
 :::
 
@@ -735,6 +766,68 @@ The `--set-upstream`, which was invoked with `-u`, will set the tracking referen
 
 ---
 
+## Getting updates: `fetch` vs `pull`
+
+::: {.columns}
+::: {.column width="50%"}
+### `git fetch`
+
+Download new commits, update `origin/main`
+
+- Your files: **unchanged**
+- Your `main`: **unchanged**
+- Safe to run anytime
+:::
+
+::: {.column width="50%"}
+### `git pull`
+
+`git fetch` + `git merge`
+
+- Your files: **updated**
+- Your `main`: **updated**
+- Conflicts? You deal with them now
+:::
+
+**Note**: `git merge` here just means "bring those commits into my branch" — we'll see what
+happens when two people change the same lines later. 
+
+:::
+
+---
+
+## Branches: parallel lines of history
+
+```{mermaid}
+%%| fig-width: 6
+gitGraph
+  commit id: "c0d8f13"
+  commit id: "e91c5aa"
+  branch sensitivity-analysis
+  checkout sensitivity-analysis
+  commit id: "1a2b3c4"
+  commit id: "5d6e7f8"
+  checkout main
+  commit id: "7b2e0d4"
+```
+
+::: {style="font-size: 85%"}
+- A branch is just a **name pointing to the latest commit**
+- `main` keeps working
+- You experiment on the side on `sensitivity-analysis`
+- Nothing touches `main` until you `git merge`
+:::
+
+. . .
+
+```bash
+git switch -c sensitivity-analysis   # create + move to it
+git switch main                      # go back
+git branch                           # list, * marks current
+```
+
+---
+
 ## The GitHub CLI (`gh`)
 
 ::: {style="font-size: 80%"}
@@ -932,6 +1025,7 @@ doc/*.txt
 # ignore all .pdf files in the doc/ directory and any of its subdirectories
 doc/**/*.pdf
 </pre>
+
 
 # Resources
 
