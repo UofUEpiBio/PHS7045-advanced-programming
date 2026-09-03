@@ -1095,7 +1095,7 @@ HEAD  config  description  hooks/  info/  objects/  refs/
 
 ::: {.fragment .fade-in}
 Copy `.git/` and you have copied the entire history. That is what "distributed" means:
-your clone is not a checkout, it is the whole repository.
+your clone is not a *working copy*, it is the whole repository.
 :::
 
 
@@ -1108,15 +1108,16 @@ your clone is not a checkout, it is the whole repository.
 Everything in `objects/` is one of three things:
 
 ::: {.fragment .fade-in}
-- **blob** -- the *contents* of a file. No name, no path, no timestamp. Just bytes.
+- **blob** -- the *contents* of a file. No metadata (no name, no path, no timestamp). Just bytes (stands for B(inary)L(arge)OB(ject)s). To identify it, Git computes a SHA-1 hash of the contents and uses that as the filename.  
+
 :::
 
 ::: {.fragment .fade-in}
-- **tree** -- a *directory listing*: names + permissions pointing at blobs and other trees.
+- **tree** -- a *directory listing*: names + permissions pointing at blobs and other trees. Trees build the complete file hierarchy of files and subdirectories in git.
 :::
 
 ::: {.fragment .fade-in}
-- **commit** -- a snapshot: one tree, the parent commit(s), author, date, and your message.
+- **commit** -- a snapshot of the project: one tree, the parent commit(s), author, date, and your message. Similar to a blob, Git computes a SHA-1 hash of the commit's contents and uses that as the filename.
 :::
 
 ::: {.fragment .fade-in}
@@ -1168,19 +1169,201 @@ not watch your files -- it re-hashes them and compares.
 
 ::: {.fragment .fade-in}
 A commit's hash covers its tree *and* its parent's hash, so it covers all the history behind it.
-Rewriting anything old (`git rebase`, `git commit --amend`) changes every hash after it -- which
-is why rewriting *pushed* history causes trouble for collaborators.
 :::
 
 ::: {.fragment .fade-in}
-The hash is also a checksum: corrupt a file in `.git/objects` and Git will notice.
+Two likely questions: 
+
+- *Could two files hash to the same name?* In principle yes, in practice
+never (and Git now also supports SHA-256). 
+
+- *Must I type 40 characters?* No -- the first 7 do:`git show ed4b46d`.
 :::
+
+:::
+
+---
+
+## How does Git use SHA-1 hashing?
+
+::: {style="font-size: 55%"}
+
+- Each object has a 40-character SHA-1 hash as its filename
+- You can use the first characters as a shortcut (GitHub: 7)
+- Git uses the first two characters to organize objects into directories
+
+```{.default}
+.git/objects/b6/542b259a8369b541cec92edd25bc45683f5805
+.git/objects/ed/4b46dc10026c8bfe58aad14387e038a41f32ca
+.git/objects/42/25cf9fa47985395c2b9e7c3601b765f51dede6
+```
 
 ::: {.fragment .fade-in}
-Two likely questions: *could two files hash to the same name?* In principle yes, in practice
-never (and Git now also supports SHA-256). *Must I type 40 characters?* No -- the first 7 do:
-`git show ed4b46d`.
+The files are compressed -- display their contents in readable format with:
+
+```sh
+$ git cat-file -p b6542b259a8369b541cec92edd25bc45683f5805
+I love git
+```
 :::
 
 :::
 
+---
+
+## Seeing the file tree: `tree`
+
+::: {style="font-size: 75%"}
+
+`tree` prints a directory and its contents as an indented tree -- handy for showing what a
+repository actually looks like on disk.
+
+```sh
+tree -a -L 2 my-project
+```
+
+```{.default}
+my-project
+├── .git
+│   ├── HEAD
+│   ├── config
+│   ├── objects
+│   └── refs
+├── .gitignore
+├── README.md
+└── data
+    └── pm25.csv
+```
+
+::: {.incremental}
+- `-a` shows hidden entries (that is how you see `.git` and `.gitignore`)
+- `-L 2` limits the depth to 2 levels
+- `-d` shows directories only; `-I "*.csv"` ignores matching files
+- `tree -a` inside a repo makes the point that **`.git/` is just a folder**
+:::
+
+:::
+
+---
+
+## Installing `tree`
+
+::: {style="font-size: 80%"}
+
+```sh
+# macOS (Homebrew)
+brew install tree
+
+# Windows (Git Bash / MSYS2 has no tree; use one of these)
+winget install --id GnuWin32.Tree
+# or, in PowerShell/cmd, the built-in:
+tree /F /A
+
+# Linux (Debian/Ubuntu)
+sudo apt install tree
+
+# Linux (Fedora/RHEL)
+sudo dnf install tree
+```
+
+::: {.fragment .fade-in}
+No `tree` and cannot install it? `find . -not -path "./.git/*"` or `ls -R` get you most of
+the way there.
+:::
+
+:::
+
+
+---
+
+# Undoing things {visibility="uncounted"}
+
+---
+
+## Amending and reverting: `git reset`
+
+::: {style="font-size: 55%"}
+
+`git reset <commit>` moves your branch back in time. What happens to your files depends on the flag:
+
+- `--soft` -- go back to an earlier commit but **keep** all the changes staged. Useful when you
+  committed something you did not mean to and want to fix it and re-commit.
+- `--mixed` (the default) -- same, but the changes are left **unstaged**.
+- `--hard` -- reset the branch **and** throw away the changes. Nothing comes with you.
+
+::: {.fragment .fade-in}
+::: {.callout-warning appearance="simple"}
+After a `--hard` reset the newer commits no longer show up in `git log` and are hard to recover.
+`git reflog` records where `HEAD` has been -- use it to find the hash and `git reset` back to it.
+:::
+:::
+
+:::
+
+---
+
+## Let's try it
+
+::: {style="font-size: 65%"}
+
+```sh
+touch do_not_track.txt
+nano git_cheatsheet.txt        # make some changes to your file
+git add *
+git commit -m "Changed cheat sheet"
+```
+
+::: {.fragment .fade-in}
+**OOPS!** -- `do_not_track.txt` should not have gone in.
+
+```sh
+git log --oneline
+git reset --soft <hash of previous commit>   # or --mixed
+```
+:::
+
+:::
+
+---
+
+## Amending and reverting: `git revert`
+
+::: {style="font-size: 55%"}
+
+`git revert` creates a **new commit** that undoes an earlier one -- `git reset` erases history
+instead. Because it adds rather than rewrites, `revert` is the safe choice on shared branches.
+
+```sh
+git revert HEAD --no-edit     # undo the latest commit
+```
+
+- `--no-edit` skips the message editor and takes the default revert message
+- `git revert HEAD~x` reverts an earlier commit (`x` = how many commits to go back)
+
+::: {.fragment .fade-in}
+```{.default}
+$ git log --oneline
+4406854 (HEAD -> main) Revert "<last commit message>"
+```
+:::
+
+:::
+
+---
+
+## Undoing `git add`: `git restore`
+
+::: {style="font-size: 55%"}
+
+- `git restore <file>` -- restore the file to its last committed state (discards your edits)
+- `git restore --staged <file>` -- unstage it, but leave your modifications untouched
+- `git restore --source <hash> <file>` -- restore the file as it was at that commit
+- `git checkout HEAD <file>` -- the older way of discarding local changes in one file
+
+::: {.fragment .fade-in}
+::: {.callout-warning appearance="simple"}
+`git restore` is powerful but unforgiving: uncommitted changes it overwrites are gone for good.
+:::
+:::
+
+:::
