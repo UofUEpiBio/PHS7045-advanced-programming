@@ -828,6 +828,74 @@ git branch                           # list, * marks current
 
 ---
 
+## Merge conflicts in a pull request
+
+::: {style="font-size: 55%"}
+
+GitHub says *"This branch has conflicts that must be resolved"* when your branch and `main`
+changed **the same lines**. GitHub only reports it -- you fix it locally, on your branch:
+
+```sh
+git switch my-feature
+git fetch origin
+git merge origin/main       # bring main's changes into your branch
+```
+
+::: {.fragment .fade-in}
+Git stops and marks every clashing spot in the file:
+
+```{.default}
+<<<<<<< HEAD
+your version (the branch you are on)
+=======
+their version (origin/main)
+>>>>>>> origin/main
+```
+:::
+
+::: {.fragment .fade-in}
+Edit the file into what it *should* say, delete the three marker lines, then:
+
+```sh
+git add <file>
+git commit                  # completes the merge
+git push                    # the PR updates itself
+```
+:::
+
+::: {.fragment .fade-in}
+`git status` lists what is still unresolved; `git merge --abort` backs out and starts over.
+:::
+
+:::
+
+---
+
+## Merge conflicts: good habits
+
+::: {style="font-size: 60%"}
+
+- **Merge `main` into your branch**, not the other way round. (`git rebase` is tidier but
+  rewrites commits you already pushed -- leave it for later.)
+- **Prevention beats cure**: merge `main` often, and keep pull requests small and touching
+  few files.
+- GitHub's **web editor** can resolve simple text conflicts in the browser, but only if you
+  have write access to the branch.
+
+::: {.fragment .fade-in}
+Working from a **fork**? `origin` is your fork, so add the original repo as a second remote:
+
+```sh
+git remote add upstream https://github.com/OWNER/REPO.git
+git fetch upstream
+git merge upstream/main
+```
+:::
+
+:::
+
+---
+
 ## The GitHub CLI (`gh`)
 
 ::: {style="font-size: 80%"}
