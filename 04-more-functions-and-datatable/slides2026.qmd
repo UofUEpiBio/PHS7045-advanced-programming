@@ -1,0 +1,2291 @@
+---
+title: "R Essentials and Functional Programming"
+subtitle: "PHS 7045: Advanced Programming — Fall 2026"
+format:
+  revealjs:
+    embed-resources: true
+    slide-number: true
+    scrollable: true
+author: "Thi Mui Pham, Ph.D.<br>Jonathan Chipman, Ph.D.<br>PHS 7045 Teaching Team"
+---
+
+```{r}
+#| echo: false
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(eval = TRUE, echo = TRUE, results = "hold",
+                      fig.width = 7, fig.height = 5)
+```
+
+## The two slogans of R
+
+::: {.r-fit-text}
+
+> To understand computations in R, two slogans help:
+>
+> - Everything that **exists** is an object.
+> - Everything that **happens** is a function call.
+>
+> — John Chambers
+
+These two sentences organize the whole day:
+
+| | Chambers' slogan | What we do with it |
+|---|---|---|
+| **Part I** | everything that *exists* is an **object** | modes, structures, names, filtering, and what "vectorized" really means |
+| **Part II** | everything that *happens* is a **function call** | promises, closures, functionals, non-standard evaluation |
+
+:::
+
+## The road map
+
+::: {.r-fit-text}
+
+**Part I: objects**
+
+1. **Modes and structures**: when to use which one
+2. **Naming and filtering**: get in the habit of using names, not positions
+3. **Control flow**: how to write loops, and when you want one
+4. **Functions**: how to write them, and how to handle the awkward cases
+5. **Vectorization**: what is really vectorized, what only looks like it, and
+   what actually makes R slow
+
+**Part II: function calls**
+
+6. **Everything is a function call**: operators, `if`, and `[` are functions
+7. **Functions are objects**: store them, pass them, return them
+8. **Lazy evaluation**: arguments are *promises*, not values
+9. **Closures**: functions carry (and can change) their environment
+10. **Functionals**: where `*apply` finally pays off
+11. **Non-standard evaluation**: how `dt[, temp]` and `filter(df, x > 1)` work
+
+::: {.fragment .fade-up}
+Lazy evaluation (#8) is the idea everything else in Part II depends on. Force a
+promise and you get a value; look at its expression instead and you get NSE.
+:::
+
+:::
+
+## Preparation
+
+::: {.r-fit-text}
+
+Read/Watch: Selections from [R Programming for Data Science](https://bookdown.org/rdpeng/rprogdatascience/)
+
+* Light read: Chapters 1–3
+* Careful read: Chapters 4, 9–10, and 13
+* Video: [Subsetting objects](https://www.youtube.com/watch?v=VfZUZGUgHqg)
+* Video: [Vectorized Operations](https://www.youtube.com/watch?v=YH3qtw7mTyA)
+
+Read: Selections from [The Art of R Programming](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=1)
+
+* [Contents through Chapter 1](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=9) (light read, for familiarity)
+* [Chapter 2: Vectors](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=51) (careful read)
+* [Chapter 3, sections 5–end: Matrices and arrays](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=104)
+* [Chapter 4, sections 1–3 and 5: Lists](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=104)
+* [Chapter 7, sections 3–4](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=165)
+
+Note: the big-picture principles in Chapter 2 (vectors) carry over to matrices,
+lists, and data frames.
+
+Aside: [a reference for good coding practices](https://www.r-bloggers.com/2018/09/r-code-best-practices/)
+
+:::
+
+# Part I: Everything that exists is an object
+
+## Four ways to organize a program
+
+::: {.r-fit-text}
+
+Before looking at R's objects, it helps to know what kind of language R is. A
+programming *paradigm* is a way of thinking about what a program **is**.
+Paradigms differ in what they put at the center:
+
+| Paradigm | Organized around | The program is… | Languages built around it |
+|---|---|---|---|
+| **Imperative / procedural** | steps that change stored values | a list of instructions: *how* to do it | C, Python, R |
+| **Object-oriented** | objects that hold data together with the operations on it | objects calling each other's operations, updating what they hold | Java, C++, Python, R |
+| **Functional** | functions, and combining them | expressions to work out, leaving stored values alone | Haskell, Lisp, R |
+| **Logic / declarative** | facts, rules, and goals | *what* is true; the engine works out *how* | Prolog, SQL, R |
+
+::: {.fragment .fade-up}
+**A word on "stored values".** At any moment during a run, your variables hold
+particular values. Programmers call that the program's *state*, and a variable
+whose value can be changed after it is created is called *mutable*.
+
+`x <- x + 1` changes the state: the name `x` now points at something different,
+and whatever it pointed at before is gone. That is the imperative style. The
+functional style avoids it: instead of changing `x`, you compute a new value and
+give it its own name. Nothing that already exists is disturbed.
+:::
+
+::: {.fragment .fade-up}
+**Notice that R appears in every row.** That is not a fudge: you will write
+loops, you will use S3 classes, you will pass functions to `lapply()`, and you
+will write `lm(y ~ x)`, which states a model rather than a fitting procedure.
+These are lenses, not boxes. The useful question is never "which kind of
+language is this", but which lens a given problem makes *natural*.
+:::
+
+::: {.fragment .fade-up}
+**Why is Python not in the functional row?** Because the last column lists
+languages *built around* a lens, not every language that permits it. Python has
+first-class functions, `lambda`, `map()`, and closures, so you can certainly
+write functionally in it. But it was not designed that way: values are mutable by
+default, `reduce()` was demoted out of the builtins in Python 3, and Guido van
+Rossum has explicitly refused tail-call optimisation, so deep recursion is not a
+safe idiom. Idiomatic Python reaches for a comprehension or a loop.
+
+R is in that row because its semantics were taken from Scheme: functions are
+values, arguments are evaluated lazily, and every operation, `+` included, is a
+function call. That is the difference between *supporting* a style and being
+*built on* it.
+:::
+
+::: {.fragment .fade-up}
+**One warning about the word "object".** R's slogan "everything that exists is
+an object" means something weaker than the paradigm does: it says every value is
+a thing you can name, store, and pass around. That alone is not
+object-oriented programming.
+
+R earns its place in that row separately, through S3, S4, and R6, which let you
+attach a class to an object and have functions such as `summary()` behave
+differently depending on it. We use S3 on the next slide but one.
+:::
+
+:::
+
+## One task, four paradigms
+
+::: {.r-fit-text}
+
+Definitions only get you so far. Here is one task written four ways. (It is also
+the task you will see again in the lab.)
+
+**The task:** given trial outcomes, report the success rate of each arm.
+
+```{r}
+#| label: paradigm-data
+#| output-location: fragment
+set.seed(1)
+trial <- data.frame(
+  arm     = rep(c("control", "A", "B"), each = 10),
+  success = rbinom(30, 1, 0.35)
+)
+head(trial, 3)
+```
+
+::: {.fragment .fade-up}
+All four give the same numbers. What changes is what the code talks about.
+:::
+
+:::
+
+## Imperative vs. functional
+
+::: {.r-fit-text}
+
+**Imperative.** You describe every step and change the stored values as you go:
+`n`, `y`, and `rate` all hold something different after each pass. The code talks
+about counters and positions.
+
+```{r}
+#| label: paradigm-imperative
+#| output-location: fragment
+arms <- unique(trial$arm)
+rate <- numeric(length(arms))
+names(rate) <- arms
+
+for (a in arms) {
+  n <- 0
+  y <- 0
+  for (i in seq_len(nrow(trial))) {     # walk every row, by hand
+    if (trial$arm[i] == a) {
+      n <- n + 1
+      y <- y + trial$success[i]
+    }
+  }
+  rate[a] <- y / n                      # change the stored result
+}
+rate
+```
+
+**Functional.** You combine small functions, and nothing that already exists is
+changed: `split()` hands back new pieces, `vapply()` hands back a new vector. The
+code talks about the transformation, split then average, rather than about
+bookkeeping.
+
+```{r}
+#| label: paradigm-functional
+#| output-location: fragment
+vapply(split(trial$success, trial$arm), mean, numeric(1))
+```
+
+::: {.fragment .fade-up}
+Same answer, fourteen lines versus one. The functional version never says *how*
+to iterate; `split()` and `vapply()` take care of that. So there is no index to
+get wrong and no counter to forget to reset.
+
+(The arms come back in a different order, because `split()` sorts them. This is
+a good reason to pull results out by name.)
+:::
+
+:::
+
+## Object-oriented vs. declarative
+
+::: {.r-fit-text}
+
+**Object-oriented.** You bundle the data with the operations that belong to it,
+and the object's class decides which code runs. The code talks about a trial
+rather than about vectors.
+
+```{r}
+#| label: paradigm-oo
+#| output-location: fragment
+# S3: attach a class, then define a method for it
+trial_obj <- structure(trial, class = c("trial", "data.frame"))
+
+success_rate <- function(x, ...) UseMethod("success_rate")
+
+success_rate.trial <- function(x, ...) {
+  vapply(split(x$success, x$arm), mean, numeric(1))
+}
+
+success_rate(trial_obj)
+```
+
+Note that the method body is just the functional version. The object-oriented
+part is not a different algorithm; it is a different way of organizing it and of
+deciding which code to run.
+
+**Declarative.** You say what you want and let something else work out how. No
+iteration appears at all:
+
+```sql
+-- SQL: no loop, no counters, no iteration at all
+SELECT arm, AVG(success) AS rate
+FROM trial
+GROUP BY arm;
+```
+
+::: {.fragment .fade-up}
+R does this too. `lm(y ~ x, data = df)` states a model, not a fitting procedure,
+and so does `aggregate(success ~ arm, trial, mean)`.
+:::
+
+:::
+
+## What is R? Three lenses at once
+
+::: {.r-fit-text}
+
+R is object-oriented, functional, and a scripting language, all at once. Each
+lens tells you something about the code you are about to write.
+
+| Lens | What it means in R | Where it shows up today |
+|---|---|---|
+| **Object-oriented** | everything you make is an object: it knows what kind of data it holds, it can carry extra labels such as names or dimensions, and it can be labelled with what sort of thing it is | Part I: modes, structures, names |
+| **Functional** | functions are values, and you combine them instead of writing the iteration by hand | Part I: vectorization. Part II: all of it |
+| **Scripting** | a script runs top to bottom, interactively or in batch, and is reproducible | every simulation you run in this course |
+
+::: {.fragment .fade-up}
+**Class and generic.** That last label, saying what sort of thing an object is,
+is called its **class**. The output of `lm()` has class `"lm"`; a data frame has
+class `"data.frame"`.
+
+A function that behaves differently depending on the class of its input is
+called a **generic**. `summary()` is one: hand it a data frame and you get a
+summary of each column, hand it the output of `lm()` and you get a regression
+table. Same function name, different work, chosen by the class.
+:::
+
+::: {.fragment .fade-up}
+R has more than one system for this. **S3** is the informal one you meet most
+often, and the only one we use today. **S4** is the stricter, formal one, and
+both ship with R. **Reference classes** (`setRefClass`) also come with R, and the
+**R6** package is the popular alternative to them. We come back to these later in
+the course.
+
+R Manual, if you want the reference version:
+[objects](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Objects),
+[writing your own functions](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Writing-your-own-functions),
+[scripting with R](https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Scripting-with-R).
+Inspect any object with `str()` and `attributes()`.
+:::
+
+:::
+
+## What makes R a scripting language
+
+::: {.r-fit-text}
+
+The difference is **when your code is turned into instructions the machine can
+run**.
+
+**Compiled (C, C++, Fortran).** You write source code, then a separate program,
+the compiler, translates *the whole file* into machine code before anything
+runs. You get an executable, and you run that.
+
+```bash
+gcc sim.c -o sim     # translate once, ahead of time
+./sim                # then run the machine code
+```
+
+**Interpreted / scripting (R, Python, shell).** There is no build step. R reads
+your code and carries it out as it goes, one expression at a time. The program
+doing that reading is called the **interpreter**, and when we say "R" does
+something at run time, that is what we mean. What you ship *is* the source file.
+
+```bash
+Rscript sim.R        # R reads and executes the file line by line
+```
+
+:::
+
+## Consequences of scripting languages
+
+::: {.r-fit-text}
+
+Two consequences, both of which we meet later:
+
+::: {.fragment .fade-up}
+**1. R decides what your code means while it runs.** The compiler for C can
+check the whole program up front and refuse to build it. R cannot: a typo on
+line 200 is discovered when line 200 runs, twenty minutes into your simulation.
+So run your code early and often, on a small number of replicates, before
+scaling up.
+:::
+
+::: {.fragment .fade-up}
+**2. Working things out at run time costs time.** For every operation, R has to
+look up what the names mean and what type of data it is holding *right then*.
+A compiled program settled all of that before it started. This is the whole
+reason a loop written in R is slower than the same loop written in C, which we
+come back to under vectorization.
+:::
+
+:::
+
+# Data modes and structures
+
+## Modes
+
+::: {.r-fit-text}
+
+An object's **mode** is the kind of data it holds: numbers, text, `TRUE`/`FALSE`,
+and so on. Ask with `mode()` or `typeof()`.
+
+```{r}
+#| label: mode-demo
+#| output-location: fragment
+mode(1)
+mode("a")
+mode(TRUE)
+```
+
+Mode matters because it decides what you are allowed to do (you can add numbers,
+not text) and how much memory each element takes. R has six primitive modes.
+
+Two you will almost never create in practice:
+
+* **Raw** (raw bytes, as they sit in memory): `x <- raw(2)` makes two bytes, both
+  zero, printed as `00 00`. You would use this for reading binary files.
+* **Complex** (numbers with an imaginary part): `x <- 0i` is the complex number
+  0 + 0i. The `i` suffix is what makes it complex, as in `3 + 2i`.
+
+One you create moderately often, usually indirectly:
+
+* **Integer** (whole numbers): `x <- 1L`. The `L` suffix is what makes it an
+  integer rather than a double. Without it, `x <- 1` gives you a numeric. R uses
+  integers behind the scenes when you write `1:10`, and for counts and indices.
+
+Three you create all the time:
+
+* **Logical** (`TRUE`/`FALSE`): `x <- TRUE`
+* **Numeric**, also called double (any real number): `x <- 0`
+* **Character**, also called string: `x <- "hello world"`
+
+::: {.fragment .fade-up}
+Why `L` for integer? It is borrowed from C, where `L` means a "long" integer.
+And why does `1` default to a double rather than an integer? Because most
+numbers in statistics are not whole, so R makes the common case the default.
+:::
+
+:::
+
+## Structures
+
+::: {.r-fit-text}
+
+| **Feature** | **Vectors** | **Matrices** | **Lists** | **Data frames** |
+|---|---|---|---|---|
+| **Memory usage** | Low | Low to moderate | Moderate | Moderate to high |
+| **Dimensionality** | 1D | 2D (rows, columns) | 1D (elements may vary in dimension) | 2D (rows, columns) |
+| **Homogeneity** | Homogeneous | Homogeneous | Heterogeneous | Heterogeneous by column |
+| **Creation** | `c()`, `seq()`, `rep()`, `:` | `matrix()`, `cbind()`, `rbind()` | `list()` | `data.frame()` |
+| **Combining** | `c()` | `cbind()`, `rbind()` | `c()`, `append()` | `cbind()`, `rbind()` |
+| **Indexing** | `[ ]` | `[ , ]` | `[[ ]]`, `[ ]` | `$`, `[[ ]]`, `[ ]` |
+| **Arithmetic** | Yes | Yes | No (operate on elements) | Not directly |
+| **Advantages** | Memory-efficient, fast | Efficient for matrix math | Highly flexible | Optimized for tabular data |
+| **Disadvantages** | Single data type | Single data type | Higher memory for complex elements | Attribute overhead |
+| **Usage** | Simple collections | Mathematical computation | Mixed-type / complex structures | Tabular data |
+
+:::
+
+## Atomic modes
+
+::: {.r-fit-text}
+
+The six primitive modes are also called **atomic** modes: elements stored
+together in a vector must share one mode.
+
+So what happens when you mix them? R **coerces** everything to a single mode.
+
+**Question:** what does `x` hold after this, and what is its mode?
+
+```{r}
+#| label: coercion-question
+#| eval: false
+x <- c("A", 0, 1L, TRUE)
+x
+str(x)
+```
+
+::: {.fragment .fade-up}
+```{r}
+#| label: coercion
+#| echo: false
+x <- c("A", 0, 1L, TRUE)
+x
+str(x)
+```
+
+Everything became character.
+:::
+
+::: {.fragment .fade-up}
+The order, from least to most general, is:
+
+`logical` → `integer` → `numeric` (double) → `character`
+
+The most general mode wins, since it is the only one that can hold all the
+values without losing information. `c(TRUE, 1L)` is integer, `c(1L, 2.5)` is
+double, and anything mixed with a string becomes character.
+
+R does this silently. It is a common source of bugs: one stray `"NA"` string
+turns a whole numeric column into text.
+:::
+
+:::
+
+## Missing values
+
+::: {.r-fit-text}
+
+R has several kinds of missing value, from most to least primitive:
+
+* `NULL`: no value at all, has length 0
+* `NaN`: not a number (for example `0/0`)
+* `NA`: no information, has length 1
+* `Inf` / `-Inf`: infinite
+
+Companion tests: `is.null()`, `is.nan()`, `is.na()`, `is.infinite()`, and
+`is.finite()` (which is `FALSE` for `NA`, `NaN`, and `Inf` alike).
+
+```{r}
+#| label: missing
+#| output-location: fragment
+x <- c(1, NA, NaN, Inf)
+is.na(x)
+is.finite(x)
+```
+
+Note that `is.na(NaN)` is `TRUE`: `NaN` is a special case of `NA`.
+
+:::
+
+## Vectors and matrices
+
+::: {.r-fit-text}
+
+Why to use vectors and matrices? They use less memory than lists and data
+frames, and operations on them are faster. Get in the habit of using them
+wherever your data are all one mode.
+
+**Creating vectors.** To initialize an empty vector, use `vector()`,
+`rep(NA, <length>)`, `numeric(<length>)`, or `character(<length>)`.
+
+```{r}
+#| label: create-vectors
+#| output-location: fragment
+vector("character", 2)
+vector("numeric", 2)
+rep(NA, 2)
+numeric(2)
+```
+
+**Question:** why would you want to create an empty vector like this, rather
+than just building the result up as you go?
+
+::: {.fragment .fade-up}
+Because you are reserving the memory in advance. If you know you need 1000
+results, `numeric(1000)` asks R for one block of the right size once, and the
+loop then fills in slots that already exist.
+
+The alternative, starting from nothing and appending each result, makes R build
+a new, slightly longer vector every time and copy everything into it. For 1000
+results that is 1000 copies.
+
+We measure how bad this gets when we come to vectorization.
+:::
+
+:::
+
+---
+
+::: {.r-fit-text}
+
+Other common ways to build numeric vectors: `c()`, `:`, `seq()`, `rep()`.
+
+```{r}
+#| label: create-vectors-2
+#| output-location: fragment
+c(1, 2, 3, 4)          # combine
+x <- 1:10              # sequential
+seq(1, 10, by = 2)     # by increment
+seq(1, 10, length.out = 3)   # equally spaced, fixed length
+rep(1:2, each = 5)
+rep(1:2, times = 5)
+
+out <- rep(NA, 10)     # pre-allocate space for future results
+```
+
+**Creating matrices:** `matrix()`, `cbind()`, `rbind()`.
+
+```{r}
+#| label: create-matrices
+#| output-location: fragment
+x <- 1:10
+rbind(x, x, x)
+matrix(x, nrow = 2)
+```
+
+:::
+
+## Naming and indexing
+
+::: {.r-fit-text}
+
+Elements are extracted by position, `[<position(s)>]`, or by name,
+`[<name(s)>]`.
+
+Rule of thumb: prefer names. Positions are transparent only to whoever wrote
+them, and they shift the moment the data change.
+
+```{r}
+#| label: index-vector
+#| output-location: fragment
+x <- 1:10
+x[3]
+x[5:3]
+
+names(x) <- 2011:2020
+x[c("2015", "2017")]
+```
+
+```{r}
+#| label: index-matrix
+#| output-location: fragment
+x <- matrix(1:10, nrow = 2)
+rownames(x) <- 2010:2011
+colnames(x) <- c("SLC", "Murray", "Bountiful", "Milcreek", "Sandy")
+x
+x[, c("SLC", "Milcreek")]
+
+# Beware of dimension reduction
+dim(x[, c("SLC", "Milcreek")])
+dim(x["2010", c("SLC", "Milcreek")])
+```
+
+**Why is the last `dim()` `NULL`?**
+
+::: {.fragment .fade-up}
+Selecting a single row gives back a plain vector, and a vector has no `dim`
+attribute. By default R drops dimensions of length 1. To keep them, use
+`drop = FALSE`: `x["2010", c("SLC", "Milcreek"), drop = FALSE]` stays a 1 × 2
+matrix. Watch for this inside functions and loops, where the change of shape is
+easy to miss.
+:::
+
+:::
+
+## Questions 1: Naming objects
+
+::: {.r-fit-text}
+
+1. What is the alphabet position of each letter of your name? Use a named
+   vector (try the `LETTERS` object). For example, JONATHAN maps to
+   10, 15, 14, 1, 20, 8, 1, 14.
+
+2. Why is it important to extract elements through naming conventions?
+
+:::
+
+## Answers 1: Naming objects
+
+::: {.r-fit-text}
+
+::: {.fragment .fade-up}
+**1.** Build a vector whose names are the letters and whose values are the
+positions, then index it with the letters of the name:
+
+```{r}
+#| label: a2-letters
+#| output-location: fragment
+position <- setNames(seq_along(LETTERS), LETTERS)
+name     <- strsplit("JONATHAN", "")[[1]]
+position[name]
+```
+
+The point here is not `strsplit()`. It is that a named vector is a lookup
+table.
+:::
+
+::: {.fragment .fade-up}
+**2.** Names make code transparent, easy to read, and reproducible. Positions
+are fragile. Add a column, reorder a merge, or change a filter upstream, and
+`x[, 3]` quietly points at different data. `x[, "temp"]` either still works or
+gives you an error, and an error is much easier to notice.
+:::
+
+:::
+
+## Lists
+
+::: {.r-fit-text}
+
+Why to use lists? They are how a function returns several different kinds of
+result at once. `lm()` returns a list, of class `lm`, which is why `print()` and
+`summary()` treat it specially.
+
+```{r}
+#| label: create-lists
+#| output-location: fragment
+x <- list(1:2, "A", NULL, c(TRUE, FALSE), list(1:10, "B"))
+str(x)
+
+x <- list("2010" = 1, "2011" = "A", "2013" = TRUE)
+names(x)
+```
+
+Extract with `[ ]` (returns a list), `[[ ]]` (returns the element), or `$`.
+See [subsetting lists](https://bookdown.org/rdpeng/rprogdatascience/subsetting-r-objects.html#subsetting-lists).
+
+```{r}
+#| label: index-lists
+#| output-location: fragment
+x <- list("2010" = 1:2, "2011" = "A", "2013" = c(TRUE, FALSE))
+x[c("2010", "2011")]   # a list of two elements
+x[["2010"]]            # the element itself
+x$"2010"
+```
+
+:::
+
+## Data frames
+
+::: {.r-fit-text}
+
+Why to use data frames?
+
+* They are the workhorse of data analysis.
+* But they are slower to compute with. Selecting `d[i, j]` from a data frame is
+  several times slower than `m[i, j]` from a matrix, because `[.data.frame` is R
+  code that has to work out what you meant, while `[` on a matrix is a primitive.
+  For heavy computation, use a matrix unless you need mixed types.
+* Underneath, a data frame is a list of equal-length columns, so list indexing
+  works on it.
+
+A helpful data frame comes from `expand.grid()`, which builds every combination
+of the values you give it. How can this be helpful in simulations?
+
+```{r}
+#| label: expand-grid
+#| output-location: fragment
+expand.grid("Param 1" = 1:2, "Param 2" = letters[1:3])
+```
+
+::: {.fragment .fade-up}
+You get every simulation scenario in one object, one row per scenario. Then you
+iterate over its rows instead of writing nested loops, and your results line up
+row for row with the parameter grid.
+:::
+
+:::
+
+## `data.table` and `tibble`
+
+::: {.r-fit-text}
+
+A `data.table` **is a data frame**: it carries the `data.frame` class as well as
+its own, so anything written for data frames still works on it. The same holds
+for the tidyverse's `tibble`. They are data frames with extra behaviour, not
+replacements.
+
+```r
+library(data.table)
+dt <- data.table(temp = c(1, 2, 3), site = c("a", "a", "b"))
+
+class(dt)          # "data.table" "data.frame"
+is.data.frame(dt)  # TRUE
+nrow(dt)           # 3 — ordinary data frame functions are fine
+```
+
+What you get for using one, in practice:
+
+- **Grouped summaries are much faster.** On 5 million rows,
+  `aggregate(temp ~ site, df, mean)` takes about 0.76 seconds;
+  `dt[, mean(temp), by = site]` takes about 0.02, roughly 36 times faster. The
+  gap widens with the number of groups.
+- **Reading files is dramatically faster.** A 25 MB csv takes `read.csv()` about
+  0.85 seconds and `fread()` about 0.013, and `fread()` guesses column types
+  more sensibly.
+- **Columns can be added and changed without copying the table.** More on this
+  on the next slide.
+- **Joins are keyed and fast**, rather than going through `merge()` on unsorted
+  columns.
+
+:::
+
+## Why `data.table` is fast
+
+::: {.r-fit-text}
+
+**Filter, compute, and group happen in one pass.** For a data frame, `df[i, j]`
+selects rows and columns and nothing else. For a data.table, the same brackets
+take a filter, an expression to compute, and a grouping:
+
+```r
+dt[temp > 1, mean(temp), by = site]
+```
+
+Because that is one call, `data.table` can plan the whole operation: it never
+builds the filtered copy that `df[df$temp > 1, ]` would build before summarising
+it.
+
+::: {.fragment .fade-up}
+**Columns are modified in place.** Adding a column to a data frame duplicates
+the table object; `data.table` writes into the existing one:
+
+```r
+df$new  <- df$temp * 2      # data frame: the object is duplicated
+dt[, new := temp * 2]       # data.table: no duplication at all
+```
+
+`tracemem(df)` prints a line each time R duplicates the object, and you get two
+for the data frame and none for the data.table.
+
+Be careful how much you read into that. The duplication is *shallow*: R copies
+the list of columns, not the values inside them, so adding one column to a
+5-million-row data frame still takes only a few milliseconds. It matters when
+you add or modify columns repeatedly, and in the loops where that adds up.
+:::
+
+::: {.fragment .fade-up}
+**Bare column names.** `temp` is not a variable in your workspace, so `[` cannot
+simply evaluate it. It captures the expression instead. We come back to how that
+works at the end of Part II.
+:::
+
+:::
+
+## Questions 2: Structures
+
+::: {.r-fit-text}
+
+1. What structure would you want for a computationally heavy task?
+
+2. What structure would you want for reading in data from a colleague?
+
+3. What kind of object does the following return?
+
+```{r}
+#| label: q1-lm
+y <- 1:10
+x <- 1:10
+f <- lm(y ~ x)
+```
+
+What do you think `mode(f)` and `names(f)` will give you?
+
+```{r}
+#| label: q1-lm-inspect
+#| eval: false
+mode(f)
+names(f)
+```
+
+:::
+
+## Answers 2: Structures
+
+::: {.r-fit-text}
+
+::: {.fragment .fade-up}
+**1.** A vector or matrix. Three reasons, all about how they are stored.
+
+- **One mode means one known size per element.** A double is 8 bytes. If R knows
+  every element is a double, it can store 1000 of them as one block of 8000
+  bytes and find element `i` by arithmetic, without looking anything up.
+- **They sit together in memory.** Your CPU loads memory in chunks, so reading
+  neighbouring elements is nearly free once the first one has been fetched.
+  Lists store *pointers* to elements that may live anywhere, so the CPU has to
+  chase each one.
+- **Less per-element overhead.** Every R object carries a header (its type, its
+  length, its attributes). A numeric vector of 1000 has one header. A list of
+  1000 numbers has 1001.
+
+A matrix is just a vector with a `dim` attribute attached, so it is stored the
+same way, column by column.
+
+::: {.fragment .fade-up}
+You can see the difference:
+
+```{r}
+#| label: a2-memory
+#| output-location: fragment
+x <- as.numeric(1:1000)
+c(vector = object.size(x), list = object.size(as.list(x)))
+```
+:::
+:::
+
+::: {.fragment .fade-up}
+**2.** A data frame (or `data.table`/`tibble`). Data from a colleague usually
+mixes character, numeric, and factor columns, and a vector or matrix cannot hold
+that: it would coerce everything to character. A data frame keeps one row per
+observation, with each column free to have its own mode and its own name.
+:::
+
+::: {.fragment .fade-up}
+**3.**
+
+```{r}
+#| label: q1-lm-answer
+#| echo: false
+mode(f)
+names(f)
+```
+
+`mode(f)` is `"list"`. `lm()` returns a list whose `class` is `"lm"`, and
+the class is what sends `summary(f)` to `summary.lm()`. Here the two lenses
+meet: an object's class decides which function call actually happens. Lists are
+the usual way for a function to return several different kinds of result at
+once.
+:::
+
+:::
+
+# Naming conventions and filtering
+
+## Naming your objects
+
+::: {.r-fit-text}
+
+Earlier we named the *elements* of an object so we could pull them out by name.
+This is the other kind of naming: what you call the objects themselves.
+
+Borrowing from a [blog on R code best practices](https://www.r-bloggers.com/2018/09/r-code-best-practices/),
+there are five naming conventions in the wild:
+
+* `alllowercase`: e.g. `adjustcolor`
+* `period.separated`: e.g. `plot.new`
+* `underscore_separated`: e.g. `numeric_version`
+* `lowerCamelCase`: e.g. `addTaskCallback`
+* `UpperCamelCase`: e.g. `SignatureMethod`
+
+Strive for names that are concise and meaningful:
+
+* Avoid a name that would overwrite something that already exists. For example,
+  `c <- 0` overwrites the `c()` function.
+* Clarity is better than brevity unless it is well documented. What does the `s`
+  in `s <- 0` stand for: sample, simulation, success?
+
+Naming conventions are personal preference. Pick one and stay with it. This
+course uses `underscore_separated`.
+
+:::
+
+## Filtering vectors
+
+::: {.r-fit-text}
+
+Elements can be filtered by position, by name, or by Boolean logic
+(`==`, `!=`, `>`, `>=`, `<`, `<=`).
+
+Example: 10 patients randomized to control (0) or treatment (1).
+
+```{r}
+#| label: filter-1
+#| output-location: fragment
+tx <- rep(0:1, times = 5)
+names(tx) <- 1:10
+
+tx[tx == 1]
+tx[c(1, 3, 7)]
+tx["3"]
+```
+
+Note that `tx[tx == 1]` does two things at once: `==` returns a vector of
+`TRUE`/`FALSE`, and `[` selects with it. Both are function calls, which we come
+back to in Part II.
+
+Boolean logic also works with `which()` (which positions meet the criterion) and
+`any()` / `all()` (do any or all of them meet it):
+
+```{r}
+#| label: filter-2
+#| output-location: fragment
+which(tx == 1)
+any(tx == 1)
+all(tx == 1)
+```
+
+:::
+
+## Questions 3: Filtering objects
+
+::: {.r-fit-text}
+
+Suppose `x` is the number of vacations taken in each year 2010–2019.
+
+```{r}
+#| label: q3-setup
+#| output-location: fragment
+set.seed(1)
+x <- sample.int(n = 7, size = 10, replace = TRUE)
+names(x) <- 2010:2019
+x
+```
+
+1. How many vacations were taken in the first and ninth years?
+
+2. How many total vacations were taken in odd years? Use element names.
+
+3. How many total vacations were taken in even years? Use `seq()`.
+
+4. Why would you want to use element names whenever possible?
+
+:::
+
+## Answers 3: Filtering objects {.smaller}
+
+::: {.r-fit-text}
+
+::: {.fragment .fade-up}
+**1.** Position indexing is fine here, since "first" and "ninth" are positions:
+
+```{r}
+#| label: a3-1
+#| output-location: fragment
+x[c(1, 9)]
+```
+:::
+
+::: {.fragment .fade-up}
+**2.** Odd years, by name. The modular operator `%%` gives the remainder after
+dividing (5 %% 2 is 1, since 2 goes into 5 twice with 1 left over), so
+`year %% 2 == 1` picks out the odd years:
+
+```{r}
+#| label: a3-2
+#| output-location: fragment
+odd <- names(x)[as.numeric(names(x)) %% 2 == 1]
+sum(x[odd])
+```
+
+Strength: it works for any span of years. Weakness: slightly harder to read.
+:::
+
+::: {.fragment .fade-up}
+**3.** Even years with `seq()`, converted to character so we can index by name:
+
+```{r}
+#| label: a3-3
+#| output-location: fragment
+sum(x[as.character(seq(2010, 2018, by = 2))])
+```
+:::
+
+::: {.fragment .fade-up}
+**4.** Filtering by name is transparent, easy to read, and less error prone.
+Suppose the data were re-sorted, or a year were added at the front. Then `x[1]`
+quietly becomes a different year, while `x["2010"]` still means 2010 or else
+gives an error. Using names is one of the most important habits for reproducible
+coding.
+:::
+
+:::
+
+# Control statements
+
+## If-then statements
+
+::: {.r-fit-text}
+
+> "R is a block-structured language ... delineated by braces, though braces are
+> optional if the block consists of just a single statement. Statements are
+> separated by newline characters or, optionally, by semicolons."
+> — Matloff, [page 139](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=165)
+
+```{r}
+#| label: if-else
+#| output-location: fragment
+x <- "yes"
+if (x == "yes") {
+  print("I'll take on the project")
+} else {
+  print("Sorry, I can't take on the project")
+}
+```
+
+An `if`/`else` statement needs a single `TRUE`/`FALSE`. `ifelse()` applies the
+same conditional to every element of a vector:
+
+```{r}
+#| label: ifelse
+#| output-location: fragment
+x <- 1:10
+ifelse(test = x > 5, yes = 1, no = 0)
+```
+
+:::
+
+## Loops
+
+::: {.r-fit-text}
+
+Loops repeat an operation over the values in a vector:
+
+* `for`: iterate through each value of a vector
+* `while`: continue while a condition is `TRUE`
+* `repeat`: continue until a `break` or `return` statement
+
+```{r}
+#| label: loops-for
+#| output-location: fragment
+x <- c(3, 7, 11)
+for (n in x) print(n)             # iterate over VALUES
+
+for (i in seq_along(x)) print(x[i])   # iterate over POSITIONS
+```
+
+Use `seq_along(x)` rather than `1:length(x)`. If `x` is empty, `1:length(x)` is
+`c(1, 0)` and the loop runs twice over nothing, while `seq_along(x)` does not run
+at all.
+
+**What will the following print?**
+
+```{r}
+#| label: loops-quiz
+#| eval: false
+x <- seq(1, 10, by = 3)
+for (i in x) print(i)
+```
+
+::: {.fragment .fade-up}
+`1`, `4`, `7`, `10`. The loop variable takes the *values* in `x`, not the
+positions.
+:::
+
+:::
+
+---
+
+::: {.r-fit-text}
+
+Use `while` and `repeat` when you do not know in advance how many iterations you
+need:
+
+```{r}
+#| label: loops-while
+#| output-location: fragment
+i <- 1
+while (i <= 10) i <- i + 4
+i
+
+i <- 1
+repeat {
+  i <- i + 4
+  if (i > 10) break
+}
+i
+```
+
+`break` exits the loop; `next` skips to the next iteration.
+
+::: {.fragment .fade-up}
+A loop is the imperative lens again: you describe every step and update a
+running result. In Part II we see the functional alternative, where you hand the
+body of the loop to another function and let it do the iterating. Neither is
+automatically better, and knowing when to use which is the point.
+:::
+
+:::
+
+## Questions 4: Creating a loop
+
+::: {.r-fit-text}
+
+From Jan 1–9, 2023, it snowed 6 days atop Snowbasin. Each day is 1 (snow) or
+0 (no snow).
+
+```{r}
+#| label: q4-setup
+snow <- c(1, 1, 1, 1, 0, 1, 1, 0, 0)
+names(snow) <- 1:9
+```
+
+On which day did it *first* snow three consecutive days (that day plus the two
+before)? Solve with a loop and conditional logic.
+
+:::
+
+## Answers 4: Creating a loop
+
+::: {.r-fit-text}
+
+::: {.fragment .fade-up}
+Walk forward through the days, skip the ones too early to have two days before
+them, and stop at the first run of three:
+
+```{r}
+#| label: a4
+#| output-location: fragment
+first_day <- NA
+for (i in seq_along(snow)) {
+  if (i < 3) next
+  if (sum(snow[(i - 2):i]) == 3) {
+    first_day <- i
+    break
+  }
+}
+first_day
+```
+
+Two habits worth copying here: `next` to skip the days where the question does
+not apply, and `break` to stop as soon as you have the answer instead of walking
+the rest of the vector.
+:::
+
+::: {.fragment .fade-up}
+That loop looks at every day three times, once for each window it belongs to,
+and `sum(snow[(i - 2):i])` builds a new little vector each pass. You can keep a
+running count instead, so each day is read once:
+
+```{r}
+#| label: a4-counter
+#| output-location: fragment
+first_day <- NA_integer_
+run       <- 0L
+
+for (i in seq_along(snow)) {
+  run <- if (snow[i] == 1) run + 1L else 0L   # extend the run, or reset it
+  if (run == 3L) {
+    first_day <- i
+    break
+  }
+}
+first_day
+```
+
+On nine days the difference is invisible. On a million it is about seven times
+faster, and the reason is the point: the cost was never the `for`, it was the
+subsetting inside it.
+:::
+
+::: {.fragment .fade-up}
+If you wanted all such days rather than the first, collect them. Note that we
+set up the result vector first instead of growing it with `c()` inside the loop.
+More on why shortly.
+
+```{r}
+#| label: a4-all
+#| output-location: fragment
+runs <- logical(length(snow))
+for (i in 3:length(snow)) runs[i] <- sum(snow[(i - 2):i]) == 3
+which(runs)
+```
+:::
+
+:::
+
+## Functions
+
+::: {.r-fit-text}
+
+This is where the functional lens becomes concrete. Functions reduce redundancy
+and make code clearer. Matloff
+([page xxii](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=23))
+on using functions instead of copy-paste:
+
+* Clearer, more compact code
+* Potentially faster execution
+* Less debugging, because the code is simpler
+* Easier transition to parallel programming
+
+```{r}
+#| label: fn-examples
+#| output-location: fragment
+fun1 <- function(v1, v2) v1 + v2       # implicit return of last expression
+fun1(1, 2)
+
+fun2 <- function(v1, v2) {
+  out <- c(sum = v1 + v2, ave = (v1 + v2) / 2)
+  return(out)                          # a named vector
+}
+fun2(1, 2)
+
+fun3 <- function(v1, v2) {
+  list(sum = v1 + v2, ave = (v1 + v2) / 2, text = "fun3")  # a list, for mixed types
+}
+str(fun3(1, 2))
+```
+
+:::
+
+---
+
+::: {.r-fit-text}
+
+A function with a default argument, for the "unfair coin experiment":
+
+```{r}
+#| label: unfair-coin
+#| output-location: fragment
+# unfairCoin
+#   n: number of tosses
+#   p: probability of heads (default = 0.7)
+unfairCoin <- function(n, p = 0.7) {
+  sample(c("H", "T"), n, replace = TRUE, prob = c(p, 1 - p))
+}
+
+set.seed(1)
+tosses <- unfairCoin(20)
+prop.table(table(tosses))
+```
+
+Defaults let you write `unfairCoin(20)` for the common case and
+`unfairCoin(20, p = 0.5)` when you need something else.
+
+::: {.fragment .fade-up}
+Two things here are stranger than they look, and Part II explains both. The
+default `p = 0.7` is not evaluated until it is used. And `unfairCoin` is itself
+just an object with a name attached, no different from `tosses`.
+:::
+
+:::
+
+## Questions 5: Creating a function
+
+::: {.r-fit-text}
+
+Generalize your Question 4 code into a function so that, for any string of days,
+you can find the first day it snowed a given number of consecutive days. Return
+`NA` if no day meets the criterion.
+
+:::
+
+## Answers 5: Creating a function
+
+::: {.r-fit-text}
+
+::: {.fragment .fade-up}
+```{r}
+#| label: a5
+#| output-location: fragment
+first_run <- function(days, k = 3) {
+
+  if (length(days) < k) return(NA_integer_)
+
+  for (i in k:length(days)) {
+    if (sum(days[(i - k + 1):i]) == k) return(i)
+  }
+
+  NA_integer_
+}
+
+first_run(snow, k = 3)
+first_run(c(1, 0, 1, 0, 1, 0), k = 3)   # never happens -> NA
+first_run(c(1, 1), k = 3)               # shorter than the window -> NA
+```
+:::
+
+::: {.fragment .fade-up}
+Three things we gained by writing this as a function:
+
+- The number of days, `k`, is now an argument with a sensible default.
+- The case where no day qualifies is handled explicitly and returns `NA`.
+- The `return()` inside the loop replaces the `break` and the bookkeeping around
+  it.
+:::
+
+:::
+
+# Vectorizing and replicate
+
+## What "vectorized" really means
+
+::: {.r-fit-text}
+
+R can perform the same operation on every element of a vector at once. A
+vectorized function takes the whole vector and does the looping in C, in one
+pass, without going back to the R interpreter for each element.
+
+Both versions loop. The difference is *who* does the looping, and the next slide
+explains why that matters so much.
+
+::: {.fragment .fade-up}
+So "vectorized" is a claim about **how a function is built**. Plenty of
+functions accept a whole vector and hand back a whole vector while still looping
+in R, one element at a time. They look vectorized from the outside and give you
+none of the speed. When we say a function is *genuinely* vectorized, we mean the
+loop is really in C.
+:::
+
+```{r}
+#| label: vec-basics
+#| output-location: fragment
+x1 <- 1:10
+x2 <- 101:110
+x1 + x2        # element-wise: element i of one, with element i of the other
+```
+
+:::
+
+## Recycling: the rule that makes it work
+
+::: {.r-fit-text}
+
+A vectorized operation pairs up elements, which leaves an obvious question: what
+if the two vectors are not the same length?
+
+R's answer is **recycling**. It repeats the shorter operand until the lengths
+line up. That is what makes a comparison against a single number mean anything
+at all:
+
+```{r}
+#| label: vec-recycle-1
+#| output-location: fragment
+x1 <- 1:10
+x1 > 5         # the single 5 is repeated to length 10, then compared
+```
+
+Without recycling you would have to write `x1 > rep(5, 10)` every time.
+
+::: {.fragment .fade-up}
+The caution is that R does this **silently** whenever the longer length is a
+multiple of the shorter:
+
+```{r}
+#| label: vec-recycle-2
+#| output-location: fragment
+x <- 1:6
+y <- 1:3
+x + y          # y is used twice, no warning at all
+```
+
+You only get told when the lengths do not divide evenly:
+
+```{r}
+#| label: vec-recycle-3
+#| output-location: fragment
+#| warning: true
+1:6 + 1:4      # warning: longer object length is not a multiple...
+```
+
+So the dangerous case is the tidy one. A filter that accidentally returns 3
+values instead of 6 will be recycled without complaint.
+:::
+
+:::
+
+## What counts as vectorized
+
+::: {.r-fit-text}
+
+Genuinely vectorized: the arithmetic and comparison operators, `sqrt()`,
+`log()`, `exp()`, `abs()`, `round()`, `ifelse()`, `pmin()` and `pmax()`,
+`cumsum()`, `sum()`, `mean()`, `which()`, `is.na()`, and the random number and
+distribution functions (`rbinom()`, `rbeta()`, and so on).
+
+:::
+
+## How can you tell?
+
+::: {.r-fit-text}
+
+**Look at the function.** Print it. If the body is `.Primitive`, `.Internal`, or
+`.Call`, the work is being handed straight to compiled code:
+
+```{r}
+#| label: vec-tell
+#| output-location: fragment
+sqrt                # .Primitive
+body(paste)         # .Internal
+body(stats::rnorm)  # .Call
+```
+
+**Or just time it against a loop.** If a function is really doing the work in C,
+it should be far faster than the same thing written out element by element. If
+the times are similar, the loop is still in R somewhere.
+
+::: {.fragment .fade-up}
+A good example of something that only *looks* vectorized. `Vectorize()` accepts
+vectors and returns a vector, but underneath it is `mapply()`, which calls your
+function once per element:
+
+```{r}
+#| label: vec-fake
+#| output-location: fragment
+slow_max <- Vectorize(function(a, b) if (a > b) a else b)
+
+x <- runif(2e5)
+system.time(pmax(x, 0.5))[["elapsed"]]        # real vectorization, in C
+system.time(slow_max(x, 0.5))[["elapsed"]]    # a loop in disguise
+```
+
+Same interface, same answer, roughly a hundredfold difference.
+:::
+
+:::
+
+## What `.Primitive`, `.Internal` and `.Call` mean
+
+::: {.r-fit-text}
+
+All three say the same thing: **the work leaves the R interpreter and runs as
+compiled C code**. They differ in who is allowed to use them and how much R
+wrapping sits in front.
+
+| Marker | What it is | Who can use it |
+|---|---|---|
+| **`.Primitive`** | there is no R function at all. The name is bound straight to C. The most basic operations work this way: `+`, `[`, `sum`, `c`, `sqrt` | base R only |
+| **`.Internal`** | a normal R function that checks arguments and fills in defaults, then hands the real work to a C routine in R's own internal table | base R only |
+| **`.Call`** | runs a C function that someone wrote, compiled, and loaded into your session. The C function receives your R objects, loops over them at C speed, and returns a new R object. This is the one you will write yourself later, via `Rcpp` | anyone |
+
+```r
+sqrt                 # function (x)  .Primitive("sqrt")
+body(paste)          # .Internal(paste(list(...), sep, collapse, recycle0))
+body(stats::rnorm)   # .Call(C_rnorm, n, mean, sd)
+```
+
+::: {.fragment .fade-up}
+Why so many? Historical, mostly. `.Primitive` is fastest, since there is no R
+function call and no argument matching first, but it is reserved for the handful
+of operations R cannot do without. `.Internal` gives base R a readable R layer in
+front of C.
+
+For today the practical reading is simply: **if you see any of them, the
+per-element loop is not happening in R.**
+:::
+
+:::
+
+## Which ones are not?
+
+::: {.r-fit-text}
+
+None of the functions on the previous list. Those all do their per-element work
+in C. The ones that *look* vectorized but are not fall into two groups.
+
+**A `for` loop written in R.** You can read the loop in the function's own
+source: `apply()` and `Reduce()`.
+
+**The loop is in C, but it calls back into R every element.** `lapply()`,
+`sapply()`, `vapply()`, `mapply()`, and `Map()` hand the iteration to
+`.Internal(...)`, so the counter is not the slow part. The cost is that the
+compiled loop must return to the interpreter to evaluate **your** R function for
+each element, and that is exactly the overhead vectorization exists to avoid.
+`Vectorize()` wraps `mapply()`, `replicate()` wraps `sapply()`, and `Filter()`
+wraps `lapply()`, so all three inherit it.
+
+::: {.fragment .fade-up}
+The distinction rarely matters in practice: both groups pay R-level cost per
+element, and both are far behind a genuinely vectorized call.
+:::
+
+```{r}
+#| label: vec-not
+#| output-location: fragment
+m <- matrix(runif(2e6), ncol = 10)
+
+system.time(rowMeans(m))[["elapsed"]]        # C loop over the whole matrix
+system.time(apply(m, 1, mean))[["elapsed"]]  # R loop, calling mean() 200,000 times
+```
+
+::: {.fragment .fade-up}
+**One caution.** Vectorized does not automatically mean fast. `ifelse()` is
+genuinely vectorized, but it builds several intermediate vectors and is still a
+few times slower than `pmax()` for the same job. C-level looping removes the
+interpreter overhead; it does not excuse doing unnecessary work.
+:::
+
+:::
+
+## Why the loop being in C matters
+
+::: {.r-fit-text}
+
+R is an **interpreted** language: nothing is translated into machine code ahead
+of time. Each time R evaluates `out[i] <- sqrt(x[i])`, it works out afresh what
+that line means. Roughly, per iteration, R must:
+
+1. look up `sqrt`, `x`, `out`, and `i` by name. R searches the current
+   **environment**, which is just the table of names and values a piece of code
+   can see, then the one enclosing it, and so on out to the packages you have
+   loaded;
+2. check what `x` is (a double vector? an integer? does it have a class with its
+   own `[` method?) and pick the right code;
+3. build the argument as a promise, and allocate a small object to hold `x[i]`;
+4. check for `NA` and for the result being out of range;
+5. assign into `out`, checking whether `out` is shared with anything else and
+   needs copying first.
+
+That bookkeeping costs far more than the square root itself.
+
+::: {.fragment .fade-up}
+`sqrt(x)` does step 1 and 2 **once**, then hands the whole vector to a compiled C
+loop. That loop was translated to machine code when R was built. It already
+knows the values are doubles sitting next to each other in memory, so the
+per-element cost is one machine instruction plus a check for `NA`, with no
+lookups and no allocation.
+
+So a vectorized call is not doing less work in total. It is paying the
+interpreter's overhead once instead of `n` times.
+:::
+
+:::
+
+## The `*apply` family is not vectorization
+
+::: {.r-fit-text}
+
+This is the part of the usual advice that is out of date. `sapply()`,
+`lapply()`, `vapply()`, `mapply()`, and `purrr::map()` are loops written in C
+that call your R function once per element. The R work still happens one element
+at a time.
+
+```{r}
+#| label: vec-apply-vs-loop
+#| output-location: fragment
+x <- runif(1e5)
+
+# a loop, pre-allocated
+out1 <- numeric(length(x))
+for (i in seq_along(x)) out1[i] <- sqrt(x[i])
+
+out2 <- vapply(x, sqrt, numeric(1))    # a loop wearing a functional's clothes
+out3 <- sqrt(x)                        # ACTUALLY vectorized
+
+all.equal(out1, out3); all.equal(out2, out3)
+```
+
+::: {.fragment .fade-up}
+On 5 million elements the loop takes about 1.4 seconds and `vapply()` about 0.5,
+so the functional is a few times quicker: it skips the R-level `out1[i] <- ...`
+on every pass. But `sqrt(x)` takes about 0.005 seconds, which is roughly a
+hundred times faster again.
+
+That is the point. `*apply` and a `for` loop are in the same league, because both
+evaluate R code once per element. Genuine vectorization is in a different one.
+
+So use `*apply` and `purrr` because they are clearer, not because they close that
+gap. 
+:::
+
+:::
+
+## What actually makes R code slow
+
+::: {.r-fit-text}
+
+Since R 3.4, R quietly translates your functions into a compact internal form
+the first time they run, which takes some of the interpreter overhead out of
+loops. A `for` loop is not slow in itself. Here is what is actually slow:
+
+```{r}
+#| label: vec-grow
+#| output-location: fragment
+#| cache: false
+n <- 20000
+
+grow <- function(n) {                # BAD: reallocates and copies each step
+  out <- c()
+  for (i in 1:n) out <- c(out, i^2)
+  out
+}
+
+prealloc <- function(n) {            # GOOD: allocate once, fill in place
+  out <- numeric(n)
+  for (i in 1:n) out[i] <- i^2
+  out
+}
+
+vectorized <- function(n) (1:n)^2    # BEST, when the operation is vectorized
+
+system.time(grow(n))[["elapsed"]]
+system.time(prealloc(n))[["elapsed"]]
+system.time(vectorized(n))[["elapsed"]]
+```
+
+::: {.fragment .fade-up}
+`grow()` gets slower and slower as it goes: every `c()` allocates a new vector
+and copies everything into it. That, rather than the `for` keyword, is the
+classic R performance bug, and it is why we set up the result vector in advance.
+
+The copying is not arbitrary. R vectors are copy-on-modify, which comes straight
+out of the functional lens: do not change something other code might be holding.
+Part II shows the one kind of object that opts out, the environment.
+:::
+
+:::
+
+## A better set of rules of thumb
+
+::: {.r-fit-text}
+
+The old advice was "always vectorize, never loop". Here is a more useful set of
+rules:
+
+1. **Write it clearly first.** Correct and readable beats fast and wrong.
+2. **Never grow an object inside a loop.** Set it up first with `numeric(n)`,
+   `vector("list", n)`, or `matrix()`, or collect the pieces and `rbind()` them
+   once at the end.
+3. **Use a genuinely vectorized function when one exists.** `sqrt(x)`,
+   `rbinom(n, ...)`, and `colSums(m)` are free speed.
+4. **Use `*apply` and `purrr` for clarity**, and because they are easy to run in
+   parallel later. In code you plan to keep, use `vapply()` rather than
+   `sapply()`: you say what shape the output should be, and you get an error if
+   it is not.
+5. **Keep the loop when each step depends on the last.** Adaptive randomization
+   and MCMC cannot be vectorized away, and forcing them hurts readability for
+   nothing.
+6. **Measure before you optimize.** `bench::mark()` and `profvis::profvis()`. We
+   spend a whole week on this.
+
+```r
+library(bench)
+bench::mark(loop = prealloc(n), vec = vectorized(n), relative = TRUE)
+```
+
+::: {.fragment .fade-up}
+And when a loop that really is sequential is still too slow, the answer is not a
+cleverer `apply`. It is Rcpp or parallel computing, both later in this course.
+:::
+
+:::
+
+## `replicate()` for simulation
+
+::: {.r-fit-text}
+
+`replicate()` evaluates an expression `n` times and collects the results. It
+calls `sapply()` underneath, so it is a loop rather than vectorization, but it is
+the natural way to write a Monte Carlo experiment.
+
+```{r}
+#| label: replicate
+#| output-location: fragment
+set.seed(1)
+tosses <- replicate(1000, sum(sample(0:1, 10, replace = TRUE)))
+mean(tosses)
+```
+
+Watch the `simplify` argument. `replicate()` returns a vector or matrix when it
+can and a list when it cannot, which is the same sometimes-surprising behavior as
+`sapply()`.
+
+Note also that it takes an expression, not a value, and re-evaluates it each
+time. That is lazy evaluation, which we get to in Part II.
+
+:::
+
+# Part II: Everything that happens is a function call
+
+## Where Part I left off
+
+::: {.r-fit-text}
+
+Part I was about the first slogan: everything that exists is an object, with a
+mode, attributes, and a class. Along the way we left three questions open.
+
+- Why is `sapply()` no faster than a loop?
+- Why is growing a vector with `c()` so slow, when changing an environment
+  costs nothing?
+- How does `dt[, temp]` find a column that is not a variable in your workspace?
+
+::: {.fragment .fade-up}
+All three are questions about what happens when a function is called, which is
+the second slogan, and the rest of today.
+
+1. **Everything is a function call**: operators, `if`, and `[` are functions.
+2. **Functions are objects**: stored, passed, returned, sometimes unnamed.
+3. **Lazy evaluation**: arguments are promises, not values.
+4. **Scoping and closures**: functions carry their environment, and environments
+   can be changed.
+5. **Functionals**: where `*apply` finally pays off.
+6. **Non-standard evaluation**: capturing code instead of values.
+
+Number 3 is the one the rest depends on. Everything before it explains how
+arguments and scopes behave, and NSE is what you get when you capture a promise
+instead of forcing it.
+:::
+
+:::
+
+# 1. Everything is a function call
+
+## Operators, `if`, and `[` are all functions
+
+::: {.r-fit-text}
+
+We opened with Chambers' second slogan: everything that happens is a function
+call. Take it literally. Operators, `if`, subsetting, and even assignment are
+function calls in disguise.
+
+```{r}
+#| label: fn-call-1
+#| output-location: fragment
+`+`(2, 3)                  # `+` is an ordinary function
+`if`(2 > 1, "yes", "no")   # if returns a value
+`[`(c(10, 20, 30), 2)      # subsetting is a function too
+```
+
+::: {.fragment .fade-up}
+So `x[i]` in your loop, `x + y` in your vectorized code, and `tx[tx == 1]` when
+you filtered the treatment assignments were all function calls.
+:::
+
+:::
+
+---
+
+::: {.r-fit-text}
+
+Because operators are just functions, **you can define your own**:
+
+```{r}
+#| label: fn-call-2
+#| output-location: fragment
+`%+%` <- function(a, b) paste0(a, b)
+"data" %+% ".table"
+```
+
+::: {.fragment .fade-up}
+Why this matters: if even operators and `if` are functions, then functions are
+nothing special. They are values, and you can store them, pass them, and return
+them. Everything else in Part II builds on that.
+:::
+
+:::
+
+# 2. Functions are objects
+
+## First-class functions
+
+::: {.r-fit-text}
+
+A function is a value like any other. You can put it in a list, pass it as an
+argument, or return it from another function. (When a language lets you do this
+with functions, they are called **first-class**.)
+
+```{r}
+#| label: first-class-1
+#| output-location: fragment
+funs <- list(
+  root   = sqrt,
+  square = function(x) x^2,
+  neg    = function(x) -x
+)
+funs$square(5)
+```
+
+```{r}
+#| label: first-class-2
+#| output-location: fragment
+# A function that takes a function and returns a function
+apply_twice <- function(f) function(x) f(f(x))
+add1 <- function(x) x + 1
+apply_twice(add1)(10)
+```
+
+:::
+
+---
+
+::: {.r-fit-text}
+
+**Anonymous functions** have no name. Since R 4.1 there is a shorthand, `\(x)`:
+
+```{r}
+#| label: anon
+#| output-location: fragment
+(\(x) x^2)(4)          # same as (function(x) x^2)(4)
+```
+
+::: {.fragment .fade-up}
+We will lean on anonymous functions constantly once we reach *functionals*.
+:::
+
+:::
+
+# 3. Lazy evaluation
+
+## Arguments are promises, not values
+
+::: {.r-fit-text}
+
+In most languages every argument is computed before the call runs. R is
+different. An argument is a *promise*: the expression you wrote, plus the
+environment to evaluate it in. R only evaluates it when the function first uses
+it.
+
+```{r}
+#| label: lazy-1
+#| output-location: fragment
+f <- function(x, y) x     # note: y is never used
+f(1, stop("boom"))        # no error: y is never forced!
+```
+
+::: {.fragment .fade-up}
+**Why would this go wrong elsewhere?** Because most languages are *eager*: they
+evaluate each argument expression at the call site, before the function body
+starts. Whether the parameter is used inside makes no difference, because the
+function has not been entered yet when the evaluating happens.
+
+What that costs you depends on the language. In Python, the equivalent raises
+before `f` ever runs:
+
+```python
+def f(x, y): return x        # y is never used
+f(1, boom())                 # ValueError - boom() ran at the call site
+```
+
+C has no exceptions, but the argument is still evaluated, so any side effect or
+wasted computation happens anyway:
+
+```c
+int f(int x, int y) { return x; }   /* y unused */
+f(1, boom());                       /* boom() still runs */
+```
+
+In R nothing ever asks for `y`, so the promise is never evaluated and
+`stop("boom")` never runs.
+:::
+
+:::
+
+## Question 6: What does this print? {.smaller}
+
+::: {.r-fit-text}
+
+```r
+g <- function(x, y) {
+  x * 2
+}
+g(5, stop("this never runs"))
+```
+
+::: {.fragment .fade-up}
+`10`. The body only uses `x`, so the promise for `y` is never evaluated and
+`stop()` never runs.
+:::
+
+:::
+
+## Consequence: defaults can see other arguments
+
+::: {.r-fit-text}
+
+A default is a promise evaluated inside the function, so it can refer to the
+other arguments. Most languages cannot do this.
+
+```{r}
+#| label: lazy-default
+#| output-location: fragment
+summarise_vec <- function(x, n = length(x)) {
+  sprintf("mean of %d values: %.2f", n, mean(x))
+}
+summarise_vec(c(2, 4, 6))    # n defaults to length(x)
+```
+
+:::
+
+## The classic gotcha: closures in a loop
+
+::: {.r-fit-text}
+
+Each function below captures the promise for `i`, and that promise is not
+evaluated until later, after the loop has already finished.
+
+```{r}
+#| label: lazy-gotcha
+#| output-location: fragment
+make_fns <- function() {
+  fns <- vector("list", 3)
+  for (i in 1:3) fns[[i]] <- function() i
+  fns
+}
+fns <- make_fns()
+c(fns[[1]](), fns[[2]](), fns[[3]]())
+```
+
+::: {.fragment .fade-up}
+`force(i)` evaluates the promise right away. `lapply()` gives each iteration its
+own `i`, so it avoids the problem altogether:
+
+```{r}
+#| label: lazy-fix
+#| output-location: fragment
+fns2 <- lapply(1:3, function(i) function() i)
+c(fns2[[1]](), fns2[[2]](), fns2[[3]]())  # 1 2 3
+```
+:::
+
+:::
+
+# 4. Scoping & closures
+
+## Lexical scoping: functions carry their environment
+
+::: {.r-fit-text}
+
+A function remembers where it was *defined*, not where it is called. It keeps
+hold of the names that were visible at that moment, and a function together with
+those kept names is called a **closure**.
+
+```{r}
+#| label: closure-factory
+#| output-location: fragment
+# A "function factory": a function that manufactures functions
+power <- function(exp) {
+  function(x) x^exp
+}
+square <- power(2)
+cube   <- power(3)
+c(square(4), cube(2))
+```
+
+::: {.fragment .fade-up}
+`square` and `cube` have the same body. Each one kept a different `exp`.
+:::
+
+:::
+
+## Environments can be changed in place
+
+::: {.r-fit-text}
+
+Vectors and lists are
+copy-on-modify: change one and R gives you back a modified copy, leaving the
+original alone. That is the functional style built into the language, and it is
+why `grow()` got slower and slower.
+
+Environments are the exception. Hand one to a function and the function changes
+the original, because what gets passed is a pointer to the environment rather
+than a copy of its contents.
+
+```{r}
+#| label: env-counter
+#| output-location: fragment
+# `<<-` assigns in the enclosing environment, so the value survives between calls
+new_counter <- function() {
+  n <- 0
+  function() {
+    n <<- n + 1
+    n
+  }
+}
+count <- new_counter()
+c(count(), count(), count())    # 1 2 3, the closure remembers n
+```
+
+```{r}
+#| label: env-ref
+#| output-location: fragment
+e <- new.env(); e$value <- 1
+modify <- function(env) env$value <- 99   # no copy is made
+modify(e)
+e$value                                    # 99, modified in place
+```
+
+:::
+
+## Aside: replacement functions
+
+::: {.r-fit-text}
+
+Here is one more place the second slogan turns up. Assigning into a function
+call is itself a function call.
+
+```{r}
+#| label: replacement
+#| output-location: fragment
+x <- c(1, 2, 3)
+names(x) <- c("a", "b", "c")   # secretly calls `names<-`(x, value)
+x
+```
+
+`names(x) <- v` is really ``x <- `names<-`(x, v)``. The same holds for
+`dim(x) <-`, `levels(x) <-`, and `x[i] <-`: there is a function behind each one,
+and you can write your own.
+
+Note that this does *not* mean a copy is made. `names<-` is a primitive, so if
+nothing else points at `x`, R modifies it in place and rebinds the name. A copy
+happens only when the vector is shared, which is copy-on-modify doing its job.
+
+:::
+
+# 5. Functionals
+
+## Functions that take functions
+
+::: {.r-fit-text}
+
+A *functional* takes a function as an input and applies it over your data,
+replacing an explicit loop with a single call.
+
+```{r}
+#| label: func-lapply
+#| output-location: fragment
+lapply(1:3, function(x) x^2)      # apply over a list, get a list back
+```
+
+```{r}
+#| label: func-vapply
+#| output-location: fragment
+vapply(1:3, function(x) x^2, numeric(1))   # you state the shape of each result
+```
+
+::: {.fragment .fade-up}
+The advantage of `vapply()` compared to `sapply()`: it gives an
+error instead of quietly returning the wrong type. 
+:::
+
+:::
+
+## More functionals: Map, Reduce, Filter
+
+::: {.r-fit-text}
+
+```{r}
+#| label: func-map
+#| output-location: fragment
+Map(function(x, y) x + y, 1:3, 10:12)   # iterate over several inputs at once
+```
+
+```{r}
+#| label: func-reduce
+#| output-location: fragment
+Reduce(`+`, 1:5)                        # combine the elements two at a time -> 15
+Reduce(`+`, 1:5, accumulate = TRUE)     # keep the running total
+```
+
+```{r}
+#| label: func-filter
+#| output-location: fragment
+Filter(function(x) x %% 2 == 0, 1:10)   # keep the elements where this is TRUE
+```
+
+The tidyverse offers a type-stable family via **purrr**:
+
+```r
+library(purrr)
+map_dbl(1:3, \(x) x^2)        # 1 4 9  (like vapply, always a double vector)
+map2_dbl(1:3, 10:12, `+`)     # 11 13 15
+```
+
+:::
+
+## Why we care: functionals are the bridge to parallelism
+
+::: {.r-fit-text}
+
+Once your iteration is written as a functional, running it in parallel is a
+one-line change, because the function is just an object you can hand to a
+different engine.
+
+```r
+# today
+lapply(files, process)
+
+# in a few weeks: same shape, now parallel / on the cluster
+parallel::mclapply(files, process, mc.cores = 4)
+future.apply::future_lapply(files, process)
+```
+
+::: {.fragment .fade-up}
+This only works because functions are objects. It is also the answer to the
+question from Part I: `*apply` is not faster on its own, but this is where the
+speed eventually comes from.
+:::
+
+:::
+
+# 6. Non-standard evaluation
+
+## Capturing code instead of values
+
+::: {.r-fit-text}
+
+Lazy evaluation, taken one step further. Instead of evaluating a promise to get
+its value, a function can look at the expression itself with `substitute()`.
+
+```{r}
+#| label: nse-1
+#| output-location: fragment
+g <- function(x) deparse(substitute(x))
+g(a + b * 2)     # "a + b * 2"; a and b need not exist
+```
+
+```{r}
+#| label: nse-standard-vs-not
+#| output-location: fragment
+h_standard <- function(x) x              # sees the VALUE
+h_nse      <- function(x) substitute(x)  # sees the CODE
+h_nse(1 + 1)                             # `1 + 1`, unevaluated
+```
+
+This is *non-standard evaluation* (NSE): the function reads the code you typed
+rather than the value it produces.
+
+:::
+
+## You have been using this all along
+
+::: {.r-fit-text}
+
+Every time you type a bare, unquoted name, NSE is at work:
+
+```r
+subset(df, temp > 20)            # `temp` is not a variable in your workspace...
+dplyr::filter(df, temp > 20)     # ...it is a bare name, captured then evaluated
+dt[, .(temp, wind)]              # data.table does exactly this
+lm(y ~ x, data = df)             # y ~ x is a captured expression (a formula)
+library(dplyr)                   # bare name, not the string "dplyr"
+```
+
+None of these would work under standard evaluation. R would look for `temp` in
+the global environment and report "object not found".
+
+::: {.fragment .fade-up}
+Compare this with Part I, where you pulled things out with a name you had
+attached yourself, as in `x["2010"]`. NSE is the same idea built into the
+language: the column name is the thing you type.
+:::
+
+:::
+
+## Build your own `subset()` in two lines
+
+::: {.r-fit-text}
+
+The whole trick is to capture the expression and then evaluate it somewhere of
+your choosing, here inside the data frame.
+
+```{r}
+#| label: nse-subset
+#| output-location: fragment
+my_subset <- function(data, condition) {
+  cond <- substitute(condition)          # 1. capture the code, unevaluated
+  rows <- eval(cond, envir = data)       # 2. evaluate it INSIDE `data`
+  data[rows, , drop = FALSE]
+}
+head(my_subset(mtcars, mpg > 30))        # `mpg` resolves to a column, not a global
+```
+
+:::
+
+## The catch: NSE is awkward to program around
+
+::: {.r-fit-text}
+
+NSE is convenient when you type at the console and awkward when you write
+functions around it. Watch this quietly wrong result:
+
+```{r}
+#| label: nse-catch
+#| output-location: fragment
+my_var <- "mpg"
+nrow(my_subset(mtcars, my_var > 30))   # 32, ALL rows!
+nrow(mtcars)
+```
+
+`my_var` was captured as code, not as the string it holds, so the comparison used
+the name itself. No error, no warning, and the wrong answer.
+
+::: {.fragment .fade-up}
+Getting out of this, that is, telling the function to evaluate one argument
+normally, is what the tidyverse's `{{ }}` and `.data[[ ]]`, and data.table's
+`env =`, are for.
+:::
+
+:::
+
+# Wrap-up
+
+## What to take away
+
+::: {.r-fit-text}
+
+**Everything that exists is an object**
+
+1. **Structures.** Vectors and matrices for computation, lists and data frames
+   when the pieces differ.
+2. **Names.** Pull things out by name, not by position. This is the habit that
+   pays off most.
+3. **Control flow.** Loops are fine. Growing an object inside one is not.
+4. **Functions.** Turn the fixed numbers into arguments, handle the awkward
+   cases, and return as soon as you have the answer.
+5. **Vectorization.** Real vectorization happens in C. `*apply` is a loop, and
+   you use it because it reads better.
+
+**Everything that happens is a function call**
+
+6. **Operators and `if` are functions.** Functions are not a special case.
+7. **Functions are objects.** Store them, pass them, return them.
+8. **Lazy evaluation.** Arguments are promises, evaluated when first used.
+9. **Closures.** A function carries its environment and can change it. This is
+   the exception to the copying that made point 3 slow.
+10. **Functionals.** Apply a function over your data. This is where the clarity
+    of point 5 turns into speed, once you run it in parallel.
+11. **NSE.** Take the promise's expression instead of its value.
+
+::: {.fragment .fade-up}
+In one sentence: objects are what R has, function calls are what R does, and
+lazy evaluation sits between them.
+:::
+
+:::
+
+## Where this goes next
+
+::: {.r-fit-text}
+
+- **Debugging and profiling:** measure before you optimize, with `bench` and
+  `profvis`.
+- **Parallel computing:** your `lapply()` becomes `mclapply()` or
+  `future_lapply()`.
+- **R packages:** closures, `...`, and functionals are what a clean interface is built from.
+
+:::
+
+## Session info {.smaller}
+
+```{r}
+#| label: sessioninfo
+sessionInfo()
+```
