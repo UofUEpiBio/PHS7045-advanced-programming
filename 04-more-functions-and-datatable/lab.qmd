@@ -1,228 +1,159 @@
 ---
-title: Lab 03 - Functions and data.table
-author: George G. Vega Yon, Ph.D.
-date-modified: 2024-09-12
+title: "Lab 02 - R Essentials and Functions"
+subtitle: "PHS 7045: Advanced Programming — Fall 2026"
 format:
   html:
     embed-resources: true
 ---
 
-## Learning goals
+# Learning goals
 
-- Used advanced features of functions in R.
-- Use the `merge()` function to join two datasets.
-- Deal with missings and data imputation data.
-- Identify relevant observations using `quantile()`.
-- Practice your GitHub skills.
+- Warm up by writing loops and functions, and see why `pkg::fun()` is worth
+  typing.
+- Turn a one-off simulation into a **parameterized function**.
+- Compare an R-level loop against a genuinely **vectorized** implementation, and
+  measure the difference instead of guessing.
+- Use **labels** (named vectors, named columns) everywhere it makes the code
+  clearer.
+- Take a first step toward HW 1.
 
-## Lab description
+The second half uses Bayesian statistics, but the emphasis is on the *coding*.
+We will walk through everything needed for the estimation.
 
-For this lab, we will deal with the meteorological dataset downloaded
-from the NOAA, the `met`. We will use `data.table` to answer some
-questions regarding the `met` data set, and practice our Git+GitHub
-skills.
+# Warm-up: loops, functions, and `beepr`
 
-This markdown document should be rendered using `gfm` document.
+Install the package `beepr` and run `beepr::beep()`. `beepr::beep(k)` can play
+k = 1 to 11 sounds (see `?beep` for the list).
 
-## Part 1: Setup the Git project and the GitHub repository
-
-1.  Go to your documents (or wherever you are planning to store the
-    data) in your computer, and create a folder for this project, for
-    example, “PHS7045-labs”
-
-2.  In that folder, save [this
-    template](https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/labs/03-functions-and-datatable/03-functions-and-datatable.qmd)
-    as “README.qmd.” This will be the markdown file where all the magic
-    will happen.
-
-3.  Go to your GitHub account and create a new repository, hopefully of
-    the same name this folder has, i.e., “PHS7045-labs”.
-
-4.  Initialize the Git project, add the “README.qmd” file, and make your
-    first commit.
-
-5.  Add the repo you just created on GitHub.com to the list of remotes,
-    and push your commit to `origin` while setting the upstream.
-
-Most of the steps can be done using the command line:
-
-```bash
-# Step 1
-cd ~/Documents
-mkdir PHS7045-labs
-cd PHS7045-labs
-
-# Step 2
-wget https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-more-functions-and-datatable/lab.qmd
-mv 03-functions-and-datatable.qmd README.qmd
-
-# Step 3
-# Happens on github
-
-# Step 4
-git init
-git add README.Rmd
-git commit -m "First commit"
-
-# Step 5
-git remote add origin git@github.com:[username]/PHS7045
-git push -u origin master
+```r
+install.packages("beepr")
+beepr::beep(0)
 ```
 
+**A. Loops and functions**
 
-You can also complete the steps in R (replace with your paths/username
-when needed)
+1. Write a loop that plays each sound in turn. Use `Sys.sleep()` to pause 2
+   seconds between calls to `beep`.
 
-```bash
-# Step 1
-setwd("~/Documents")
-dir.create("PHS7045-labs")
-setwd("PHS7045-labs")
+2. Modify the loop to pause a random duration of time. You can set your own
+   parameters for what "a random duration of time" means.
 
-# Step 2
-download.file(
-  "https://raw.githubusercontent.com/UofUEpiBio/PHS7045-advanced-programming/main/03-more-functions-and-datatable/lab.qmd",
-  destfile = "README.qmd"
-  )
+**B.** How can `beepr::beep()` be useful? What does this say about R being a
+scripting language?
 
-# Step 3: Happens on Github
+**C.** After `library(beepr)`, you can call `beep()` directly. Why might you
+still write `beepr::beep()`?
 
-# Step 4
-system("git init && git add README.Rmd")
-system('git commit -m "First commit"')
+**D.** Write a function that takes two inputs, a numeric vector and `sound`.
+Inside it, write a loop that calculates the cumulative sum one element at a time
+(do not use `cumsum()`), and play a beep at the end using the `sound` input. The
+output should be a two-column matrix with the original vector and the cumulative
+sum. Check your answer against `cumsum()`.
 
-# Step 5
-system("git remote add origin git@github.com:[username]/PHS7045-labs")
-system("git push -u origin master")
-```
+Note that question D is designed to practice working with loops and building up
+a result. One-at-a-time calculations are discouraged whenever you can avoid
+them; in practice you would just use `cumsum()`.
 
-Once you are done setting up the project, you can now start working on
-the lab.
+This warm-up is not submitted. We discuss B and C together before moving on.
 
-## Part 2: Advanced functions
+# Part 1: The urn problem
 
-### Question 1: **Ellipsis**
+From [The Art of R Programming](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331):
 
-Write a function using the ellipsis argument (`...`) with the goal of
-(i) retrieving the list of arguments passed to it, (ii) printing
-information about them using `str()`, and (iii) printing the environment
-where they belong and the address of the object in memory using
-`data.table::address()`.
+> Urn 1 contains ten blue marbles and eight yellow ones. In urn 2, the mixture is
+> six blue and six yellow. We draw a marble at random from urn 1, transfer it to
+> urn 2, and then draw a marble at random from urn 2. What is the probability
+> that the second marble is blue?
 
-Knit the document, commit your changes, and push them to GitHub.
+This is easy to find analytically, but we will use simulation.
 
-### Question 2: **Lazy evaluation**
+1. Write a first version any way you like: a loop, `replicate()`, whatever comes
+   to mind. Then turn it into a function with these arguments and defaults:
 
-A concept we did not review was lazy evaluation. Write a function with
-two arguments (`a` and `b`) that only uses one of them as an integer,
-and then call the function passing the following arguments
-`(1, this_stuff)`
+   ```r
+   urn_prob <- function(nreps = 100000, b1 = 10, y1 = 8, b2 = 6, y2 = 6) {
+     # your code
+   }
+   ```
 
-Knit the document, commit your changes, and push them to GitHub.
+2. Check your function against the analytic answer,
+   $\frac{b_1}{b_1+y_1}\cdot\frac{b_2+1}{b_2+y_2+1} + \frac{y_1}{b_1+y_1}\cdot\frac{b_2}{b_2+y_2+1}$.
+   Does it agree to within Monte Carlo error? How would you *quantify* "within
+   Monte Carlo error"?
 
-### Question 3: **Putting all together**
+3. Post your function [here](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit).
 
-Write a function that fits a linear regression model and saves the
-result to the global environment using the `assign()` function. The name
-of the output must be passed as a symbol using lazy evaluation.
+4. We will benchmark the class's solutions together and discuss how to speed
+   them up:
 
-Knit the document, commit your changes, and push them to GitHub.
+   ```{r}
+   #| eval: false
+   library(bench)
+   bench::mark(<solutions>, relative = TRUE, check = FALSE)
+   ```
 
-## Part 3: Data.table
+5. Write a second version that removes the R-level loop entirely: draw all
+   `nreps` replicates at once with `rbinom()`. Benchmark it against your first
+   version. Where did the time actually go?
 
-### Setup in R
+**Submit:** your original function, the more efficient version, the benchmark,
+and a short paragraph on what you would do differently next time.
 
-1.  Load the `data.table` (and the `dtplyr` and `dplyr` packages if you
-    plan to work with those).
+# Part 2: Extending the urn problem
 
-2.  Load the met data from
-    https://raw.githubusercontent.com/USCbiostats/data-science-data/master/02_met/met_all.gz,
-    and the station data. For the latter, you can use the code we used
-    during the lecture to pre-process the stations’ data:
+The point of parameterizing the function is that new questions become cheap.
 
-```{r}
-#| eval: false
-# Download the data
-stations <- fread("ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.csv")
-stations[, USAF := as.integer(USAF)]
+1. **Sweep the urn compositions.** Use `expand.grid()` to build a grid of
+   scenarios, varying `b1` over `5:15` and holding the other urns fixed, then
+   estimate the probability for each. Return a labeled data frame with one row
+   per scenario. Use a functional (`Map()`, `mapply()`, or `apply()` over the
+   rows) rather than a nested loop, and plot the result.
 
-# Dealing with NAs and 999999
-stations[, USAF   := fifelse(USAF == 999999, NA_integer_, USAF)]
-stations[, CTRY   := fifelse(CTRY == "", NA_character_, CTRY)]
-stations[, STATE  := fifelse(STATE == "", NA_character_, STATE)]
+2. **Generalize to $k$ urns.** Extend the function so the marble is transferred
+   through a chain of urns: draw from urn 1, transfer to urn 2, draw from urn 2,
+   transfer to urn 3, and so on, reporting the probability that the *final* draw
+   is blue. Represent the urns as a labeled structure (a matrix with a `blue`
+   and `yellow` column and one row per urn, or a list of named vectors) so the
+   code reads clearly.
 
-# Selecting the three relevant columns, and keeping unique records
-stations <- unique(stations[, list(USAF, CTRY, STATE)])
+   Note where vectorization stops being possible: each transfer depends on the
+   previous draw, so the chain is inherently sequential. What *can* still be
+   vectorized across replicates?
 
-# Dropping NAs
-stations <- stations[!is.na(USAF)]
+3. **Add a Monte Carlo standard error.** Have your function return not just the
+   estimate but the standard error, $\sqrt{\hat p (1-\hat p) / \texttt{nreps}}$,
+   as a named vector. How many replicates do you need for a standard error below
+   0.001?
 
-# Removing duplicates
-stations[, n := 1:.N, by = .(USAF)]
-stations <- stations[n == 1,][, n := NULL]
-```
+# Part 3: Estimating the probability one treatment arm is better than another
 
-3.  Merge the data as we did during the lecture.
+Create a simulated dataset that enrolls 40 participants ($i = 1, \dots, 40$)
+equally randomized to 4 arms ($t = 0, 1, 2, 3$). Generate outcomes supposing the
+probability of success under each arm, $p_t$, is 0.35.
 
-### Question 1: Representative station for the US
+Begin by creating a matrix with 10 rows and 4 columns. Label the columns to
+indicate each treatment arm and generate the observed outcomes under each
+treatment arm. The total number of observations and successes under arm $t$ is,
+respectively, $n_t$ and $y_t$.
 
-What is the median station in terms of temperature, wind speed, and
-atmospheric pressure? Look for the three weather stations that best
-represent the continental US using the `quantile()` function. Do these
-three coincide?
+Compare the probability of success under each experimental arm to control, i.e.,
+Pr($p_t > p_0$).
 
-Knit the document, commit your changes, and Save it on GitHub. Don’t
-forget to add `README.md` to the tree, the first time you render it.
+We will use a Bayesian framework to estimate the distribution of $p_t$ under each
+arm. With Bernoulli outcomes and a Beta($\alpha_t = 0.35, \beta_t = 0.65$) prior
+on the success rate, the posterior is
+Pr($p_t \mid y_t$) $\sim$ Beta($\alpha_t + y_t$, $\beta_t + n_t - y_t$).
 
-### Question 2: Representative station per state
+To estimate Pr($p_t > p_0$), take many (say 1000) random draws from each arm's
+posterior: `rbeta(n = 1000, 0.35 + y_t, 0.65 + n_t - y_t)`. Use vectorization to
+compare how often a randomly generated experimental success rate exceeds a
+randomly generated control success rate.
 
-Identify what the most representative (the median) station per state is.
-Instead of looking at one variable at a time, look at the euclidean
-distance. If multiple stations show in the median, select the one at the
-lowest latitude.
+Declare the trial a "success" if the maximum of Pr($p_t > p_0$) $> \delta = 0.025$.
 
-Knit the doc and save it on GitHub.
+Throughout, use labels wherever appropriate. Submit this as your lab assignment.
 
-### (optional) Question 3: In the middle?
+# Next steps
 
-For each state, identify the closest station to the mid-point of the
-state. Combining these with the stations you identified in the previous
-question, use `leaflet()` to visualize all ~100 points in the same
-figure, applying different colors for those identified in this question.
-
-Knit the doc and save it on GitHub.
-
-### (optional) Question 4: Means of means
-
-Using the `quantile()` function, generate a summary table that shows the
-number of states included, average temperature, wind speed, and
-atmospheric pressure by the variable “average temperature level,” which
-you’ll need to create.
-
-Start by computing the states’ average temperature. Use that measurement
-to classify them according to the following criteria:
-
-- low: temp \< 20
-- Mid: temp \>= 20 and temp \< 25
-- High: temp \>= 25
-
-Once you are done with that, you can compute the following:
-
-- Number of entries (records),
-- Number of NA entries,
-- Number of stations,
-- Number of states included, and
-- Mean temperature, wind speed, and atmospheric pressure.
-
-All by the levels described before.
-
-Knit the document, commit your changes, and push them to GitHub. If
-you’d like, you can take this time to include the link of [the issue of
-the
-week](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/5)
-so that you let us know when you are done, e.g.,
-
-
-```bash
-git commit -a -m "Finalizing lab 3 https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/5"
-```
+With minor modifications, this is the setup for the first of the two trial
+designs in HW 1. If you have extra time, start on HW 1.
