@@ -14,7 +14,7 @@ Thursday, September 17
 # Submission
 
 Your work lives in a **Git repository on your GitHub account**, and you submit
-it by **opening an issue**.
+it **in the commit message** of your final commit.
 
 1. Create a git repository for this assignment and commit your work to it as you go.
    Commit whenever you finish something that works — not once at the end. We
@@ -24,13 +24,22 @@ it by **opening an issue**.
 2. Push your rendered report **and** the source `.qmd`. The report must knit
    from a clean session without errors.
 
-3. When you are done, open an **issue in your own repository** titled
-   `Homework 01 submission`, and in it:
+3. When you are done, make a final commit whose message **tags both
+   instructors** and **includes the URL of this week's issue** in the course
+   repository:
 
-   - link the commit you want graded,
-   - tag the instructors, `@gvegayon` and `@tm-pham`, so we get notified,
-   - cross-reference this week's issue in the course repository, so your
-     submission shows up there.
+   ``` sh
+   git commit -a -m "Homework 01 done @gvegayon and @tm-pham https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/73"
+   ```
+
+   The mention notifies us. The URL makes your commit appear as a
+   cross-reference in
+   [issue #73](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/73),
+   so we can find the commit you want graded from the issue thread. Both parts
+   matter — without the URL we have no link to your work; without the mentions
+   we get no notification.
+
+   Push after that commit, or the link will not appear.
 
 Your repository can be public or private. We recommend **public** — seeing each
 other's code is part of how this class works. If you would rather not have your
@@ -53,7 +62,7 @@ what changed and why, not restate the diff.
   it over a grid of parameters two different ways — a **loop** and a
   **functional** — and judge which one you would rather maintain.
 - Use **Git** to track your work in meaningful increments, and **GitHub** to
-  submit it as an issue that points at the commit you want graded.
+  submit it by cross-referencing the course issue from your final commit.
 
 This assignment is adapted from the
 [party game example project](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects/06-party).
