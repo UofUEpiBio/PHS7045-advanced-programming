@@ -20,6 +20,55 @@ format:
 The second half uses Bayesian statistics, but the emphasis is on the *coding*.
 We will walk through everything needed for the estimation.
 
+# Submission
+
+Submit at the **end of the lab session**, the same way as homework: through
+**Git and GitHub**.
+
+Use **one repository** on your GitHub account, with one subfolder per piece of
+work:
+
+```
+phs7045-lab03/
+├── beepr/   # the beepr warm-up (A–D)
+└── urn/     # Parts 1 and 2, the urn problem
+```
+
+If you already have a repository for this course's labs, add a `lab03/` folder
+there instead of starting a new one.
+
+In the repository:
+
+1. Commit as you go — whenever you finish something that works, not once at the
+   end.
+
+2. Push the code itself. Either format is fine: a plain `.R` script or a
+   Quarto document (`.qmd`) — use whichever you prefer, and feel free to mix
+   the two across folders. If you write a `.qmd`, push the rendered output
+   (`.html`) alongside the source. Whatever form you choose, it should run from
+   a clean session without errors.
+
+Then, once:
+
+3. Submit by **commenting on this week's issue in the course repository**. In
+   your comment:
+
+   - link the commit you want us to look at,
+   - tag the instructors, `@gvegayon` and `@tm-pham`, so we get notified.
+
+   Everyone's submission then lives in one thread, which is also where we pull
+   the functions from for the benchmark.
+
+Your repository can be public or private. We recommend **public** — seeing each
+other's code is part of how this class works. If you would rather not have your
+work visible, make the repository **private**, but add both instructors
+(`@gvegayon` and `@tm-pham`) as collaborators. Otherwise we cannot follow the
+cross-reference link to your commit or leave feedback directly in your code.
+
+Submit whatever you have, including what you did not finish. Nothing here is
+graded; we look at labs to see how the class is doing, so an incomplete attempt
+is worth submitting.
+
 # Warm-up: loops, functions, and `beepr`
 
 Install the package `beepr` and run `beepr::beep()`. `beepr::beep(k)` can play
@@ -83,6 +132,27 @@ This is easy to find analytically, but we will use simulation.
    Does it agree to within Monte Carlo error? How would you *quantify* "within
    Monte Carlo error"?
 
+   ::: {.callout-tip collapse="true"}
+   ## Hint: what is Monte Carlo error?
+
+   Your estimate $\hat p$ is the proportion of `nreps` independent replicates in
+   which the second marble was blue, so it is an average of Bernoulli draws. Run
+   the simulation again with a different seed and you get a slightly different
+   number: that random variation is the **Monte Carlo error** — the difference
+   between your estimate and the true value $p$ that comes from using finitely
+   many replicates, not from a bug.
+
+   Its size is the standard deviation of $\hat p$ across hypothetical repeated
+   runs, the **Monte Carlo standard error**, estimated by
+
+   $$\widehat{\text{SE}}(\hat p) = \sqrt{\frac{\hat p (1 - \hat p)}{\texttt{nreps}}}.$$
+
+   Note the $1/\sqrt{\texttt{nreps}}$: to halve the error you need four times
+   the replicates. To *quantify* "within Monte Carlo error", compare
+   $|\hat p - p_{\text{analytic}}|$ to a couple of standard errors, or check
+   whether $\hat p \pm 1.96\,\widehat{\text{SE}}$ covers the analytic answer.
+   :::
+
 3. Commit your function to your urn-problem repository and paste it as a comment
    on this week's issue in the course repository, so the class can benchmark the
    solutions together.
@@ -104,7 +174,7 @@ This is easy to find analytically, but we will use simulation.
 version, the benchmark, and a short paragraph on what you would do differently
 next time (a comment in the script is fine).
 
-# Part 2: Extending the urn problem
+# Part 2: Extending the urn problem (optional)
 
 The point of parameterizing the function is that new questions become cheap.
 
@@ -113,6 +183,64 @@ The point of parameterizing the function is that new questions become cheap.
    estimate the probability for each. Return a labeled data frame with one row
    per scenario. Use a functional (`Map()`, `mapply()`, or `apply()` over the
    rows) rather than a nested loop, and plot the result.
+
+   ::: {.callout-note collapse="true"}
+   ## Is the functional *faster* than a loop here? (No — and that is worth knowing)
+
+   Use `Map()` here for **readability**, not speed. It is a common myth that
+   the apply family is the "fast C version" of a `for` loop. It is not, and
+   this exercise is a good place to see why.
+
+   **The trip-downstairs picture.** R is two layers: the R language you write,
+   and a fast C layer underneath it. Every call from R down into C costs a
+   fixed overhead. Think of yourself as a manager with a very fast assistant
+   downstairs, where each trip down and back takes a minute no matter how small
+   the errand:
+
+   - A `for` loop over 100,000 items: you walk downstairs 100,000 times.
+   - `sapply()` / `Map()` / `lapply()`: the assistant now keeps the checklist
+     and the clipboard, so you no longer track which item you are on — but
+     *you* still make the decision for each item, so you still walk down
+     100,000 times. You saved the bookkeeping, which was never the expensive
+     part.
+   - `rbinom(100000, ...)`: you walk down **once**, hand over all 100,000 items,
+     and the assistant does the whole batch without you.
+
+   That is the whole story. The apply family tidies up your bookkeeping; it
+   does not reduce the number of trips. Real vectorization reduces them to one.
+
+   Concretely: `lapply()` does the counting and the list-building in C, but the
+   thing being repeated — calling *your* R function — is still ordinary R, once
+   per element, and that is where nearly all the time goes.
+
+   **So what does that mean for this exercise?** The sweep has only 11
+   scenarios, and each one runs a full simulation. Whether you write a `for`
+   loop or `Map()`, you make 11 trips either way, and each trip takes vastly
+   longer than the walk. The two will benchmark the same to within noise. The
+   `rbinom()` rewrite in Part 1.5 is the one that actually buys speed, because
+   it is the only change that reduces the number of trips.
+
+   **The one loop mistake that does cost you.** This one is real:
+
+   ```r
+   out <- c()                              # slow: regrows every iteration
+   for (i in 1:n) out <- c(out, f(i))
+
+   out <- numeric(n)                       # fast: room reserved up front
+   for (i in 1:n) out[i] <- f(i)
+   ```
+
+   The first version rebuilds the whole result vector on every pass — with
+   10,000 items that is 10,000 progressively larger copies. The second reserves
+   the space once and fills it in. This is what gives `for` loops their bad
+   reputation, and it is a *preallocation* problem, not a loop problem.
+   Switching to `sapply()` happens to fix it, which is probably how the myth
+   started.
+
+   Two smaller notes: `apply()` over a data frame coerces it to a matrix first
+   (so prefer `Map()` / `mapply()` here), and `vapply()` is worth knowing
+   because it checks the type and shape of each result for you.
+   :::
 
 2. **Generalize to $k$ urns.** Extend the function so the marble is transferred
    through a chain of urns: draw from urn 1, transfer to urn 2, draw from urn 2,
@@ -130,41 +258,3 @@ The point of parameterizing the function is that new questions become cheap.
    as a named vector. How many replicates do you need for a standard error below
    0.001?
 
-# Submission
-
-Submit at the **end of the lab session**, the same way as homework: through
-**Git and GitHub**.
-
-Use **two separate repositories on your GitHub account**, one per piece of work:
-
-| Repository | Contents |
-|---|---|
-| `phs7045-lab03-beepr` | The `beepr` warm-up (A–D) |
-| `phs7045-lab03-urn` | Parts 1 and 2, the urn problem |
-
-Keeping them apart is deliberate: the two are unrelated pieces of work, and
-starting a repository from scratch is itself worth practising.
-
-In **each** repository:
-
-1. Commit as you go — whenever you finish something that works, not once at the
-   end.
-
-2. Push the code itself. A plain `.R` script is fine — you only need a `.qmd`
-   report if you want one. Whatever form you choose, it should run from a clean
-   session without errors.
-
-Then, once:
-
-3. Submit by **commenting on this week's issue in the course repository** — one
-   comment covering both repositories. In it:
-
-   - link the commit in each repository that you want us to look at,
-   - tag the instructors, `@gvegayon` and `@tm-pham`, so we get notified.
-
-   Everyone's submission then lives in one thread, which is also where we pull
-   the functions from for the benchmark.
-
-Submit both, including whatever you did not finish. Nothing here is graded; we
-look at labs to see how the class is doing, so an incomplete attempt is worth
-submitting.

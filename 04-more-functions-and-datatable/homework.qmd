@@ -32,6 +32,12 @@ it by **opening an issue**.
    - cross-reference this week's issue in the course repository, so your
      submission shows up there.
 
+Your repository can be public or private. We recommend **public** — seeing each
+other's code is part of how this class works. If you would rather not have your
+work visible, make the repository **private**, but add both instructors
+(`@gvegayon` and `@tm-pham`) as collaborators. Otherwise we cannot follow the
+cross-reference link to your commit or leave feedback directly in your code.
+
 Writing good commit messages is part of the assignment. A message should say
 what changed and why, not restate the diff.
 
