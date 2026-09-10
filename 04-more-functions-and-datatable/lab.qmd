@@ -42,6 +42,21 @@ In the repository:
 1. Commit as you go — whenever you finish something that works, not once at the
    end.
 
+   In the commit you want us to look at, **include a link to this week's issue
+   in the course repository** in the commit message:
+
+   ```
+   Add urn simulation and vectorized version
+
+   UofUEpiBio/PHS7045-advanced-programming#73
+   ```
+
+   Use the `owner/repo#number` form (or the full URL,
+   <https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/73>) —
+   a bare `#73` only works within a single repository, and your work lives in
+   your own. Written this way, the commit shows up as a cross-reference in the
+   issue thread, so your submission is linked from both directions.
+
 2. Push the code itself. Either format is fine: a plain `.R` script or a
    Quarto document (`.qmd`) — use whichever you prefer, and feel free to mix
    the two across folders. If you write a `.qmd`, push the rendered output
@@ -50,8 +65,9 @@ In the repository:
 
 Then, once:
 
-3. Submit by **commenting on this week's issue in the course repository**. In
-   your comment:
+3. Submit by commenting on this week's issue in the course repository —
+   [Week 3: Functional Programming, issue #73](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/73).
+   In your comment:
 
    - link the commit you want us to look at,
    - tag the instructors, `@gvegayon` and `@tm-pham`, so we get notified.
