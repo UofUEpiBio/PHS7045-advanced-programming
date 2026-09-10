@@ -1,47 +1,148 @@
 ---
-title: "Homework 1b (bonus) - Data Wrangling"
+title: "Homework 01 - The Party Game"
+subtitle: "PHS 7045: Advanced Programming — Fall 2026"
 format:
   html:
     embed-resources: true
-    date-modified: 2024-09-16
-    author: George G. Vega Yon, Ph.D.
+    toc: true
 ---
 
-# Due Date
+# Due date
 
-~~Tuesday, September 24~~ Thursday, September 26
+Thursday, September 17
 
-# Data Wrangling
+# Submission
 
-The learning objectives are to conduct data wrangling and generate some summary statastics.
+Your work lives in a **Git repository on your GitHub account**, and you submit
+it by **opening an issue**.
 
-You will need to download two datasets from https://github.com/USCbiostats/data-science-data. The [individual](https://raw.githubusercontent.com/USCbiostats/data-science-data/master/01_chs/chs_individual.csv)
-and [regional](https://raw.githubusercontent.com/USCbiostats/data-science-data/master/01_chs/chs_regional.csv)
-CHS datasets in `01_chs`.
-The individual data includes personal and health characteristics of children in
-12 communities across Southern California. The regional data include air quality
-measurements at the community level. 
-Once downloaded, you can merge these datasets using the location variable. Once
-combined, you will need to do the following:
+1. Create a git repository for this assignment and commit your work to it as you go.
+   Commit whenever you finish something that works — not once at the end. We
+   will look at your history, and a single commit called "homework" tells us
+   nothing about how you got there.
 
-1. After merging the data, make sure you don’t have any duplicates by counting
-   the number of rows. Make sure it matches.
-   
-   In the case of missing values, impute data using the average within the
-   variables "male" and "hispanic." If you are interested (and feel adventurous)
-   in the theme of Data Imputation, take a look at this paper on "Multiple Imputation"
-   using the Amelia R package [here](https://gking.harvard.edu/files/gking/files/amelia_jss.pdf).
-   
-2. Create a new categorical variable named “obesity_level” using the BMI measurement
-   (underweight BMI<14; normal BMI 14-22; overweight BMI 22-24; obese BMI>24).
-   To make sure the variable is rightly coded, create a summary table that contains
-   the minimum BMI, maximum BMI, and the total number of observations per category.
-   
-3. Create another categorical variable named "smoke_gas_exposure" that summarizes
-   "Second Hand Smoke" and "Gas Stove." The variable should have four categories
-   in total.
-   
-4. Create four summary tables showing the average (or proportion, if binary) and
-   sd of “Forced expiratory volume in 1 second (ml)” and asthma indicator by
-   town, sex, obesity level, and "smoke_gas_exposure."
+2. Push your rendered report **and** the source `.qmd`. The report must knit
+   from a clean session without errors.
 
+3. When you are done, open an **issue in your own repository** titled
+   `Homework 01 submission`, and in it:
+
+   - link the commit you want graded,
+   - tag the instructors, `@gvegayon` and `@tm-pham`, so we get notified,
+   - cross-reference this week's issue in the course repository, so your
+     submission shows up there.
+
+Writing good commit messages is part of the assignment. A message should say
+what changed and why, not restate the diff.
+
+# Learning goals
+
+- Write a **loop** that runs until a condition is met, rather than for a fixed
+  number of iterations.
+- Wrap that loop in a **function**: choose its arguments, its defaults, and what
+  it returns.
+- Make the function **parameterized** so that a question you did not originally
+  ask can be answered without rewriting it.
+- Repeat a simulation to turn a single result into a **distribution**, and sweep
+  it over a grid of parameters two different ways — a **loop** and a
+  **functional** — and judge which one you would rather maintain.
+- Use **Git** to track your work in meaningful increments, and **GitHub** to
+  submit it as an issue that points at the commit you want graded.
+
+This assignment is adapted from the
+[party game example project](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects/06-party).
+
+# Background
+
+You have been invited to a party where the host is giving away a present.
+Seated at a round table are the host, you, and 8 other guests — 10 chairs in
+total. The present is passed around according to a coin flip by whoever is
+currently holding it:
+
+- **Heads:** pass it to the left.
+- **Tails:** pass it to the right.
+
+The host sits in chair 1 and holds the present first. The table is round, so
+the chairs wrap around.
+
+**Whoever receives the present last wins it and gets to keep it.** The game ends
+the moment every one of the 10 people has held the present at least once, and
+the winner is the last person to receive it.
+
+Since you are the host's best friend, you get to pick your chair first.
+
+> **The question:** which chair should you pick? The one to the host's left, the
+> one to the host's right, or the one farthest from the host?
+
+Write down your guess *before* you write any code. You will be asked to compare
+it against your results at the end.
+
+# Part 1: Simulating one party
+
+**1.** Write a function `present_party()` that simulates a single party. It
+should take the number of guests and the probability of heads as arguments, and
+return both the number of passes the game took and the chair of the winner.
+
+Think about which of those arguments deserve default values, and about how you
+want to return two things from one function.
+
+**2.** Convince your reader that the function is correct. Decide for yourself
+what "correct" means here and what evidence would be persuasive.
+
+# Part 2: From one party to a distribution
+
+**3.** Simulate at least 10,000 parties with a fair coin and 10 chairs.
+
+**4.** Plot the distribution of winning chairs, and add a reference line showing
+what you would expect if every eligible chair were equally likely.
+
+**5.** Report the average number of passes per party and plot its distribution.
+Describe its shape.
+
+**6.** **Answer the question.** Which chair should you pick? State the answer in
+plain language, compare it to the guess you wrote down at the start, and explain
+*why* the result comes out the way it does.
+
+The explanation matters as much as the simulation. Think about what has to be
+true about your neighbors for *you* to be the last one served.
+
+**7.** Support your answer with a formal test rather than by eyeballing the
+plot.
+
+# Part 3: When does the game stop being fair?
+
+So far the coin has been fair. Now use the argument you built for the
+probability of heads.
+
+**8.** Simulate the game across a range of coin biases and summarize, for each
+one, how far the outcome departs from the fair result. You will need to decide
+what "how unfair" should be measured by.
+
+Write the sweep **twice**: once with a `for` loop, and once with a functional.
+Present the results as a table and a plot.
+
+**9.** Time your two sweeps against each other. Is one faster? Was that the
+answer you expected before you measured?
+
+**10.** Given what you found, argue for one of the two versions on grounds other
+than speed. Which would you rather hand to a collaborator, and what specifically
+goes wrong with the other one if the simulation is later changed?
+
+**11.** How biased does the coin have to be before your seat starts to matter? Is
+the fair result robust to a slightly unfair coin, or is it fragile?
+
+**12. (Optional.)** Sweep over both the coin bias and the number of chairs. Does
+your answer from Part 2 hold for tables of other sizes?
+
+# Part 4: AI disclosure
+
+Per the course syllabus, briefly describe how you used AI tools on this
+assignment, if at all. Include which parts you used them for and what you
+changed about their output. "I did not use AI for this assignment" is a complete
+answer if it is true.
+
+---
+
+Code that runs but is unreadable will not receive full credit. Name your objects
+descriptively, and use named vectors or named columns so your tables and plots
+label themselves.
