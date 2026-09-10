@@ -1,5 +1,5 @@
 ---
-title: "Lab 02 - R Essentials and Functions"
+title: "Lab 03 - R Essentials and Functions"
 subtitle: "PHS 7045: Advanced Programming — Fall 2026"
 format:
   html:
@@ -54,7 +54,9 @@ Note that question D is designed to practice working with loops and building up
 a result. One-at-a-time calculations are discouraged whenever you can avoid
 them; in practice you would just use `cumsum()`.
 
-This warm-up is not submitted. We discuss B and C together before moving on.
+We discuss B and C together before moving on. The warm-up is submitted at the
+end of the lab in its **own repository**, separate from the urn problem — see
+[Submission](#submission).
 
 # Part 1: The urn problem
 
@@ -81,7 +83,9 @@ This is easy to find analytically, but we will use simulation.
    Does it agree to within Monte Carlo error? How would you *quantify* "within
    Monte Carlo error"?
 
-3. Post your function [here](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit).
+3. Commit your function to your urn-problem repository and paste it as a comment
+   on this week's issue in the course repository, so the class can benchmark the
+   solutions together.
 
 4. We will benchmark the class's solutions together and discuss how to speed
    them up:
@@ -96,8 +100,9 @@ This is easy to find analytically, but we will use simulation.
    `nreps` replicates at once with `rbinom()`. Benchmark it against your first
    version. Where did the time actually go?
 
-**Submit:** your original function, the more efficient version, the benchmark,
-and a short paragraph on what you would do differently next time.
+**Include in what you submit:** your original function, the more efficient
+version, the benchmark, and a short paragraph on what you would do differently
+next time (a comment in the script is fine).
 
 # Part 2: Extending the urn problem
 
@@ -125,35 +130,41 @@ The point of parameterizing the function is that new questions become cheap.
    as a named vector. How many replicates do you need for a standard error below
    0.001?
 
-# Part 3: Estimating the probability one treatment arm is better than another
+# Submission
 
-Create a simulated dataset that enrolls 40 participants ($i = 1, \dots, 40$)
-equally randomized to 4 arms ($t = 0, 1, 2, 3$). Generate outcomes supposing the
-probability of success under each arm, $p_t$, is 0.35.
+Submit at the **end of the lab session**, the same way as homework: through
+**Git and GitHub**.
 
-Begin by creating a matrix with 10 rows and 4 columns. Label the columns to
-indicate each treatment arm and generate the observed outcomes under each
-treatment arm. The total number of observations and successes under arm $t$ is,
-respectively, $n_t$ and $y_t$.
+Use **two separate repositories on your GitHub account**, one per piece of work:
 
-Compare the probability of success under each experimental arm to control, i.e.,
-Pr($p_t > p_0$).
+| Repository | Contents |
+|---|---|
+| `phs7045-lab03-beepr` | The `beepr` warm-up (A–D) |
+| `phs7045-lab03-urn` | Parts 1 and 2, the urn problem |
 
-We will use a Bayesian framework to estimate the distribution of $p_t$ under each
-arm. With Bernoulli outcomes and a Beta($\alpha_t = 0.35, \beta_t = 0.65$) prior
-on the success rate, the posterior is
-Pr($p_t \mid y_t$) $\sim$ Beta($\alpha_t + y_t$, $\beta_t + n_t - y_t$).
+Keeping them apart is deliberate: the two are unrelated pieces of work, and
+starting a repository from scratch is itself worth practising.
 
-To estimate Pr($p_t > p_0$), take many (say 1000) random draws from each arm's
-posterior: `rbeta(n = 1000, 0.35 + y_t, 0.65 + n_t - y_t)`. Use vectorization to
-compare how often a randomly generated experimental success rate exceeds a
-randomly generated control success rate.
+In **each** repository:
 
-Declare the trial a "success" if the maximum of Pr($p_t > p_0$) $> \delta = 0.025$.
+1. Commit as you go — whenever you finish something that works, not once at the
+   end.
 
-Throughout, use labels wherever appropriate. Submit this as your lab assignment.
+2. Push the code itself. A plain `.R` script is fine — you only need a `.qmd`
+   report if you want one. Whatever form you choose, it should run from a clean
+   session without errors.
 
-# Next steps
+Then, once:
 
-With minor modifications, this is the setup for the first of the two trial
-designs in HW 1. If you have extra time, start on HW 1.
+3. Submit by **commenting on this week's issue in the course repository** — one
+   comment covering both repositories. In it:
+
+   - link the commit in each repository that you want us to look at,
+   - tag the instructors, `@gvegayon` and `@tm-pham`, so we get notified.
+
+   Everyone's submission then lives in one thread, which is also where we pull
+   the functions from for the benchmark.
+
+Submit both, including whatever you did not finish. Nothing here is graded; we
+look at labs to see how the class is doing, so an incomplete attempt is worth
+submitting.
