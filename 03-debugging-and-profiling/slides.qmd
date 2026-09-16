@@ -1,145 +1,132 @@
 ---
-title: 'Debugging and Profiling'
-author: 'Jonathan Chipman, Ph.D.'
-format: 
-  html:
-    toc: TRUE
-    toc-depth: 2
-    toc-location: left
-    highlight: pygments
-    font_adjustment: -1
-    css: styles.css
-    # code-fold: true
-    code-tools: true
-    smooth-scroll: true
-    embed-resources: true
+title: Profiling & Debugging
+author:
+  - George G. Vega Yon, Ph.D.
+  - Jonathan Chipman
+date: 2025-08-14
+lightbox: true
+date-modified: 2026-09-16
 ---
 
-# Introduction
+::: {.callout-note}
+The profiling section of this lecture was taken directly from the "Applied HPC R" ([link](https://book-hpc.ggvy.cl){target="_blank"}) book by George G. Vega Yon, Ph.D. The debugging component was adapted from Jonathan Chipman's adapted lecture from the "Advanced R" book by Hadley Wickham, Ph.D. ([link](https://adv-r.hadley.nz/){target="_blank"}).
+:::
 
-## Readings
+## Profiling
 
-In the RStudio (aka Posit) menu bar, notice the `Debug` and `Profile` drop-down menus.  These are quick starting points for finding code bugs/bottlenecks.  Studying the below chapters will give insight into finding where and how to improve code efficiency.
+Code profiling is a fundamental tool for programmers. With profiling, it is possible to **identify potential bottle necks in your code**, as well as exessive memory usage. Some important things to consider when profiling your code:
 
-Required reading from [Advanced R](https://adv-r.hadley.nz/index.html) by Hadley Wickham: 
+- **It has a stochastic component**: Unrelated to computational complexity, a program can exhibit different performance characteristics across different runs. This means that you should always profile your code multiple times and take the average performance as the final result.
 
-1. [Ch. 22: Debugging](https://adv-r.hadley.nz/debugging.html)
-1. [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) 
-2. [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
+- **It is worthless if the program is too quick**: Most of the time, code profiling must be done on programs that take a noticeable amount of time to run. If a program runs too quickly, the overhead of the profiling itself can skew the results. If you still need to address this, you can, for example, do multiple runs or use a larger dataset to increase the run time of the program.
 
-Supplemental reading: 
+- **Don't do it too early**: Most of the time, developers tend to optimizing (and thus profiling) their code too early. You don't want to spend time doing code profiling on something that could quickly change. So it is better to do it on a working code rather than pieces of it.
+  
+  Instead of profiling the code too early, make sure that you have a good design and implementation plan.
 
-Norman Matloof's [Ch. 13.1-13.3.5: Debugging](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=311) and [Ch. 14: Performance Enhancement: Speed and Memory](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331) is slightly outdated by recommending `RProf` to measure performance (as compared to `profvis` used in RStudio) but has good content on speed and memory allocation.
+- **Be strategic**: Not everything needs to be optimized. Focus on the parts of the code that are critical for performance and user experience. You can think of it in terms of how much time the program/user spends on each bit.
 
+- **AI can give you good tips**: In my personal experience, AI can be useful doing code profiling too. This works better if you are using an [agentic AI](https://en.wikipedia.org/w/index.php?title=Agentic_AI&oldid=1305674453){target="_blank"}, as it is more likely to get good feedback from it (it will test the code for you).
 
+Here is a proposed workflow for profiling and optimizing your code in general
 
-## Warm-up 
+### A proposed workflow
 
-[Vectorization](https://uofuepibio.github.io/PHS7045-advanced-programming/02-essentials/slides.html)
+Here is a formula to follow when doing code profiling/optimization:
 
-Review the table of vectorization commands
+1. Ask yourself these questions before you jump into profiling:
 
-Perform calculations one-at-a-time ONLY if necessary. Pause to think if you're performing the same operation over and over again.
+<!-- https://mermaid.live/edit#pako:eNpNUNFO4zAQ_BVrXy6RQkTatGmjEydoywnpQCfgBZQXt942vou9leOoF5L--9ktBN52PDM7s-5gQwIhh21Fh03JjWW_HgvN2HUQPFkHw_Di4uqmu6uZtN_X5qp2uh9Hr7hxRP-Cdb_org2ylpoT3xj8wj-QZQZ5VbXR-4I_TW1ZTY0WNdsQVXEc98sgWGkRht628LZ73q7RM6vumf_Fmiky6N225JolSmqfMch9i9vPjgcytnTzucdqUAzogfrl2X57hhG7-6aGdmsXJjzyqneNWxAx1bJKbk9FBO7Rn0DaBfU_g-C3oQ2iYAdpSy-gvZVKvnErSYchRLAzUkBuTYMRKDSKewidTyjAlqiwgNyNAre8qWwBhT46257rVyL14TTU7ErIt7yqHWr2gltcSr4zXA2vxjVDs3B_bCEfTU47IO_gH-TJPIuTNBml09E0uRxnkzSCFvLxPE7HWZrNp7PxZJ5NZ8cI3k6pl_Esmxz_A2q8spU -->
+![](fig/when_to_profile.png){fig-alt="Figure showing a silly diagram about when to profile. Generally, you only want to do that if it is taking more than a few seconds."}
 
+2. If you succeed, then ensure that the profiling is done in a finite time, this is, use a subset of the data to avoid having long waits. **Running the profiler will add overhead computing time, so try to keep it short (e.g., 1 minute)**.
 
-[Urn problem revisited!](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=331)
+3. There may be many things that could be optimized, focus on what would deliver the highest impact. Could be a function that is only called once but takes a long time to execute, or a function that is called multiple times but is relatively fast.
 
-"Urn 1 contains ten blue marbles and eight yellow ones. In urn 2, the mixture is six blue and six yellow. We draw a marble at random from
-urn 1, transfer it to urn 2, and then draw a marble at random from urn 2. What is the probability that that second marble is blue? This is easy to find analytically, but we’ll use simulation."  Create a function that generates 100K replicates and returns the estimated probability.
+4. Before making any changes, ensure that you have a backup of your original code, as well as a copy of the current profiling results. **You should also ensure to save (if possible) the outcome of the code.**
 
+5. Re-run the profiler and compare performance. If no changes are observed, then go back to step 2. **Ensure the new version of the code maintains the same functionality as the original (check the results).**
 
-[When are loops faster than *apply (and vice-versa)](https://chatgpt.com/share/49e6f08b-f940-4def-84f6-353964ef5aad)
+### Profiling code in R
 
-We saw some [solutions](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit) to the urn problem that were more time consuming despite using an apply statement.  What is happening here?
+In the R programming language, the most used profiling tool comes with the [`profvis` package](https://cran.r-project.org/package=profvis). The package provides a wrapper of the `Rprof` function, which is a built-in R function for profiling code. The `profvis` package makes it easier to visualize the profiling results in a web-based interface.
 
+To use `profvis`, you first need to install it from CRAN:
 
-<!-- How can you "modularize" design 1 and 2 of [lab 2](https://uofuepibio.github.io/PHS7045-advanced-programming/week-02-lab.html)? -->
-
-<!-- * What are common tasks of design 1 and 2 that can be performed using the same user-defined function? -->
-
-
-## This week's lesson
-
-### Key concepts
-
-1. Debugging strategies
-  * Modular programming
-  * traceback
-  * `debug` functions
-  * set break points
-2. Profiling code
-  * `system.time` and `bench::mark`
-  * `profvis::provis`
-3. Improving efficiency
-  * [Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
-  * Use vectorization
-  * Beware of copy-on-change (example: continual `rbind`'ing)
-  * Use `data.table` as appropriate
-  * Use parallel computing
-  * Compile code in C (`rcpp`)
-
-
-
-# Debugging
-
-## Debug in a Modular, Top-Down Manner
-
-How do you organize files on your computer?
-
-A friend of mine stored _all_ documents in the downloads folder!  When it came time to find a file, it was like finding a needle in a haystack (there also wasn't a uniform naming convention).
-
-
-[Quoting from Matloff](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=312)
-
-"Most good software developers agree that code should be written in a modular manner. Your first-level code should not be longer than, say, a dozen lines, with much of it consisting of function calls. And those functions should not be too lengthy and should call other functions if necessary. This makes the code easier to organize during the writing stage and easier for others to understand when it comes time for the code to be extended."
-
-Top-down modular level: 
-
-1. Analysis / Summary
-2. Design functions
-3. Function to draw posterior distributions
-
-With debugging start top-down.  Assume lower-level functions are correct until finishing debugging / checking top-level modules.
-
-An example from collaboration:
-
-<img src="./fig/modular_collaboration.png" style="width:1000px;" alt="Diagram showing modular collaboration pattern in software development with top-level and lower-level function modules">
-
-
-An example from an R package: [SeqSGPV](https://github.com/chipmanj/SeqSGPV/blob/master/R/SeqSGPV.R)
-
-* Step 0: Provides initial checks on inputs
-* Steps 1-4: Call lower-level functions
-* Step 5: Aggregates results
-* Step 6: Returns output object
-
-**Question for HW 1: What can be "modularized"?**
-
-## Antibugging
-
-Pro-actively stop a function (or provide a warning or message) if a condition is not met (example similar to [here](https://diytranscriptomics.com/Reading/files/The%20Art%20of%20R%20Programming.pdf#page=313)):
-
-```{r, error=TRUE}
-x <- 1
-stopifnot(is.character(x))
+```r
+install.packages("profvis")
 ```
 
-Here, is an equivalent stop command using if-logic. `deparse(subsitute([var]))` prints the name of the object:
+Then, you can use it to profile your R code like this:
 
-```{r, error=TRUE}
-x <- 1
-if(!is.character(x)){
-  stop(paste0(deparse(substitute(x)), " is not a character"))
-}
+```R
+library(profvis)
+
+profvis({
+  # Your R code here
+})
 ```
+
+This will execute the code and generate a visualization of the profiling results in a new browser window. You can also save the output using the `htmlwidgets` package:
+
+```r
+pv <- profvis({
+  # Your R code here
+})
+
+htmlwidgets::saveWidget(pv, "profvis.html")
+```
+
+Once open, you will see two visualizations: the flamegraph and the data. The flamegraph is one of the most useful visualizations. It directly maps the time and memory used by each line of code
+
+![](fig/profvis_flame_graph.png)
+
+The data visualization shows the distribution of time spent in each function. Using a tree structure, which allows taking deep dives into the call stack.
+
+![](fig/profvis_data.png)
+
+::: {.callout-tip}
+When developing R packages, it is a good idea to pair your `profvis::profvis` call with `devtools::load_all()` to ensure that all source code is available to the profiler. Otherwise, the flamegraph won't show your code (it will say "unavailable").
+:::
+
+### Exercise: Identifying the bottle neck[^bottleneck]
+
+[^bottleneck]: Code copied verbatim from the `profvis` R package [here](https://profvis.r-lib.org/articles/examples.html#example-2){target="_blank"}.
 
 ```{r}
-x <- 1
-if(!is.character(x)){
-  warning(paste0(deparse(substitute(x)), " is not a character"))
-}
+#| label: slow-code
+#| cache: true
+# Generate data
+times <- 4e5
+cols <- 150
+data <- as.data.frame(x = matrix(rnorm(times * cols, mean = 5), ncol = cols))
+data <- cbind(id = paste0("g", seq_len(times)), data)
+
+pv <- profvis::profvis({
+  data1 <- data   # Store in another variable for this run
+
+  # Get column means
+  means <- apply(data1[, names(data1) != "id"], 2, mean)
+
+  # Subtract mean from each column
+  for (i in seq_along(means)) {
+    data1[, names(data1) != "id"][, i] <- data1[, names(data1) != "id"][, i] - means[i]
+  }
+})
+
+htmlwidgets::saveWidget(pv, "profvis-slow-code.html")
+
+# In interactive mode, we can directly view the profiling results
+if (interactive())
+  print(pv)
 ```
 
+
+<iframe src="profvis-slow-code.html" width="100%" height="600px"></iframe>
+
+Can you identify where is the bottleneck in the code? What would you do to speed it up?
+
+## Debugging
 
 ## Interactive debugging 
 
@@ -250,178 +237,3 @@ While embedding `browser` into code can be helpful, you must remember to remove 
 Using the urn problem, set breakpoints and run through `debugonce()`.
 
 
-
-## Practice
-
-Find a set of code you've written and know well to share with a classmate.  
-
-As the classmate, 
-
-* Do you have any feedback on how to make the code more readable? More efficient?
-* Insert a bug(s) into the code
-
-When you get your code back, can you find and fix the bug?
-
-
-
-# Profiling
-
-## system.time
-
-For a quick profiling of code, use `system.time()`.  
-
-```{r}
-x <- runif(10000000)
-y <- runif(10000000)
-t1 <- system.time(z <- x + y)
-
-z <- numeric(10000000)
-t2 <- system.time({
-  for (i in 1:length(x)) {
-    z[i] <- x[i] + y[i]
-  }
-})
-
-# Time duration
-t1
-t2
-
-# The loop is longer by a factor of:
-t2["elapsed"] / t1["elapsed"]
-```
-
-Why is `t2` `r round(t2["elapsed"] / t1["elapsed"],2)`? times longer?
-
-* Seemingly hidden functions are `:` and `[` (subsetting) which add to the collective set of functions called (i.e. the "stack frame").
-
-
-`system.time` is not as precise for quick calls and can require many iterations to get a meaningful timing (example: 10e6 in above example). `bench::mark` can provide more precise timings (see warm up problem).
-
-
-* ns (nanoseconds) < $\mu$s (microseconds) < ms (milliseconds) < s (seconds) < m (minutes) < h (hours) < d (days) < w (weeks)
-* `relative` option in `mark` does not report in raw time but in comparing different calls
-* `check=FALSE` allows for running different code which may return different results (example: due to sampling)
-
-
-## profvis (profiling visualization)
-
-`profvis::profvis` is a good go-to for evaluating performance of multiple calls.
-
-We'll work through [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) together. Begin by the below script as a file called "profiling-example.R": 
-
-```{r,eval=FALSE}
-f <- function() {
-  profvis::pause(0.1)
-  g()
-  h()
-}
-g <- function() {
-  profvis::pause(0.1)
-  h()
-}
-h <- function() {
-  profvis::pause(0.1)
-}
-```
-
-Install the `profvis` package if needed, and call:
-
-```{r, eval=FALSE}
-source("profiling-example.R")
-profvis::profvis(f())
-```
-
-Alternatively, call
-
-```{r}
-f <- function() {
-  profvis::pause(0.1)
-  g()
-  h()
-}
-g <- function() {
-  profvis::pause(0.1)
-  h()
-}
-h <- function() {
-  profvis::pause(0.1)
-}
-profvis::profvis(f())
-```
-
-
-Now, we'll turn to the notes [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html) as we walk through the:
-
-1. stack call: the set of routines called in a function and subfunctions
-2. time allocation: the time spent on each call within function
-3. memory allocation: the amount of memory used with each call
-
-Notice in the example below (and even better as seen in [Ch. 23: Measuring Performance](https://adv-r.hadley.nz/perf-measure.html)) how much time is spent in <GC>. <GC> stands for 'garbage collector' and points to a place of possible ineffeciences.
-
-```{r}
-profvis::profvis({
-  x <- integer()
-  for (i in 1:1e4) {
-    x <- c(x, i)
-  }
-})
-```
-
-
-### Practice
-
-Run your urn solution (or another posted [here](https://docs.google.com/document/d/1ZGy7GleaK1Xvjo6FyMcZggm9x-yOe2ZpfdP1a9s8PzM/edit)) through ``profvis::profvis()``.
-
-
-## Benchmarking
-
-The `bench::mark` function provides more accurate time of functions and allows for checking whether two functions return the same results (`check=TRUE`).  We've seen this [here](https://uofuepibio.github.io/PHS7045-advanced-programming/02-essentials/lab.html).
-
-```{r, eval=FALSE}
-library(bench)
-bench::mark( <solutions>, relative = TRUE, check = FALSE)
-```
-
-
-
-# Improving efficiency
-
-[Ch. 24: Improving Performance](https://adv-r.hadley.nz/perf-improve.html)
-
-Parts to highlight:
-
-* [introduction](https://adv-r.hadley.nz/perf-improve.html#introduction-23)
-
-"It’s easy to get caught up in trying to remove all bottlenecks. Don’t! Your time is valuable and is better spent analysing your data, not eliminating possible inefficiencies in your code. Be pragmatic: don’t spend hours of your time to save seconds of computer time. To enforce this advice, you should set a goal time for your code and optimise only up to that goal. This means you will not eliminate all bottlenecks."
-
-* [vectorize](https://adv-r.hadley.nz/perf-improve.html#vectorise)
-* [do as little as possible](https://adv-r.hadley.nz/perf-improve.html#be-lazy)
-
-Be aware of all the steps required for a function.  If it requires additional steps, see if there are alternative strategies that provide equivalent solutions
-
-* [avoid copies](https://adv-r.hadley.nz/perf-improve.html#avoid-copies)
-
-Avoiding copies is when you iteratively build up an object that includes previous values.  For example:
-
-```{r}
-# NOTE: an example of what to AVOID
-out <- 1
-for (i in 1:10){
-  out <- c(out,i)
-}
-
-# BETTER: Pre-allocate space
-out <- rep(NA,11)
-out[1] <- 1
-for (i in 1:10){
-  out[i+1] <- i
-}
-```
-
-*[check for existing solutions; also, appreciate the value of cpp](https://adv-r.hadley.nz/perf-improve.html#already-solved)
-
-
-# Session info
-```{r}
-devtools::session_info()
-```
