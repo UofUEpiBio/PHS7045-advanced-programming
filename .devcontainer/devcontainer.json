@@ -25,7 +25,8 @@
 			"extensions": [
 				"quarto.quarto",
 				"openai.chatgpt",
-				"google.geminicodeassist"
+				"google.geminicodeassist",
+				"ms-vscode.live-server"
 			]
 		}
 	},
