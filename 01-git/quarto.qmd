@@ -4,7 +4,7 @@ author: <a href="https://ggvy.cl"><b>George G. Vega Yon, Ph.D.</b></a><br>george
 date: January 12, 2023
 format: 
   html:
-    embed-resources: true
+    embed-resources: false
     code-fold: show
     toc: true
 ---

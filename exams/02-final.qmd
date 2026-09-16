@@ -2,7 +2,7 @@
 title: "Advanced Programming with R: Final"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 ## Due date

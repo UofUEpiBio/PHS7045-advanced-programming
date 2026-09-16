@@ -2,7 +2,7 @@
 format:
   gfm:
     wrap: none
-embed-resources: true
+embed-resources: false
 ---
 
 {{< include _course-home.qmd >}}
