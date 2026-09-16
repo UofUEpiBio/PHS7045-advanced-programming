@@ -2,7 +2,7 @@
 title: "Homework 04 - Slurm"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 # Due date
