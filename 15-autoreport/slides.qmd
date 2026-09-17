@@ -4,7 +4,7 @@ subtitle: "PHS 7045: Advanced Programming"
 author: "George G. Vega Yon, Ph.D."
 format:
   revealjs:
-    embed-resources: true
+    embed-resources: false
     slide-number: true
     scrollable: true
 ---

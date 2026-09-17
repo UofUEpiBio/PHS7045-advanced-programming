@@ -7,7 +7,7 @@ date: 2024-09-17
 institute: "The University of Utah"
 format:
   revealjs:
-    embed-resources: true
+    embed-resources: false
     theme: ["default", "style.scss"]
     code-annotations: true
     slide-number: c

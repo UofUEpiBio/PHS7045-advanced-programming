@@ -12,7 +12,7 @@ format:
     # code-fold: true
     code-tools: true
     smooth-scroll: true
-    embed-resources: true
+    embed-resources: false
 ---
 
 # Introduction

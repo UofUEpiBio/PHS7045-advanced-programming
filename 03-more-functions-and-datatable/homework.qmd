@@ -3,7 +3,7 @@ title: "Homework 01 - The Party Game"
 subtitle: "PHS 7045: Advanced Programming — Fall 2026"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
     toc: true
 ---
 

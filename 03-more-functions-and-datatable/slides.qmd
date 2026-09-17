@@ -3,7 +3,7 @@ title: "R Essentials and Functional Programming"
 subtitle: "PHS 7045: Advanced Programming — Fall 2026"
 format:
   revealjs:
-    embed-resources: true
+    embed-resources: false
     slide-number: true
     scrollable: true
 author: "Thi Mui Pham, Ph.D.<br>Jonathan Chipman, Ph.D.<br>PHS 7045 Teaching Team"

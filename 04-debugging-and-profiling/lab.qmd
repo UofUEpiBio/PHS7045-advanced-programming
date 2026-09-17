@@ -1,0 +1,397 @@
+---
+title: "Lab 04 - Debugging and Profiling"
+subtitle: "PHS 7045: Advanced Programming — Fall 2026"
+format:
+  html:
+    embed-resources: false
+---
+
+# Learning goals
+
+- Use `profvis::profvis()` to find where time and memory actually go, instead
+  of guessing.
+- Practice reading a flamegraph and letting it, rather than intuition, decide
+  what to rewrite.
+- Use `browser()` and `traceback()` to step into a failing function and watch
+  the state change line by line.
+- Track down a bug that does not announce itself — one that only misbehaves on
+  data you did not fit the model to.
+
+# Submission
+
+Push your code to a repository on your own GitHub account — a plain `.R`
+script or a `.qmd`, whichever you prefer.
+
+When you are done, cross-reference
+[Week 4: Debugging and profiling, issue #60](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/60)
+so we can find your work: either put
+`UofUEpiBio/PHS7045-advanced-programming#60` in a commit message, or comment on
+the issue with a link to your repository. Tag `@gvegayon` and `@tm-pham`.
+
+Submit whatever you have, including what you did not finish. Nothing here is
+graded.
+
+# Part 1: Profiling
+
+For both exercises, wrap the code in `profvis::profvis({ ... })`, run it, and
+read the flamegraph before you touch anything. If you are working in plain R
+(not RStudio), save the result and open it in a browser:
+
+```r
+pv <- profvis::profvis({
+  # code to profile
+})
+htmlwidgets::saveWidget(pv, "profvis.html")
+```
+
+## Exercise 1: Estimating π by Monte Carlo
+
+**The math.** Throw a point uniformly at the square $[-1,1]^2$, which has area
+4. It lands inside the unit disk, area $\pi$, with probability
+
+$$\Pr\left(X^2 + Y^2 \le 1\right) = \frac{\pi}{4},
+\qquad X, Y \stackrel{iid}{\sim} \text{Unif}(-1, 1).$$
+
+So a Monte Carlo estimator of $\pi$ is four times the hit rate:
+
+$$\hat\pi_n = \frac{4}{n} \sum_{i=1}^{n} \mathbb{1}\left\{x_i^2 + y_i^2 \le 1\right\}.$$
+
+This also tells you how precise to expect $\hat\pi_n$ to be: it is four times a
+Bernoulli mean, so its Monte Carlo standard error is
+$\sqrt{\pi(4-\pi)/n} \approx 1.64/\sqrt{n}$ — about 0.0007 at $n = 5{,}000{,}000$.
+That is the yardstick for step 3 below: two versions that both estimate $\pi$
+should agree to within a couple of these standard errors, not bit-for-bit.
+
+**The code.** [`pi-simulation.R`](pi-simulation.R) implements $\hat\pi_n$ with
+an explicit `for` loop, drawing one point at a time:
+
+```r
+simulate_pi <- function(n = 5e6) {
+  inside <- 0
+  for (i in 1:n) {
+    x <- runif(1, -1, 1)
+    y <- runif(1, -1, 1)
+    if (x^2 + y^2 <= 1) inside <- inside + 1
+  }
+  4 * inside / n
+}
+```
+
+1. Open the file, source it, and confirm it takes a few seconds to run at the
+   default `n`.
+
+2. Profile it with `profvis::profvis()`. Which line dominates the flamegraph?
+   How much of the total time is `runif` versus everything else in the loop?
+
+   ::: {.callout-tip collapse="true"}
+   ## Hint: what should the flamegraph show?
+
+   `runif` is called twice per iteration — 10,000,000 times total at the
+   default `n`. Each call is cheap, but there are a lot of them. Compare the
+   width of the `runif` bar to the width of the bar for the `if` check and the
+   assignment. Where is nearly all the time going: inside `runif` itself, or in
+   the R-level bookkeeping around it?
+   :::
+
+3. Rewrite `simulate_pi()` so it draws all `n` pairs at once — no `for` loop —
+   and benchmark it against the original with `bench::mark(..., relative =
+   TRUE, check = FALSE)`. How big is the speedup? Do the two versions agree on
+   $\hat\pi_n$ to within the Monte Carlo error computed above?
+
+   ::: {.callout-note collapse="true"}
+   ## Why "no loop" instead of "a faster loop"?
+
+   This is the same "trip downstairs" idea from
+   [Lab 03](../03-more-functions-and-datatable/lab.qmd#part-2-extending-the-urn-problem-optional):
+   every call from R down into the underlying C code costs a fixed overhead.
+   The loop version makes that trip 10,000,000 times (`runif` twice per
+   iteration, `n` times). The vectorized version makes it twice, period —
+   once for the `x` draws, once for the `y` draws — then compares and sums
+   the whole vector in C. Nothing about `for` loops is intrinsically slow;
+   what is slow is a loop whose body does a small amount of work per call to a
+   vectorized primitive.
+   :::
+
+## Exercise 2: Spread across a landscape
+
+**The math.** A discrete-time metapopulation model. Let $p^{(s)}$ be the
+distribution of cases across $k$ locations at time $s$, so $p^{(s)}_i \ge 0$
+and $\sum_i p^{(s)}_i = 1$. Movement between locations decays with distance
+through a row-normalized Gaussian kernel,
+
+$$K_{ij} = \frac{\exp\left(-\lVert c_i - c_j \rVert^2 / h^2\right)}
+{\sum_{l=1}^{k} \exp\left(-\lVert c_i - c_l \rVert^2 / h^2\right)},$$
+
+where $c_i$ is the location of site $i$ and $h$ is the bandwidth. Each row of
+$K$ sums to 1, so $K$ is a transition matrix, and the process advances by
+
+$$p^{(s+1)} = p^{(s)} K, \qquad s = 0, 1, \dots, S-1.$$
+
+Two things follow directly from this notation. First, $p^{(s+1)}$ depends on
+$p^{(s)}$, so the `for` loop over $s$ is **genuinely necessary** — there is no
+single vectorized call that replaces it. Second, $K$ does not depend on $s$:
+running the recursion out gives $p^{(S)} = p^{(0)} K^{S}$, with the *same* $K$
+at every step.
+
+**The code.** [`spatial-spread.R`](spatial-spread.R) implements this with
+`k = 1000` locations and `nsteps = 300`:
+
+```r
+make_kernel <- function(coords, bandwidth) {
+  d <- as.matrix(dist(coords))
+  K <- exp(-(d / bandwidth)^2)
+  K / rowSums(K)
+}
+
+simulate_spread <- function(coords, p0, nsteps = 300, bandwidth = 0.15) {
+  p <- p0
+  for (s in seq_len(nsteps)) {
+    K <- make_kernel(coords, bandwidth)
+    p <- as.vector(p %*% K)
+    p <- p / sum(p)
+  }
+  p
+}
+```
+
+1. Source the file and time `simulate_spread(coords, p0)`. It should take a
+   few seconds.
+
+2. Profile it. Where does the time go — and where does the *memory* go? (Look
+   at the memory column in `profvis`, not just the time.)
+
+   ::: {.callout-tip collapse="true"}
+   ## Hint: look at what changes between iterations
+
+   Compare `make_kernel(coords, bandwidth)` to the recursion
+   $p^{(s+1)} = p^{(s)}K$ written out above. Does `K` have an $s$ in it
+   anywhere? If not, why is it being recomputed inside the loop?
+   :::
+
+3. Fix it by moving the invariant computation outside the loop, and confirm
+   with `all.equal()` that the result is unchanged. Benchmark before and
+   after — how much of the 300-step run was spent rebuilding a $1000 \times
+   1000$ matrix that never changed?
+
+   ::: {.callout-note collapse="true"}
+   ## A second thing to notice in the flamegraph
+
+   Each `make_kernel()` call allocates a fresh $1000\times1000$ matrix
+   (`d`, then `K`) — about 8 MB — and immediately throws away the previous
+   one. Over 300 iterations that is a lot of garbage for R to collect. If you
+   see `<GC>` bars in the flamegraph, this loop is why: fixing the redundant
+   computation also removes most of that memory churn.
+   :::
+
+# Part 2: Debugging
+
+For both exercises, insert `browser()` into the function, source the file, and
+call the function again so you land inside the debugger. Use `n` to step line
+by line, and print variables directly at the `Browse[1]>` prompt.
+
+## Exercise 1: Fitting a Poisson regression by Newton–Raphson
+
+**The math.** Poisson regression with a log link:
+
+$$Y_i \mid x_i \sim \text{Poisson}(\mu_i), \qquad \log \mu_i = x_i^\top \beta.$$
+
+Dropping the $\log y_i!$ term (it does not involve $\beta$), the
+log-likelihood, score, and Hessian are
+
+$$\ell(\beta) = \sum_{i=1}^{n} \left[ y_i \, x_i^\top\beta - \exp(x_i^\top\beta) \right],
+\qquad
+U(\beta) = X^\top (y - \mu),
+\qquad
+H(\beta) = -X^\top W X,$$
+
+with $\mu = \exp(X\beta)$ and $W = \text{diag}(\mu)$.
+
+Newton–Raphson steps by $-H^{-1}U$. Note that the same step has **two
+equivalent forms with opposite signs**, depending on which matrix you built:
+
+$$\beta^{(t+1)} = \beta^{(t)} - H^{-1} U
+\qquad\text{with the Hessian } H = -X^\top W X,$$
+
+$$\beta^{(t+1)} = \beta^{(t)} + \mathcal{I}^{-1} U
+\qquad\text{with the information } \mathcal{I} = -H = X^\top W X.$$
+
+Both are correct. Mixing them — taking the minus sign from the first while
+building the matrix from the second — is not, and it is an easy slip, because
+$-H^{-1}U$ is what most textbooks write while $X^\top W X$ is what most code
+computes. Whenever you read or write a Newton update, check which of the two
+matrices is actually on the page.
+
+This gives you the diagnostic for the exercise. Since every $\mu_i > 0$, the
+information $\mathcal{I} = X^\top W X$ is positive definite, so a correctly
+signed step is guaranteed to be an **ascent** direction: $\ell(\beta^{(t)})$
+must increase at every iteration. If it does not, the sign is wrong.
+
+**The code.** [`poisson-nr.R`](poisson-nr.R) simulates data from this model
+with known coefficients $\beta = (-2,\ 0.05,\ 0.8)$ and fits it back with
+Newton–Raphson:
+
+```r
+fit_poisson_nr <- function(X, y, maxit = 50, tol = 1e-8) {
+  beta <- rep(0, ncol(X))
+  beta[1] <- log(mean(y))
+
+  for (it in 1:maxit) {
+    mu <- exp(drop(X %*% beta))
+    score <- crossprod(X, y - mu)
+    info <- crossprod(X * mu, X)
+    step <- solve(info, score)
+
+    beta <- beta - drop(step)
+
+    if (max(abs(step)) < tol) break
+  }
+
+  list(coefficients = beta, iterations = it)
+}
+```
+
+1. Source the file. It should fail with an error from `solve()` about a
+   computationally singular matrix.
+
+2. Run `traceback()`. It points at `solve()` — but `solve()` is not actually
+   the problem; a genuinely singular information matrix is a *symptom* here,
+   not the cause. Put `browser()` at the top of the `for (it in 1:maxit)` loop,
+   re-source, and re-run. Step through with `n`, printing `beta` and
+
+   ```r
+   sum(y * drop(X %*% beta) - exp(drop(X %*% beta)))
+   ```
+
+   (the log-likelihood) each time you land back at the top of the loop. What
+   happens to the log-likelihood from one iteration to the next?
+
+   ::: {.callout-tip collapse="true"}
+   ## Hint: which way should the log-likelihood move?
+
+   A Newton step built from the correct sign is an ascent step — the
+   log-likelihood should go up every time, by construction (see the math
+   above). If instead it is getting *more* negative each iteration, the update
+   is moving the wrong way. There is exactly one sign in the update formula
+   above; check it against what the code does.
+   :::
+
+3. Fix it, confirm the function now converges in a handful of iterations, and
+   check your coefficients against `coef(glm(y ~ x1 + x2, family =
+   poisson()))` on the same data.
+
+   ::: {.callout-note collapse="true"}
+   ## A quieter bug worth trying afterward
+
+   Once this one is fixed, try changing `y - mu` to `y - drop(X %*% beta)` in
+   the score (i.e., forgetting to apply `exp()` — comparing the counts to the
+   linear predictor instead of to the mean). Unlike the sign flip, this
+   version **never errors**. It creeps along instead, the step shrinking but
+   never meeting `tol`, silently exhausts `maxit`, and hands back whatever it
+   had reached — so the "estimate" is really a function of your iteration cap.
+
+   Compare `fit$iterations` to `maxit`. A fit that stopped because it ran out
+   of iterations has not converged, and should be treated as a failure rather
+   than an answer. Loud bugs that crash are the easy ones; this is the more
+   common kind in practice.
+   :::
+
+## Exercise 2: Predicting counts for a new clinic
+
+::: {.callout-important}
+## If you have more time
+
+This exercise is here if Exercise 1 goes quickly. It is worth doing even
+after lab, on your own time.
+:::
+
+**The math.** Optimizers converge faster when the columns of $X$ are on
+comparable scales, so it is common to fit on standardized predictors,
+
+$$z_{ij} = \frac{x_{ij} - c_j}{s_j}, \qquad
+c_j = \frac{1}{n}\sum_{i=1}^{n} x_{ij}, \qquad
+s_j = \text{sd}(x_{\cdot j}),$$
+
+where $c_j$ and $s_j$ are computed **once, from the training data**. The fit
+then returns $\tilde\beta$, defined on that standardized scale:
+
+$$\log \mu = \tilde\beta_0 + \sum_{j} \tilde\beta_j \frac{x_j - c_j}{s_j}.$$
+
+Expanding the sum shows exactly what predicting on new data requires:
+
+$$\log \mu =
+\underbrace{\left(\tilde\beta_0 - \sum_{j} \tilde\beta_j \frac{c_j}{s_j}\right)}_{\beta_0}
++ \sum_{j} \underbrace{\frac{\tilde\beta_j}{s_j}}_{\beta_j}\, x_j.$$
+
+The constants $c_j$ and $s_j$ are **parameters of the fitted model**, exactly
+like $\tilde\beta$ — not properties of whatever data you predict on later.
+Recomputing them from new data silently changes the model.
+
+**The code.** [`predict-scaling.R`](predict-scaling.R) does exactly that.
+`fit_poisson()` standardizes `X`, fits by Newton–Raphson (correct sign this
+time), and returns coefficients on the standardized scale:
+
+```r
+fit_poisson <- function(X, y, maxit = 50, tol = 1e-8) {
+  Z <- scale(X)
+  Zd <- cbind(1, Z)
+  beta <- rep(0, ncol(Zd))
+  beta[1] <- log(mean(y))
+  for (it in 1:maxit) {
+    mu <- exp(drop(Zd %*% beta))
+    score <- crossprod(Zd, y - mu)
+    info <- crossprod(Zd * mu, Zd)
+    step <- solve(info, score)
+    beta <- beta + drop(step)
+    if (max(abs(step)) < tol) break
+  }
+  list(coefficients = beta, iterations = it)
+}
+
+predict_counts <- function(fit, newdata) {
+  Z <- scale(newdata)
+  Zd <- cbind(1, Z)
+  exp(drop(Zd %*% fit$coefficients))
+}
+```
+
+1. Source the file. `predict_counts(fit, X)` — predicting on the training data
+   — looks essentially perfect. Now a colleague asks for the predicted count
+   at a single new clinic: `predict_counts(fit, X[1, , drop = FALSE])`. What
+   comes back?
+
+2. Put `browser()` at the top of `predict_counts()`, re-source, and call it
+   again on the single-row input. Compare `Z <- scale(newdata)` here against
+   what `scale(X)` produced inside `fit_poisson()` — specifically, look at the
+   `"scaled:center"` and `"scaled:scale"` attributes each call produces.
+
+   ::: {.callout-tip collapse="true"}
+   ## Hint: what does `scale()` need to know?
+
+   `scale()` with no `center`/`scale` arguments computes them from whatever
+   you pass it. Inside `fit_poisson()`, that is the full training set. Inside
+   `predict_counts()`, that is `newdata` — which might be one row. What are
+   the mean and standard deviation of a single number?
+   :::
+
+3. Fix it. There are two reasonable approaches — pick one:
+
+   - Store `"scaled:center"` and `"scaled:scale"` on the object returned by
+     `fit_poisson()`, and pass them explicitly to `scale()` inside
+     `predict_counts()`.
+   - Back-transform the coefficients once, inside `fit_poisson()`, using the
+     $\beta_0$ and $\beta_j$ formulas derived above, so the returned model
+     lives on the original scale and `predict_counts()` needs no scaling step
+     at all.
+
+   Either way, check the single-row prediction against a `glm(y ~ x1 + x2,
+   family = poisson())` fit on the unstandardized data.
+
+   ::: {.callout-note collapse="true"}
+   ## Why this matters beyond this exercise
+
+   This is the same mistake as calling `fit_transform()` on both the training
+   and the test set in scikit-learn, instead of `fit_transform()` on training
+   and `transform()` on test. It is also why preprocessing steps belong
+   *inside* a cross-validation loop, fit on each training fold and only
+   applied — never refit — to the held-out fold.
+   :::

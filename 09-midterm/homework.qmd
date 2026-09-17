@@ -2,7 +2,7 @@
 title: "Homework 03 - Functions, Profiling, and Rcpp"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 # Due date

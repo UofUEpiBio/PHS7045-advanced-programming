@@ -2,7 +2,7 @@
 title: "Midterm"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 ## Due date

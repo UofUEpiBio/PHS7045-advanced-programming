@@ -3,7 +3,7 @@ title: "Lab 01 - GitHub"
 format:
   markdown_github: default
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 # Learning goals

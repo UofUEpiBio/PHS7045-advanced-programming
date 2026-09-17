@@ -4,7 +4,7 @@ author: George G. Vega Yon, Ph.D.
 date-modified: 2024-09-12
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 ## Learning goals

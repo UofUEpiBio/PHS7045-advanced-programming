@@ -54,23 +54,23 @@ book:
         - file: 02-essentials/01-essentialsSimulations.qmd
           target: _blank
           rel: noopener
-    - part: "Debugging and Profiling"
-      chapters:
-        - file: 03-debugging-and-profiling/slides.qmd
-          target: _blank
-          rel: noopener
-        - file: 03-debugging-and-profiling/lab.qmd
-          target: _blank
-          rel: noopener
     - part: "Functional Programming"
       chapters:
-        - file: 04-more-functions-and-datatable/slides.qmd
+        - file: 03-more-functions-and-datatable/slides.qmd
           target: _blank
           rel: noopener
-        - file: 04-more-functions-and-datatable/lab.qmd
+        - file: 03-more-functions-and-datatable/lab.qmd
           target: _blank
           rel: noopener
-        - file: 04-more-functions-and-datatable/homework.qmd
+        - file: 03-more-functions-and-datatable/homework.qmd
+          target: _blank
+          rel: noopener
+    - part: "Debugging and Profiling"
+      chapters:
+        - file: 04-debugging-and-profiling/slides.qmd
+          target: _blank
+          rel: noopener
+        - file: 04-debugging-and-profiling/lab.qmd
           target: _blank
           rel: noopener
     - part: "Introduction to C++"

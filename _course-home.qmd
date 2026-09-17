@@ -41,7 +41,7 @@ make_material <- function(link_text, link, source) {
     out <- sprintf(
       "%s (<a href=\"%s\" target=\"_blank\" rel=\"noopener\">source</a>)",
       out,
-      make_url(source, paste0(urlgit, "tree/main"))
+      make_url(source, paste0(urlgit, "blob/main"))
     )
   }
 
@@ -63,6 +63,23 @@ dat[, title := fifelse(
 dat[, materials := mapply(
   make_material, link_text, link, source, USE.NAMES = FALSE
 )]
+
+dat[, homework_materials := mapply(
+  make_material,
+  "homework",
+  homework,
+  homework_source,
+  USE.NAMES = FALSE
+)]
+
+dat[
+  homework_materials != "",
+  materials := fifelse(
+    materials == "",
+    homework_materials,
+    paste0(materials, "<br>", homework_materials)
+  )
+]
 
 dat[
   !is.na(extra) & extra != "",

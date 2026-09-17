@@ -3,7 +3,7 @@ title: "Lab 03 - R Essentials and Functions"
 subtitle: "PHS 7045: Advanced Programming — Fall 2026"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 # Learning goals

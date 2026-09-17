@@ -2,7 +2,7 @@
 title: "Homework 1b (bonus) - Data Wrangling"
 format:
   html:
-    embed-resources: true
+    embed-resources: false
     date-modified: 2024-09-16
     author: George G. Vega Yon, Ph.D.
 ---

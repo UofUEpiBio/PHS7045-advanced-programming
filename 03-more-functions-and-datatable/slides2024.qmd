@@ -3,7 +3,7 @@ title: "Functions and data.table"
 subtitle: "PHS 7045: Advanced Programming"
 format:
   revealjs:
-    embed-resources: true
+    embed-resources: false
     slide-number: true
     scrollable: true
 author: "George G. Vega Yon, Ph.D."

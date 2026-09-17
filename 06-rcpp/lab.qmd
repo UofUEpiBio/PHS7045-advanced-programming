@@ -5,7 +5,7 @@ date-modified: 2024-09-23
 date: 2024-09-24
 format:
   html:
-    embed-resources: true
+    embed-resources: false
 ---
 
 ## Learning goals
