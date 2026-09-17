@@ -6,7 +6,7 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who,homework,home
 9/8/26,3,Lecture,Functional programming,,slides,03-more-functions-and-datatable/slides.html,03-more-functions-and-datatable/slides.qmd,,,Mui
 9/10/26,3,Lab,Functional programming,,lab,03-more-functions-and-datatable/lab.html,03-more-functions-and-datatable/lab.qmd,,,Mui,03-more-functions-and-datatable/homework.html,03-more-functions-and-datatable/homework.qmd
 9/15/26,4,Lecture,Debugging and profiling,,slides,04-debugging-and-profiling/slides.html,04-debugging-and-profiling/slides.qmd,,Mui out,George
-9/17/26,4,Lab,Debugging and profiling,,lab,03-debugging-and-profiling/lab.html,03-debugging-and-profiling/lab.qmd,,Mui out,George
+9/17/26,4,Lab,Debugging and profiling,,lab,04-debugging-and-profiling/lab.html,04-debugging-and-profiling/lab.qmd,,Mui out,George
 9/22/26,5,Lecture,Introduction to C++,,slides,05-cpp/slides.html,05-cpp/slides.qmd,,,Mui
 9/24/26,5,Lab,Introduction to C++,,lab,05-cpp/lab.html,05-cpp/lab.qmd,,"Ask students to ""declare"" what their midterm project will be. This could be a sort of an abstract and title to be shared.",Mui
 9/29/26,6,Lecture,C++ in R,,slides,06-rcpp/slides.html,06-rcpp/slides.qmd,,,George
