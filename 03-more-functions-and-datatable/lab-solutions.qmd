@@ -1,0 +1,583 @@
+---
+title: "Lab 03 - R Essentials and Functions (Solutions)"
+subtitle: "PHS 7045: Advanced Programming — Fall 2026"
+format:
+  html:
+    embed-resources: true
+---
+
+```{r}
+#| label: setup
+#| message: false
+set.seed(7045)
+```
+
+# Warm-up: loops, functions, and `beepr`
+
+**A1. Play each sound in turn.**
+
+```{r}
+#| eval: false
+for (k in 1:11) {
+  beepr::beep(k)
+  Sys.sleep(2)
+}
+```
+
+**A2. Pause a random duration.** `runif(1, 1, 3)` gives a pause between one and
+three seconds.
+
+```{r}
+#| eval: false
+for (k in 1:11) {
+  beepr::beep(k)
+  Sys.sleep(runif(1, min = 1, max = 3))
+}
+```
+
+**B.** A beep is an *out-of-band* signal: it tells you a long-running job
+finished without you watching the console. That is only useful because R is a
+scripting language, i.e., the code runs top to bottom in a live session, so side effects like sound, printing, and plotting are part of the normal workflow (compared to a compiled binary).
+
+**C.** `beepr::beep()` says exactly which package the function came from. It
+avoids masking (two attached packages exporting the same name), it documents the
+dependency at the call site, and it keeps a script runnable even if someone
+removes the `library()` call. The cost is verbosity and a very small lookup
+overhead, so the usual compromise is `library()` for packages used constantly
+and `::` for one-off calls.
+
+**D. Cumulative sum by hand.**
+
+```{r}
+cumsum_beep <- function(x, sound = 1) {
+  if (length(x) == 0L) {
+    warning("`x` is empty; returning a 0-row result.", call. = FALSE)
+    return(cbind(x = numeric(0), cumsum = numeric(0)))
+  }
+  if (!is.numeric(x)) {
+    stop("`x` must be a numeric vector.", call. = FALSE)
+  }
+  out <- numeric(length(x))
+  total <- 0
+  for (i in seq_along(x)) {
+    total <- total + x[i]
+    out[i] <- total
+  }
+  if (requireNamespace("beepr", quietly = TRUE)) beepr::beep(sound)
+  return(cbind(x = x, cumsum = out))
+}
+
+# Test if it behaves as intended for the edge case of an empty vector
+x <- NULL
+res <- cumsum_beep(x)
+
+# Test for an actual vector
+x <- c(3, 1, 4, 1, 5, 9, 2, 6)
+res <- cumsum_beep(x)
+res
+# Check against cumsum()
+all.equal(res[, "cumsum"], cumsum(x), check.attributes = FALSE)
+```
+
+Preallocating `out` matters: growing a vector with `out <- c(out, total)`
+reallocates on every iteration, which turns a linear loop into a quadratic one.
+
+Validating `x` first also matters. Without the checks, `cumsum_beep(NULL)`
+skips the loop entirely (`seq_along(NULL)` is empty) but still falls through to
+the beep -- a silent no-op that sounds like success. Note the two different
+responses: a non-numeric `x` is a programming error, so `stop()`; an empty `x`
+is a plausible edge case (a filter that matched nothing), so `warning()` plus an
+early return of a 0-row result keeps the caller's pipeline running while still
+making noise in the log. Check inputs before any side effect.
+
+Order matters here: `is.numeric(NULL)` is `FALSE`, so testing `is.numeric()`
+first would send `cumsum_beep(NULL)` down the error branch instead of the
+warning branch. `length(NULL)` is `0`, so the emptiness check catches both `NULL`
+and `numeric(0)` when it comes first.
+
+# Part 1: The urn problem
+
+## 1. A first version, then a function
+
+The direct translation of the problem: draw one marble from urn 1, move it into
+urn 2, draw from urn 2, record whether that second marble is blue.
+
+```{r}
+urn_prob_loop <- function(nreps = 100000, b1 = 10, y1 = 8, b2 = 6, y2 = 6) {
+  blue <- logical(nreps)
+  for (i in seq_len(nreps)) {
+    # Draw from urn 1: TRUE if blue.
+    first_blue <- runif(1) < b1 / (b1 + y1)
+
+    # Transfer it into urn 2 and draw again.
+    b2_now <- b2 + first_blue
+    blue[i] <- runif(1) < b2_now / (b2 + y2 + 1)
+  }
+  mean(blue)
+}
+
+urn_prob_loop(nreps = 10000)
+```
+
+## 2. Check against the analytic answer
+
+### Where the formula comes from
+
+The formula in the lab is just the **law of total probability** applied to the
+one thing that is uncertain about urn 2: the color of the marble transferred
+into it.
+
+Let $B_1$ be the event that the first draw (from urn 1) is blue, and $B_2$ the
+event that the second draw (from urn 2) is blue. The two cases $B_1$ and
+$B_1^c$ partition the sample space, so
+
+$$
+\Pr(B_2) = \Pr(B_2 \mid B_1)\Pr(B_1) + \Pr(B_2 \mid B_1^c)\Pr(B_1^c).
+$$
+
+The three ingredients:
+
+- **The first draw.** Urn 1 holds $b_1$ blue and $y_1$ yellow marbles, all
+  equally likely, so $\Pr(B_1) = \frac{b_1}{b_1 + y_1}$ and
+  $\Pr(B_1^c) = \frac{y_1}{b_1 + y_1}$.
+
+- **If a blue marble was transferred,** urn 2 now holds $b_2 + 1$ blue out of
+  $b_2 + y_2 + 1$ total, so $\Pr(B_2 \mid B_1) = \frac{b_2 + 1}{b_2 + y_2 + 1}$.
+
+- **If a yellow marble was transferred,** the blue count is unchanged but the
+  total still went up by one:
+  $\Pr(B_2 \mid B_1^c) = \frac{b_2}{b_2 + y_2 + 1}$.
+
+Substituting gives exactly the expression in the lab,
+
+$$
+\Pr(B_2) = \frac{b_1}{b_1+y_1}\cdot\frac{b_2+1}{b_2+y_2+1}
+         + \frac{y_1}{b_1+y_1}\cdot\frac{b_2}{b_2+y_2+1}.
+$$
+
+With the default urns, $\frac{10}{18}\cdot\frac{7}{13} + \frac{8}{18}\cdot\frac{6}{13} = \frac{118}{234} \approx 0.5043$.
+
+Two things are worth noticing. First, the denominator $b_2 + y_2 + 1$ is the
+same in both terms — urn 2 gains a marble either way — so only the *numerator*
+records which color arrived. Second, the structure of the derivation is the
+structure of the simulation: `first_blue` is the conditioning event, and the
+`prob` argument of the second `rbinom()` call is the conditional probability
+$\Pr(B_2 \mid \cdot)$. The simulation is doing the same bookkeeping, one
+replicate at a time, and averaging instead of weighting.
+
+### What "Monte Carlo error" means
+
+The simulation answers a *deterministic* question — $\Pr(B_2)$ is a fixed number
+— with a *random* procedure, so the answer is random too. Run
+`urn_prob_loop()` twice and you get two different values. Monte Carlo error is
+the size of that wobble: the discrepancy between $\hat p$ and $p$ that comes
+from having used finitely many replicates, not from a bug.
+
+It is worth separating this from the other way an estimate can be wrong:
+
+- **Monte Carlo error** shrinks as `nreps` grows. It is noise.
+- **Bias** does not. If the code transfers the marble incorrectly, more
+  replicates only pin down the wrong number more precisely.
+
+That distinction is the whole reason to quantify the error: it is the only way
+to tell "my simulation disagrees with the truth in the third decimal because it
+is noisy" from "my simulation disagrees because it is broken."
+
+**Why the standard error has that form.** Each replicate is an independent trial
+that comes up "second marble is blue" with probability $p$. Writing
+$X_i \in \{0,1\}$ for replicate $i$, the estimate is the sample mean
+$\hat p = \frac{1}{n}\sum_{i=1}^n X_i$ of $n = \texttt{nreps}$ i.i.d. Bernoulli
+draws. A Bernoulli variable has $\mathrm{Var}(X_i) = p(1-p)$, and variances of
+independent variables add, so
+
+$$
+\mathrm{Var}(\hat p) = \frac{1}{n^2}\sum_{i=1}^n \mathrm{Var}(X_i)
+                     = \frac{p(1-p)}{n},
+\qquad
+\mathrm{SE}(\hat p) = \sqrt{\frac{p(1-p)}{n}}.
+$$
+
+Since $p$ is what we are trying to estimate, we plug in $\hat p$ for it. Two
+consequences are worth internalizing:
+
+- **The $\sqrt{n}$ law.** The error falls like $1/\sqrt{n}$, so one extra decimal
+  place of accuracy costs **100×** the replicates. This is what makes
+  brute-force simulation expensive and vectorized code worth writing.
+- **The problem sets the difficulty.** $p(1-p)$ is largest at $p = 0.5$ — which
+  is almost exactly our case — and small for rare events. A probability near
+  one half is the hardest kind to pin down.
+
+By the central limit theorem $\hat p$ is approximately normal for large $n$, so
+$\hat p \pm 1.96\,\widehat{\mathrm{SE}}$ covers $p$ about 95% of the time. That
+interval is the yardstick: "within Monte Carlo error" means the interval covers
+the truth, not that the two numbers look close to the eye.
+
+### The check
+
+```{r}
+urn_prob_exact <- function(b1 = 10, y1 = 8, b2 = 6, y2 = 6) {
+  b1 / (b1 + y1) * (b2 + 1) / (b2 + y2 + 1) +
+    y1 / (b1 + y1) *  b2      / (b2 + y2 + 1)
+}
+
+truth <- urn_prob_exact()
+truth
+```
+
+Applying that yardstick:
+
+```{r}
+nreps <- 100000
+phat  <- urn_prob_loop(nreps = nreps)
+se    <- sqrt(phat * (1 - phat) / nreps)
+lower <- phat - 1.96 * se
+upper <- phat + 1.96 * se
+
+c(estimate = phat, se = se, lower = lower, upper = upper, truth = truth)
+```
+
+**How to read that output.** Each element answers a different question:
+
+- `estimate` is $\hat p$, our simulated answer.
+- `se` is the Monte Carlo standard error: it says how much `estimate` would move
+  if we re-ran the simulation with a different seed. Here it is about
+  $0.0016$, i.e. only the first two decimals of `estimate` are trustworthy.
+  Reporting `estimate` to six digits would be false precision.
+- `lower`/`upper` are the 95% interval $\hat p \pm 1.96\,\widehat{\mathrm{SE}}$.
+- `truth` is the analytic value.
+
+**The verdict is a single yes/no question: does the interval `[lower, upper]`
+cover `truth`?** Ask R rather than squinting at the numbers:
+
+```{r}
+covers <- (lower <= truth) && (truth <= upper)
+
+c(distance = truth - phat, se = se, n_se_away = (truth - phat) / se)
+covers
+```
+
+`truth - phat` is the actual error, about $1.3\times 10^{-4}$, and `se` says an
+error of that size is entirely ordinary — it is well under one standard error,
+so `covers` is `TRUE` and the function passes — the simulation and the algebra
+agree to within Monte Carlo error. Note what we did *not* do: we never asked
+whether `estimate` and `truth` "look close." Closeness only means something
+relative to `se`.
+
+That `n_se_away` column is the check as one number, and it is the version worth
+automating:
+
+```{r}
+z <- (phat - truth) / se
+abs(z) < 2
+```
+
+$z$ is how many standard errors the estimate sits from the truth, so under a
+correct implementation it is approximately a standard normal draw. Roughly
+$|z| < 2$ is unremarkable, $|z| > 3$ is a red flag. Written this way the check
+is a one-line regression test: it does not care what `nreps` is, because the
+yardstick rescales with the precision.
+
+**What to do with the answer:**
+
+- **The interval covers the truth ($|z|$ small).** The implementation is consistent
+  with the analytic answer. If the interval is still too wide for the use you
+  have in mind, that is a *precision* problem, not a correctness one — increase
+  `nreps` (and remember the $1/\sqrt{n}$ law: ten times narrower costs 100×
+  the replicates).
+- **The interval misses the truth ($|z|$ large).** Do not reach for more
+  replicates: bias does not shrink with `nreps`, so a bug will only be pinned
+  down more precisely. Go looking for the bug instead. In this problem the usual
+  culprits are forgetting to add the transferred marble to urn 2's denominator,
+  or drawing the second marble from urn 1's composition.
+
+Note the direction of that sentence. $p$ is a fixed, unknown constant — here we
+even know it exactly — and it is the *interval* that is random, since both
+`estimate` and `se` are recomputed from fresh draws on every run. So the
+question is always whether this particular interval covered $p$, never whether
+$p$ happened to fall inside fixed bounds. "95% confidence" is a property of the
+procedure across hypothetical repetitions: about 95% of the intervals it
+produces cover $p$. It says nothing about the one interval in front of you,
+which either covers $p$ or does not.
+
+That is also the caveat: about 5% of intervals miss even when the code is
+correct. A single borderline $z$ is weak evidence either way — re-run with a
+different seed before concluding anything.
+
+## 5. A vectorized version
+
+Nothing in a replicate depends on any other replicate, so all `nreps` draws can
+be generated at once. `rbinom()` does the work in compiled code:
+
+```{r}
+urn_prob_vec <- function(nreps = 100000, b1 = 10, y1 = 8, b2 = 6, y2 = 6) {
+  # First draw for every replicate at once: 1 = blue.
+  first_blue <- rbinom(nreps, size = 1, prob = b1 / (b1 + y1))
+
+  # Second draw, with urn 2's composition depending on what was transferred.
+  p2 <- (b2 + first_blue) / (b2 + y2 + 1)
+  mean(rbinom(nreps, size = 1, prob = p2) == 1)
+}
+
+urn_prob_vec(nreps = 100000)
+```
+
+`prob` is vectorized over the replicates, which is what lets the transfer be
+handled without a loop.
+
+## 4. Benchmark
+
+```{r}
+#| message: false
+bench::mark(
+  loop = urn_prob_loop(nreps = 10000),
+  vec  = urn_prob_vec(nreps = 10000),
+  relative = TRUE,
+  check = FALSE
+)
+```
+
+### Reading the output
+
+`bench::mark()` runs each expression many times and reports thirteen columns,
+though only the first nine are printed. From left to right:
+
+| Column | What it is |
+|---|---|
+| `expression` | The label you gave the expression (`loop`, `vec`), or the code itself if you did not name it. |
+| `min` | The fastest single run. Often the most useful summary: it is the run least polluted by garbage collection and by whatever else the machine was doing. |
+| `median` | The typical run. Compare it against `min` — a median far above the minimum means the timings are noisy or GC is interfering. |
+| `itr/sec` | Iterations per second, i.e. throughput. This is the one column where **bigger is better**; all the timing columns are the opposite. |
+| `mem_alloc` | Total memory allocated during one run. Note *allocated*, not peak usage: memory that is allocated and immediately freed still counts, which is exactly what a loop that creates a length-1 vector per iteration does. |
+| `gc/sec` | Garbage collections per second. High values mean the expression is generating enough short-lived objects to keep R's collector busy — usually a symptom of allocating inside a loop. |
+| `n_itr` | How many times the expression actually ran. `bench` decides this itself from `min_time` (0.5s by default), so a fast expression gets many more iterations than a slow one. |
+| `n_gc` | Total garbage collections across all those iterations. |
+| `total_time` | Wall-clock time spent on that expression overall — roughly `n_itr` × `median`, and *not* a measure of speed. |
+
+The four hidden list-columns are `result` (the value each expression returned),
+`time` (every individual timing), `gc` (the GC events), and `memory` (the full
+allocation breakdown). They are there for plotting and debugging:
+`ggplot2::autoplot()` on the result uses `time` to show the whole distribution
+rather than a single number.
+
+**`relative = TRUE`** rescales `min`, `median`, `itr/sec`, `mem_alloc` and
+`gc/sec` so the best performer is `1` and everything else is a multiple of it.
+That is what we want here — "the loop is 20× slower" is a portable statement,
+whereas "the loop takes 54 ms" is a fact about this laptop. Drop the argument to
+see absolute times with their units.
+
+**`check = FALSE`** turns off `bench`'s default insistence that all expressions
+return identical values. We need it because the two functions are stochastic and
+return different estimates by design. Be careful with it: that check is a free
+correctness test, so switch it off only when you know why the results differ,
+and satisfy yourself some other way that the fast version is right — here, that
+both estimates land within Monte Carlo error of the analytic answer.
+
+**Where did the time go?** Not into the arithmetic — both versions do the same
+two comparisons per replicate. The loop pays the R interpreter's per-iteration
+overhead 10,000 times over: dispatching `runif`, allocating a length-1 result,
+and indexing `blue[i]`. The vectorized version pays that overhead twice, for
+whole vectors, and does the per-element work inside C.
+
+**What I would do differently next time:** Return the standard error from the start; without it
+there is no way to tell a bug from Monte Carlo noise when the two versions
+disagree in the third decimal.
+
+# Part 2: Extending the urn problem (optional)
+
+## 1. Sweep the urn compositions
+
+```{r}
+scenarios <- expand.grid(b1 = 5:15, y1 = 8, b2 = 6, y2 = 6)
+
+scenarios$prob <- mapply(
+  urn_prob_vec,
+  b1 = scenarios$b1, y1 = scenarios$y1, b2 = scenarios$b2, y2 = scenarios$y2,
+  MoreArgs = list(nreps = 20000)
+)
+scenarios$exact <- with(scenarios, urn_prob_exact(b1, y1, b2, y2))
+
+head(scenarios)
+```
+
+```{r}
+#| label: fig-sweep
+#| fig-cap: "Probability the second marble is blue, as urn 1 gets bluer."
+plot(scenarios$b1, scenarios$prob,
+     type = "b", pch = 19,
+     xlab = "Blue marbles in urn 1 (b1)",
+     ylab = "Pr(second marble is blue)")
+lines(scenarios$b1, scenarios$exact, col = "red", lty = 2)
+legend("bottomright", c("simulated", "exact"),
+       col = c("black", "red"), lty = c(1, 2), pch = c(19, NA), bty = "n")
+```
+
+`mapply()` walks the rows of the grid without a nested loop, and the result stays
+a labeled data frame with one row per scenario.
+
+::: {.callout-note collapse="true"}
+## Is the functional *faster* than a loop here? (No — and that is worth knowing)
+
+`mapply()` is used here for **readability**, not speed. It is a common myth
+that the apply family is the "fast C version" of a `for` loop. It is not.
+
+**The trip-downstairs picture.** R is two layers: the R language you write, and
+a fast C layer underneath it. Every call from R down into C costs a fixed
+overhead. Think of yourself as a manager with a very fast assistant downstairs,
+where each trip down and back takes a minute no matter how small the errand:
+
+- A `for` loop over 100,000 items: you walk downstairs 100,000 times.
+- `sapply()` / `Map()` / `lapply()`: the assistant now keeps the checklist and
+  the clipboard, so you no longer track which item you are on — but *you* still
+  make the decision for each item, so you still walk down 100,000 times. You
+  saved the bookkeeping, which was never the expensive part.
+- `rbinom(100000, ...)`: you walk down **once**, hand over all 100,000 items,
+  and the assistant does the whole batch without you.
+
+The apply family tidies up your bookkeeping; it does not reduce the number of
+trips. Real vectorization reduces them to one. Concretely, `lapply()` does the
+counting and list-building in C, but the thing being repeated — calling *your*
+R function — is still ordinary R, once per element, and that is where nearly
+all the time goes.
+
+The sweep above has only 11 scenarios, each running a full simulation, so a
+`for` loop and `mapply()` make 11 trips either way and benchmark the same to
+within noise. It is the `rbinom()` rewrite in Part 1 that buys the speedup,
+because it is the only change that reduces the number of trips:
+
+```{r}
+f <- function(x) x + 1
+x <- 1:10000
+
+bench::mark(
+  loop      = { out <- numeric(length(x))
+                for (i in seq_along(x)) out[i] <- f(x[i])
+                out },
+  vapply    = vapply(x, f, numeric(1)),
+  vectorized = x + 1,
+  relative  = TRUE, check = FALSE
+)[, c("expression", "median", "mem_alloc")]
+```
+
+The loop and `vapply()` land within a small factor of each other; the
+vectorized version is in a different regime entirely.
+
+**The one loop mistake that does cost you.** Growing the result instead of
+preallocating it:
+
+```{r}
+grow <- function(n) { out <- c();          for (i in 1:n) out <- c(out, i); out }
+prealloc <- function(n) { out <- numeric(n); for (i in 1:n) out[i] <- i;     out }
+
+bench::mark(grow(10000), prealloc(10000), relative = TRUE, check = FALSE)[, c("expression", "median", "mem_alloc")]
+```
+
+`grow()` rebuilds the whole vector on every pass — 10,000 progressively larger
+copies. This is what gives `for` loops their bad reputation, and it is a
+*preallocation* problem, not a loop problem. Switching to `sapply()` happens to
+fix it, which is probably how the myth started.
+:::
+
+## 2. Generalize to $k$ urns
+
+Represent the urns as a matrix with `blue` and `yellow` columns and one row per
+urn, so every index into it reads as a name rather than a number.
+
+```{r}
+urn_chain <- function(nreps = 10000, urns = rbind(c(10, 8), c(6, 6), c(4, 9))) {
+  urns <- as.matrix(urns)
+  colnames(urns) <- c("blue", "yellow")
+  rownames(urns) <- paste0("urn", seq_len(nrow(urns)))
+
+  # Replicates are independent, so carry all of them through the chain at once.
+  # `transferred` is 1 if the marble moved into the current urn is blue.
+  transferred <- rbinom(
+    nreps, size = 1,
+    prob = urns["urn1", "blue"] / sum(urns["urn1", ])
+  )
+
+  for (k in seq_len(nrow(urns))[-1]) {
+    n_k    <- sum(urns[k, ]) + 1                    # urn k plus the transfer
+    p_blue <- (urns[k, "blue"] + transferred) / n_k
+    transferred <- rbinom(nreps, size = 1, prob = p_blue)
+  }
+
+  mean(transferred == 1)
+}
+
+# Two urns reproduces Part 1.
+urn_chain(nreps = 100000, urns = rbind(c(10, 8), c(6, 6)))
+truth
+
+# Three urns.
+urn_chain(nreps = 100000)
+```
+
+**Reading the function.** The physical process is: draw a marble from urn 1,
+drop it into urn 2, draw from urn 2, drop it into urn 3, and so on. The only
+thing that matters downstream at each step is *the color of the marble that
+just moved*, so the whole simulation collapses to a chain of Bernoulli draws and
+no individual marble ever needs to be represented.
+
+- The naming step (`colnames()`, `rownames()`) is cosmetic but pays for itself:
+  the rest of the body says `urns["urn1", "blue"]` instead of `urns[1, 1]`.
+  `as.matrix()` is defensive, in case a data frame is passed.
+- The first `rbinom()` draws from urn 1 with probability
+  $10/18$. `size = 1` makes it a Bernoulli, and because the first argument is
+  `nreps` it returns a *vector* of `nreps` independent draws — all replicates
+  are launched at once, which is why there is no outer loop over replicates.
+- `seq_len(nrow(urns))[-1]` is $2, \dots, k$, written safely: dropping the first
+  element of `seq_len()` still gives an empty sequence when there is only one
+  urn, whereas `2:nrow(urns)` would silently run backwards.
+- `n_k` is urn $k$'s original count plus the one marble that just arrived — the
+  denominator. In `p_blue`, the numerator adds `transferred`, a length-`nreps`
+  vector of 0/1, so `p_blue` is itself a *vector* of probabilities, one per
+  replicate, differing by whether that replicate's incoming marble was blue.
+- `rbinom()` accepts a vectorized `prob` and draws elementwise, so a single call
+  advances every replicate one urn. `transferred` is then overwritten with the
+  color drawn from urn $k$, ready to feed urn $k+1$.
+- After the loop `transferred` holds the color drawn from the *last* urn, so
+  `mean(transferred == 1)` estimates $P(\text{final draw is blue})$.
+
+With two urns the loop runs once and reproduces Part 1:
+$(10/18)(7/13) + (8/18)(6/13) = 118/234 \approx 0.5043$.
+
+Note that urn $k$'s counts are never decremented after its marble leaves. That
+is correct here because each urn is drawn from exactly once; it would need
+changing if a marble were ever drawn twice from the same urn.
+
+**Where vectorization stops.** The loop over urns cannot be removed: urn $k$'s
+composition depends on the marble drawn from urn $k-1$, so the transfers are
+inherently sequential. What *is* still vectorized is the replicate dimension —
+each pass through the loop advances all `nreps` chains simultaneously. The loop
+therefore runs $k-1$ times, not $k \times \texttt{nreps}$ times, which is the
+whole point: vectorize over the independent axis and loop over the dependent one.
+
+## 3. Monte Carlo standard error
+
+```{r}
+urn_prob_se <- function(nreps = 100000, b1 = 10, y1 = 8, b2 = 6, y2 = 6) {
+  first_blue <- rbinom(nreps, size = 1, prob = b1 / (b1 + y1))
+  draws <- rbinom(nreps, size = 1, prob = (b2 + first_blue) / (b2 + y2 + 1))
+
+  phat <- mean(draws)
+  c(estimate = phat, se = sqrt(phat * (1 - phat) / nreps))
+}
+
+urn_prob_se(nreps = 10000)
+```
+
+**How many replicates for SE < 0.001?** Solve
+$\sqrt{p(1-p)/n} < 0.001$ for $n$ at $p \approx `r round(truth, 3)`$:
+
+```{r}
+p <- truth
+n_needed <- ceiling(p * (1 - p) / 0.001^2)
+n_needed
+
+urn_prob_se(nreps = n_needed)
+```
+
+Roughly a quarter of a million replicates. Note the square-root scaling: cutting
+the standard error in half again, to 0.0005, costs four times as many draws. This
+is why the vectorized implementation matters — the loop version at this $n$ is
+slow enough to be annoying, and at SE = 0.0001 it is unusable.
