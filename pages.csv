@@ -2,9 +2,9 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who,homework,home
 8/25/26,1,Lecture,Intro classes AI,,slides,00-ai/slides.html,00-ai/slides.qmd,,,George
 8/27/26,1,Lab,How to use AI in the class,,slides,00-ai/lab.html,00-ai/lab.qmd,,,George
 9/1/26,2,Lecture,Intro to Git,,slides,01-git/slides.html,01-git/slides.qmd,,,Mui
-9/3/26,2,Lab,Git and Github exercises,,lab,01-git/lab.html,01-git/lab.qmd,+ <a href="01-git/quarto.html">quarto</a> <a href="01-git/quarto.qmd">(source)</a>,,Mui
+9/3/26,2,Lab,Git and Github exercises,,lab,01-git/lab.html,01-git/lab.qmd,"+ <a href=""01-git/quarto.html"">quarto</a> <a href=""01-git/quarto.qmd"">(source)</a>",,Mui
 9/8/26,3,Lecture,Functional programming,,slides,03-more-functions-and-datatable/slides.html,03-more-functions-and-datatable/slides.qmd,,,Mui
-9/10/26,3,Lab,Functional programming,,lab,03-more-functions-and-datatable/lab.html,03-more-functions-and-datatable/lab.qmd,,,Mui,03-more-functions-and-datatable/homework.html,03-more-functions-and-datatable/homework.qmd
+9/10/26,3,Lab,Functional programming,,lab,03-more-functions-and-datatable/lab.html,03-more-functions-and-datatable/lab.qmd,"<a href=""https://UofUEpiBio.github.io/PHS7045-advanced-programming/03-more-functions-and-datatable/lab-solutions.html"" target=""_blank"" rel=""noopener"">lab solutions</a> (<a href=""https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/03-more-functions-and-datatable/lab-solutions.qmd"" target=""_blank"" rel=""noopener"">source</a>)",,Mui,03-more-functions-and-datatable/homework.html,03-more-functions-and-datatable/homework.qmd
 9/15/26,4,Lecture,Debugging and profiling,,slides,04-debugging-and-profiling/slides.html,04-debugging-and-profiling/slides.qmd,,Mui out,George
 9/17/26,4,Lab,Debugging and profiling,,lab,04-debugging-and-profiling/lab.html,04-debugging-and-profiling/lab.qmd,,Mui out,George
 9/22/26,5,Lecture,Introduction to C++,,slides,05-cpp/slides.html,05-cpp/slides.qmd,,,Mui

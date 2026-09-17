@@ -62,6 +62,9 @@ book:
         - file: 03-more-functions-and-datatable/lab.qmd
           target: _blank
           rel: noopener
+        - file: 03-more-functions-and-datatable/lab-solutions.qmd
+          target: _blank
+          rel: noopener
         - file: 03-more-functions-and-datatable/homework.qmd
           target: _blank
           rel: noopener
