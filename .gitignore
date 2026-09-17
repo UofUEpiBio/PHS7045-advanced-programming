@@ -26,3 +26,7 @@ _course-home.html
 _slides/
 *.knit.md
 
+
+# Rendered lab solutions: kept local, not part of the book project.
+**/lab-solutions.html
+**/lab-solutions.rmarkdown
