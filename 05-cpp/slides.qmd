@@ -42,6 +42,32 @@ We will need a compiler:
 
 # Start! {background-color="black"}
 
+## Why C++?
+
+> You profiled your code and vectorized what you could. It's still slow. Now what?
+
+::: {.incremental}
+- Some problems **can't be vectorized**: each step depends on the previous one.
+    - MCMC samplers, agent-based models, stochastic simulations, recursive filters.
+- R is **interpreted and dynamically typed**; C++ is **compiled and statically typed**.
+    - For loop-heavy code, speedups of **10--100x** are common.
+:::
+
+## Why C++? (cont'd)
+
+You already rely on C++ every day:
+
+::: {.incremental}
+- **Stan**, **data.table**, **dplyr**, **ranger**, **xgboost**, **glmmTMB**, **epiworld**...
+- **Rcpp** is one of the most depended-upon packages on CRAN.
+:::
+
+. . .
+
+Learning C++ means you can write the fast part yourself *and* read the source of
+the packages you depend on.
+
+
 ## Hello world
 
 The program
