@@ -1,7 +1,9 @@
 ---
 title: "Intro to C++"
 subtitle: "PHS 7045: Advanced Programming"
-author: "George G. Vega Yon, Ph.D."
+author:
+  - George G. Vega Yon, Ph.D.
+  - Thi Mui Pham, Ph.D.
 date-modified: 2024-09-12
 date: 2024-09-17
 institute: "The University of Utah"
@@ -15,6 +17,10 @@ revealjs-plugins:
   - codefocus
 engine: knitr
 ---
+
+::: {.callout-note}
+These slides are adapted from a lecture by George G. Vega Yon, Ph.D. ([link](https://ggvy.cl){target="_blank"}).
+:::
 
 ## Introduction
 
