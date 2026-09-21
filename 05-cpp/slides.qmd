@@ -103,6 +103,270 @@ g++ -std=c++14 hello-world.cpp -o hello-world
 ./hello-world
 ```
 
+## Two words we just used
+
+::: {.incremental}
+**Compiler**: a program that translates your `.cpp` source code into machine code
+your CPU can run directly.
+
+- In R there is no such step: R *interprets* your code line by line, every time
+  you run it.
+- In C++ you pay this cost **once**, up front, and get a standalone executable
+  (`hello-world`). That is a large part of where the speed comes from.
+- The compiler also checks your types **before** the program ever runs, so many
+  bugs become compile errors instead of runtime surprises.
+
+**Standard**: the official version of the C++ language, revised every few years.
+
+- C++11, C++14, C++17, C++20, C++23 --- each adds features and syntax.
+- `-std=c++14` tells the compiler *which* version of the language to read your
+  file as. Code using a C++17 feature will not compile under `-std=c++14`.
+- We use C++14 because it is what R and Rcpp assume by default.
+:::
+
+## What is actually running your code?
+
+::: {.columns}
+::: {.column width="55%"}
+![](figures/von-neumann-architecture.svg){width="100%"}
+
+::: {style="font-size: 50%"}
+Diagram by William Lau, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:CPT-Von_neumann_architecture.svg),
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+:::
+:::
+
+::: {.column width="45%" .incremental}
+- The **CPU** (central processing unit) is the part that actually *does* things:
+  arithmetic, comparisons, moving data around.
+- It understands only **machine code**: a long list of very simple numbered
+  instructions (add these two numbers, jump to that instruction).
+- **Memory** holds both your data *and* the instructions. This is the
+  **RAM** --- *random-access memory*, "random access" meaning the CPU can reach
+  any address directly, in any order, at the same cost.
+- RAM is the big, cheap memory (gigabytes of it), but it sits *outside* the CPU,
+  and it is **volatile**: it empties when the machine powers off. Your files live
+  on disk; a running program lives in RAM.
+- The CPU runs one simple cycle, billions of times per second:
+  **fetch** an instruction -> **decode** it -> **execute** it.
+:::
+:::
+
+## One more detail: the CPU waits for memory
+
+The diagram shows memory as **one box**. Real machines have a **hierarchy**:
+
+::: {.columns}
+::: {.column width="52%"}
+| | size | time to reach |
+|:---|:---|---:|
+| registers | a few dozen values | instant |
+| L1 cache | ~32--128 KB | ~1 ns |
+| L2 cache | ~1--4 MB | ~4 ns |
+| L3 cache | ~8--32 MB | ~15 ns |
+| **RAM** | **gigabytes** | **~60--100 ns** |
+
+: {tbl-colwidths="[34,36,30]"}
+:::
+
+::: {.column width="48%" .incremental}
+- **Caches** are small, fast copies of memory kept *close to* the CPU.
+- A trip to RAM costs ~100 ns --- time for the CPU to have executed **hundreds
+  of instructions**. It simply waits.
+- Memory is fetched in **blocks** (64--128 bytes), never single values: asking
+  for one number brings its neighbours along for free.
+- So for number-crunching code, the question is often not "how fast is the
+  arithmetic?" but **"where is the data?"**
+:::
+:::
+
+## So what is a "program"?
+
+::: {.incremental}
+A program is, in the end, **a sequence of machine-code instructions the CPU can
+fetch and execute**.
+
+- The CPU cannot read `hello-world.cpp`. It cannot read R code either.
+- Something must turn your human-readable code into those instructions.
+- **That is the whole difference between C++ and R**: *when* that translation
+  happens, and *how many times*.
+:::
+
+## How C++ runs your code
+
+```{dot}
+//| fig-width: 9.5
+digraph cpp {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.45; ranksep=0.55;
+  node [shape=box, style="rounded,filled", fillcolor="#f2f2f2", color="#555555",
+        fontcolor="#222222", fontname="Helvetica", fontsize=13, penwidth=1.5,
+        margin="0.20,0.14"];
+  edge [color="#555555", penwidth=1.8, arrowsize=1.0, fontname="Helvetica",
+        fontsize=11, fontcolor="#777777"];
+
+  src [label="hello-world.cpp\nsource code"];
+  cc  [label="compiler\ng++ / clang++\n-std=c++14"];
+  exe [label="hello-world\nmachine code"];
+  cpu [label="CPU\nfetch / decode / execute"];
+  err [label="compile error", fillcolor="#ffffff", color="#999999",
+       fontcolor="#666666", style="rounded,filled,dashed"];
+
+  src -> cc  [label="  compile  "];
+  cc  -> exe;
+  exe -> cpu [label="  run  "];
+  cc  -> err [style=dashed, label="  type errors\ncaught here  "];
+  {rank=same; cc; err;}
+}
+```
+
+::: {.incremental}
+- The **compiler** does the translating; the **standard** (`-std=c++14`) tells it
+  which version of the language to read your file as.
+- **Compile once, run many times**: the CPU is handed exactly the machine code it
+  knows how to fetch, decode and execute --- nothing stands in between.
+:::
+
+. . .
+
+::: {.callout-tip appearance="simple"}
+Once compiled, **R is out of the picture**: the translating is already done.
+:::
+
+## How R runs your code
+
+```{dot}
+//| fig-width: 9.5
+digraph r {
+  rankdir=LR; bgcolor="transparent"; nodesep=0.45; ranksep=0.7;
+  node [shape=box, style="rounded,filled", fillcolor="#f2f2f2", color="#555555",
+        fontcolor="#222222", fontname="Helvetica", fontsize=13, penwidth=1.5,
+        margin="0.20,0.14"];
+  edge [color="#555555", penwidth=1.8, arrowsize=1.0, fontname="Helvetica",
+        fontsize=11, fontcolor="#777777"];
+
+  src [label="script.R\nsource code"];
+  int [label="R interpreter\ntranslates line by line"];
+  cpu [label="CPU\nfetch / decode / execute"];
+
+  src -> int [label="  source()  "];
+  int -> cpu;
+  int -> int [label="  next line,\nevery time  "];
+}
+```
+
+::: {.incremental}
+- No compile step and **no executable**: the interpreter sits between your code
+  and the CPU for as long as the program runs.
+- It also works out **types while running** --- `x + y` means checking what `x`
+  and `y` are on *every* iteration of a loop.
+- That per-line overhead is where the **10--100x** from the first slide comes from.
+:::
+
+. . .
+
+::: {.callout-tip appearance="simple"}
+The interpreter **never leaves**: it re-does the translating on every line, on
+every pass through a loop.
+:::
+
+## The same loop, two different journeys
+
+::: {.columns}
+::: {.column width="50%"}
+**R** --- interpreted
+
+```r
+s <- 0
+for (i in 1:n)
+  s <- s + sqrt(i)
+```
+
+Per iteration, the interpreter must:
+
+- look up what `sqrt` and `+` mean *right now*,
+- check the types of `s` and `i`,
+- allocate a result,
+- then finally do the arithmetic.
+
+**All of that, `n` times.**
+:::
+
+::: {.column width="50%"}
+**C++** --- compiled
+
+```cpp
+double s = 0.0;
+for (int i = 1; i <= n; ++i)
+  s += std::sqrt((double) i);
+```
+
+The compiler settled all of that **once**, before the program ran:
+
+- `s` is a `double`, `i` is an `int` --- fixed, no checking,
+- `sqrt` is one machine instruction,
+- no allocation.
+
+**The CPU just adds numbers.**
+:::
+:::
+
+## The same loop, two different journeys (cont'd)
+
+With `n = 10,000,000` on my laptop:
+
+| | time |
+|:---|---:|
+| R (`for` loop) | ~0.145 s |
+| C++ (`g++ -O2`) | ~0.008 s |
+
+: {tbl-colwidths="[70,30]"}
+
+::: {.incremental}
+- Roughly **18x** here --- and this is R at its *best*: the loop is simple enough
+  for R's byte-code compiler to help.
+- The C++ program also had to be compiled first (~1 s). You pay that **once**;
+  you save on **every** run, and on every one of the 10 million iterations.
+- This is also why the R packages from the first slide are written in C++: the
+  loop lives in C++, and you call it from R.
+:::
+
+## `g++` vs `clang++`
+
+Both are **C++ compilers**: same language, same standards, (mostly) the same flags.
+
+::: {.incremental}
+- `g++` --- GNU Compiler Collection (GCC). Default on Linux and with Rtools on Windows.
+- `clang++` --- LLVM's compiler. Default on macOS, shipped with Xcode command line tools.
+- The commands are interchangeable for everything in this lecture:
+
+    ```bash
+    g++     -std=c++14 hello-world.cpp -o hello-world
+    clang++ -std=c++14 hello-world.cpp -o hello-world
+    ```
+:::
+
+## `g++` vs `clang++` (cont'd)
+
+::: {.incremental}
+- **Careful on macOS**: `g++` is usually just a *symlink to* `clang++`. Check with
+
+    ```bash
+    g++ --version
+    ```
+
+    If it says "Apple clang", you are using clang, no matter what you typed.
+- Practical differences you may hit:
+    - **Error messages**: clang's are generally more readable.
+    - **OpenMP**: works out of the box with `g++`; on macOS clang needs `libomp`
+      installed separately (relevant next week for parallel computing).
+    - Minor differences in warnings and in which C++ standard is the default.
+- For R packages, you do not choose directly: R uses whatever is set in
+  `~/.R/Makevars` / `R CMD config CXX`.
+
+    ```r
+    system("R CMD config CXX")
+    ```
+:::
 
 ## Example: Computing the mean
 
@@ -257,6 +521,56 @@ std::vector< int > my_vector = {1, 2, 3, 4, 5};
 std::vector< std::string > my_str_vector = {"a", "b", "c"};
 std::vector< std::vector< int > > my_matrix = {{1, 2}, {3, 4}};
 ```
+
+## Basic data types
+
+How much memory each type takes, and what fits in it:
+
+| Data type | Size | Description |
+|:---|:---|:---|
+| `bool` | 1 byte | Stores `true` or `false` |
+| `char` | 1 byte | A single character/letter/number, or ASCII value |
+| `int` | 2 or 4 bytes | Whole numbers, no decimals |
+| `float` | 4 bytes | Fractional numbers; ~6--7 decimal digits |
+| `double` | 8 bytes | Fractional numbers; ~15 decimal digits |
+
+: {tbl-colwidths="[18,22,60]"}
+
+::: {style="font-size: 70%"}
+Adapted from [W3 Schools](https://www.w3schools.com/cpp/cpp_data_types.asp).
+:::
+
+## Basic data types: why the sizes matter
+
+::: {.incremental}
+- In R you never see this: every number is a `double` (8 bytes) unless you work
+  at it, and a "scalar" is really a length-1 vector with a header.
+- In C++ **you choose**, and the choice has consequences:
+    - `double` vs `float`: 8 vs 4 bytes --- half the memory, but only ~7 digits
+      of precision.
+    - A vector of 100 million `int`s is 400 MB; as `double`s, 800 MB.
+- "2 or 4 bytes" for `int` is not a typo: sizes are **implementation-defined**.
+  Check rather than assume:
+
+    ```cpp
+    std::cout << sizeof(int) << std::endl;  // bytes
+    ```
+- Remember the **memory hierarchy**: the CPU waits ~100 ns for RAM, ~1 ns for
+  cache, and fetches memory in 64--128 byte blocks. So the size of your type
+  decides *how much useful data arrives per trip*:
+    - one 64-byte block holds **16 `int`s** but only **8 `double`s**,
+    - 1 million `double`s is 8 MB (spills to RAM); as `float`s, 4 MB (may stay
+      in cache).
+- For big arrays scanned repeatedly, that can matter more than the arithmetic
+  itself.
+
+. . .
+
+::: {.callout-warning appearance="simple"}
+This is a **later** concern. `float` buys speed by giving up precision
+(~7 digits vs ~15) --- rarely a good trade in statistics. Default to `double`;
+worry about bytes when profiling says to.
+:::
 
 ## Vectors in C++
 
