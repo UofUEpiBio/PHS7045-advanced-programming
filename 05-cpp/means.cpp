@@ -13,7 +13,7 @@ int main() {
   // - Starts in i = 0
   // - Until i reaches dat.size() (stops)
   // - Increments i + 1
-  for (size_t i = 0; i < dat.size(); ++i)
+  for (int i = 0; i < dat.size(); ++i)
     ans = ans + dat[i];
 
   ans = ans/dat.size();

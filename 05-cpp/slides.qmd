@@ -67,7 +67,7 @@ We will need a compiler:
 You already rely on C++ every day:
 
 ::: {.incremental}
-- **Stan**, **data.table**, **dplyr**, **ranger**, **xgboost**, **glmmTMB**, **epiworld**...
+- **Stan**, **data.table**, **dplyr**, **ranger**, **xgboost**, **glmmTMB**
 - **Rcpp** is one of the most depended-upon packages on CRAN.
 :::
 
@@ -83,13 +83,14 @@ the packages you depend on.
 
 The program
 
-::: {layout-ncol="2" .incremental}
+::: {layout="[55,45]" .incremental}
 
 ```cpp
 #include<iostream> // <1>
 
 int main() { // <2>
-  std::cout << "Hello world" << std::endl; // <3>
+  std::cout << "Hello world"
+            << std::endl; // <3>
   return 0; // <4>
 }
 ```
@@ -116,19 +117,32 @@ g++ -std=c++14 hello-world.cpp -o hello-world
 **Compiler**: a program that translates your `.cpp` source code into machine code
 your CPU can run directly.
 
-- In R there is no such step: R code is handed to an **interpreter** instead
-  (we come back to what that means).
-- In C++ you pay this cost **once**, up front, and get a standalone executable
-  (`hello-world`). That is a large part of where the speed comes from.
-- The compiler also checks your types **before** the program ever runs, so many
-  bugs become compile errors instead of runtime surprises.
-
 **Standard**: the official version of the C++ language, revised every few years.
 
 - C++11, C++14, C++17, C++20, C++23 --- each adds features and syntax.
 - `-std=c++14` tells the compiler *which* version of the language to read your
   file as. Code using a C++17 feature will not compile under `-std=c++14`.
 - We use C++14 because it is what R and Rcpp assume by default.
+:::
+
+## The stored-program computer (1945)
+
+::: {.columns}
+::: {.column width="52%"}
+![](figures/von-neumann-1945.svg){width="100%"}
+
+::: {style="font-size: 50%"}
+Diagram by Kapooht, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Von_Neumann_Architecture.svg),
+[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+:::
+:::
+
+::: {.column width="48%" .incremental}
+- Described by **John von Neumann in 1945** (the EDVAC report), and still the
+  blueprint for almost every computer.
+- The key idea: **instructions live in the same memory as the data** --- to run
+  a different program you *load* one, instead of rewiring the machine.
+:::
 :::
 
 ## What is actually running your code?
@@ -202,11 +216,14 @@ digraph cpp {
 ::: {.incremental}
 - The **compiler** does the translating; the **standard** (`-std=c++14`) tells it
   which version of the language to read your file as.
-- **Compile once, run many times**: the CPU is handed exactly the machine code it
-  knows how to fetch, decode and execute --- nothing stands in between.
+- **Compile once, run many times**: you pay the translation up front and get a
+  standalone executable (`hello-world`); the CPU is then handed exactly the
+  machine code it knows how to fetch, decode and execute.
+- Types are checked **before the program ever runs**, so many bugs become
+  compile errors instead of runtime surprises.
 :::
 
-## The other word: interpreter
+## How R runs your code
 
 ::: {.incremental}
 **Interpreter**: a program that reads your code and carries out what it says,
@@ -273,13 +290,6 @@ digraph r {
 - That overhead is where the **10--100x** from the first slide comes from.
 :::
 
-. . .
-
-::: {.callout-tip appearance="simple"}
-The interpreter **never leaves**: the arithmetic is one CPU instruction, and
-everything around it is a hundred more.
-:::
-
 ## The same loop, two different journeys
 
 ::: {.columns}
@@ -337,7 +347,7 @@ With `n = 10,000,000` on my laptop:
 | | time |
 |:---|---:|
 | R (`for` loop) | ~0.145 s |
-| C++ (`g++ -O2`) | ~0.008 s |
+| C++ | ~0.008 s |
 
 : {tbl-colwidths="[70,30]"}
 
@@ -411,7 +421,7 @@ int main() {
   double ans = 0.0;
 
   // Looping through the data
-  for (size_t i = 0; i < dat.size(); ++i)
+  for (int i = 0; i < dat.size(); ++i)
     ans = ans + dat[i];
 
   ans = ans/dat.size();
@@ -582,14 +592,6 @@ Adapted from [W3 Schools](https://www.w3schools.com/cpp/cpp_data_types.asp).
 - Smaller types also mean **less data to move around**: 1 million `double`s is
   8 MB, but only 4 MB as `float`s. For big arrays scanned repeatedly, that can
   matter more than the arithmetic itself.
-:::
-
-. . .
-
-::: {.callout-warning appearance="simple"}
-This is a **later** concern. `float` buys speed by giving up precision
-(~7 digits vs ~15) --- rarely a good trade in statistics. Default to `double`;
-worry about bytes when profiling says to.
 :::
 
 ## Vectors in C++
