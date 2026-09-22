@@ -1243,9 +1243,7 @@ You can download the full C++ code [here](summary.cpp) and the header file [here
 ```{r}
 #| eval: true
 #| results: asis
-cat("```cpp\n")
-cat(readLines("summary.hpp"), sep = "\n")
-cat("```\n")
+cat("```cpp", readLines("summary.hpp"), "```", sep = "\n")
 ```
 
 ## Details: Declaration of the class
