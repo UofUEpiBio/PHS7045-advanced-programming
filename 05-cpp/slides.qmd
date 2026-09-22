@@ -13,6 +13,9 @@ format:
     theme: ["default", "style.scss"]
     code-annotations: true
     slide-number: c
+    toc: true
+    toc-depth: 1
+    toc-title: "Outline"
 revealjs-plugins:
   - codefocus
 engine: knitr
@@ -46,9 +49,9 @@ We will need a compiler:
 - If you don't have compiler installed, you can join the class via posit.cloud.
 :::
 
-# Start! {background-color="black"}
+# Why C++? {background-color="black"}
 
-## Why C++?
+## When R is not enough
 
 > You profiled your code and vectorized what you could. It's still slow. Now what?
 
@@ -59,7 +62,7 @@ We will need a compiler:
     - For loop-heavy code, speedups of **10--100x** are common.
 :::
 
-## Why C++? (cont'd)
+## You already depend on C++
 
 You already rely on C++ every day:
 
@@ -73,6 +76,8 @@ You already rely on C++ every day:
 Learning C++ means you can write the fast part yourself *and* read the source of
 the packages you depend on.
 
+
+# A first program {background-color="black"}
 
 ## Hello world
 
@@ -103,14 +108,16 @@ g++ -std=c++14 hello-world.cpp -o hello-world
 ./hello-world
 ```
 
+# How your code actually runs {background-color="black"}
+
 ## Two words we just used
 
 ::: {.incremental}
 **Compiler**: a program that translates your `.cpp` source code into machine code
 your CPU can run directly.
 
-- In R there is no such step: R *interprets* your code line by line, every time
-  you run it.
+- In R there is no such step: R code is handed to an **interpreter** instead
+  (we come back to what that means).
 - In C++ you pay this cost **once**, up front, and get a standalone executable
   (`hello-world`). That is a large part of where the speed comes from.
 - The compiler also checks your types **before** the program ever runs, so many
@@ -152,34 +159,6 @@ Diagram by William Lau, [Wikimedia Commons](https://commons.wikimedia.org/wiki/F
 :::
 :::
 
-## One more detail: the CPU waits for memory
-
-The diagram shows memory as **one box**. Real machines have a **hierarchy**:
-
-::: {.columns}
-::: {.column width="52%"}
-| | size | time to reach |
-|:---|:---|---:|
-| registers | a few dozen values | instant |
-| L1 cache | ~32--128 KB | ~1 ns |
-| L2 cache | ~1--4 MB | ~4 ns |
-| L3 cache | ~8--32 MB | ~15 ns |
-| **RAM** | **gigabytes** | **~60--100 ns** |
-
-: {tbl-colwidths="[34,36,30]"}
-:::
-
-::: {.column width="48%" .incremental}
-- **Caches** are small, fast copies of memory kept *close to* the CPU.
-- A trip to RAM costs ~100 ns --- time for the CPU to have executed **hundreds
-  of instructions**. It simply waits.
-- Memory is fetched in **blocks** (64--128 bytes), never single values: asking
-  for one number brings its neighbours along for free.
-- So for number-crunching code, the question is often not "how fast is the
-  arithmetic?" but **"where is the data?"**
-:::
-:::
-
 ## So what is a "program"?
 
 ::: {.incremental}
@@ -187,9 +166,10 @@ A program is, in the end, **a sequence of machine-code instructions the CPU can
 fetch and execute**.
 
 - The CPU cannot read `hello-world.cpp`. It cannot read R code either.
-- Something must turn your human-readable code into those instructions.
-- **That is the whole difference between C++ and R**: *when* that translation
-  happens, and *how many times*.
+- Something must stand between your human-readable code and those instructions.
+- **That is the whole difference between C++ and R**: C++ turns *your* code into
+  machine code ahead of time; R hands your code to a program that was compiled
+  already, and that program acts on it while it runs.
 :::
 
 ## How C++ runs your code
@@ -226,10 +206,27 @@ digraph cpp {
   knows how to fetch, decode and execute --- nothing stands in between.
 :::
 
+## The other word: interpreter
+
+::: {.incremental}
+**Interpreter**: a program that reads your code and carries out what it says,
+*while your program runs*.
+
+- The interpreter is itself an ordinary compiled program. `R` on your laptop is
+  an executable written mostly in C, compiled once by whoever built it --- just
+  like `hello-world` was.
+- When you type `sqrt(2)`, you hand that program a piece of text. It works out
+  what the text means and calls the C function that does the square root.
+- **You have been talking to it all along.** The `>` prompt *is* the interpreter,
+  sitting there waiting for its next instruction.
+:::
+
 . . .
 
 ::: {.callout-tip appearance="simple"}
-Once compiled, **R is out of the picture**: the translating is already done.
+A compiler is a **translator**: it turns the whole book into another language
+once, and you read the translation. An interpreter is a **performer**: it is
+handed the script and acts it out, line by line, every time.
 :::
 
 ## How R runs your code
@@ -245,28 +242,42 @@ digraph r {
         fontsize=11, fontcolor="#777777"];
 
   src [label="script.R\nsource code"];
-  int [label="R interpreter\ntranslates line by line"];
   cpu [label="CPU\nfetch / decode / execute"];
 
-  src -> int [label="  source()  "];
-  int -> cpu;
-  int -> int [label="  next line,\nevery time  "];
+  subgraph cluster_r {
+    label="the R interpreter: a C program, compiled long ago";
+    fontname="Helvetica"; fontsize=12; fontcolor="#666666";
+    color="#999999"; style=dashed; penwidth=1.2; margin=16;
+
+    parse [label="parse + byte-compile\nyour code\n(once)"];
+    eval  [label="evaluate it"];
+    parse -> eval;
+    eval -> eval [label="  again, every time\nthe line runs  "];
+  }
+
+  src -> parse [label="  source()  "];
+  eval -> cpu [label="  R's own\nmachine code  "];
 }
 ```
 
 ::: {.incremental}
-- No compile step and **no executable**: the interpreter sits between your code
-  and the CPU for as long as the program runs.
-- It also works out **types while running** --- `x + y` means checking what `x`
-  and `y` are on *every* iteration of a loop.
-- That per-line overhead is where the **10--100x** from the first slide comes from.
+- Your R code is **never turned into machine code**. The machine code that runs
+  is R's own --- `R` is a program written in C, compiled once, long before you
+  started. Your script is *data* to it.
+- No compile step and **no executable of your own**: the interpreter sits
+  between your code and the CPU for as long as the program runs.
+- What repeats is not translation but **evaluation**. For `s + sqrt(i)`, on
+  *every* pass R must look up what `sqrt` and `+` mean right now, check the
+  types of `s` and `i`, and allocate a place for the result --- before doing the
+  one instruction of actual arithmetic.
+- That overhead is where the **10--100x** from the first slide comes from.
 :::
 
 . . .
 
 ::: {.callout-tip appearance="simple"}
-The interpreter **never leaves**: it re-does the translating on every line, on
-every pass through a loop.
+The interpreter **never leaves**: the arithmetic is one CPU instruction, and
+everything around it is a hundred more.
 :::
 
 ## The same loop, two different journeys
@@ -286,7 +297,7 @@ Per iteration, the interpreter must:
 - look up what `sqrt` and `+` mean *right now*,
 - check the types of `s` and `i`,
 - allocate a result,
-- then finally do the arithmetic.
+- and only then do the arithmetic.
 
 **All of that, `n` times.**
 :::
@@ -310,6 +321,15 @@ The compiler settled all of that **once**, before the program ran:
 :::
 :::
 
+. . .
+
+::: {.callout-tip appearance="simple"}
+The arithmetic itself is **equally fast in both**. R's `+` and `sqrt` are C
+functions inside the R binary, and they end up at the very same CPU instruction
+the C++ version uses. The difference is never the math --- it is everything R
+has to do *around* the math, `n` times over.
+:::
+
 ## The same loop, two different journeys (cont'd)
 
 With `n = 10,000,000` on my laptop:
@@ -329,6 +349,8 @@ With `n = 10,000,000` on my laptop:
 - This is also why the R packages from the first slide are written in C++: the
   loop lives in C++, and you call it from R.
 :::
+
+# Compilers {background-color="black"}
 
 ## `g++` vs `clang++`
 
@@ -368,6 +390,8 @@ Both are **C++ compilers**: same language, same standards, (mostly) the same fla
     ```
 :::
 
+# Two worked examples {background-color="black"}
+
 ## Example: Computing the mean
 
 Download the program [here](means.cpp).
@@ -387,7 +411,7 @@ int main() {
   double ans = 0.0;
 
   // Looping through the data
-  for (int i = 0; i < dat.size(); ++i)
+  for (size_t i = 0; i < dat.size(); ++i)
     ans = ans + dat[i];
 
   ans = ans/dat.size();
@@ -467,12 +491,12 @@ int main() {
 :::
 
 ::: {.fragment data-code-focus="11-13"}
-- The `std::accumulate` function summs the elements of the vector.
+- The `std::accumulate` function sums the elements of the vector.
 :::
 
 ::: {.fragment data-code-focus="1-22"}
 To compile it, run the following command:
-```{.bash}
+```{bash}
 #| eval: true
 #| echo: true
 g++ -std=c++14 means2.cpp -o means2
@@ -491,13 +515,13 @@ Here are some differences between C++ and R:
 
 Feature | C++ | R
 --- | --- | ---
-Type | Compiled | Interpreted
+Execution | Compiled | Interpreted
 Type explicit? | Yes | No
 Index starts at | 0 | 1
 `for` loop | `for (int i = 0; i < n; ++i)` | `for (i in 1:n)`
 Line ending | "`;`" | "`\n`" (implicit)
 
-- *Compiled*: the code is translated to machine code before running, allowing for **faster execution**. *Interpreted*: the code is executed, allowing **interactive programming**.
+- *Compiled*: translated to machine code before running --- **faster execution**. *Interpreted*: another program reads and carries out your code as it runs --- **interactive**, but slower.
 
 - *Type explicit*: in C++, we always declare the type of the variables. In R, we don't need to.
 
@@ -514,7 +538,7 @@ bool my_boolean      = true;    // Boolean
 std::string my_text  = "Hello"; // String
 ```
 
-Vectors in C++ are similar to lists in R:
+Vectors in C++ are similar to *atomic* vectors in R --- all elements share one type:
 
 ```cpp
 std::vector< int > my_vector = {1, 2, 3, 4, 5};
@@ -555,14 +579,10 @@ Adapted from [W3 Schools](https://www.w3schools.com/cpp/cpp_data_types.asp).
     ```cpp
     std::cout << sizeof(int) << std::endl;  // bytes
     ```
-- Remember the **memory hierarchy**: the CPU waits ~100 ns for RAM, ~1 ns for
-  cache, and fetches memory in 64--128 byte blocks. So the size of your type
-  decides *how much useful data arrives per trip*:
-    - one 64-byte block holds **16 `int`s** but only **8 `double`s**,
-    - 1 million `double`s is 8 MB (spills to RAM); as `float`s, 4 MB (may stay
-      in cache).
-- For big arrays scanned repeatedly, that can matter more than the arithmetic
-  itself.
+- Smaller types also mean **less data to move around**: 1 million `double`s is
+  8 MB, but only 4 MB as `float`s. For big arrays scanned repeatedly, that can
+  matter more than the arithmetic itself.
+:::
 
 . . .
 
@@ -586,7 +606,7 @@ my_vector.push_back(6); // Add an element
 my_vector.pop_back();   // Remove the last element
 my_vector.size();       // Number of elements
 my_vector[0];           // Access the first element
-my_vector.at(0)         // Access the first element (safer)
+my_vector.at(0);        // Access the first element (safer)
 ```
 
 ## Vectors in C++: Looping
@@ -597,7 +617,7 @@ Looping through vectors can be done in different ways:
 ::: {.column width="60%"}
 ```cpp
 // Suppose we have this:
-std::vector< int > my_vector = {1, 2, 3, 4, 5};`
+std::vector< int > my_vector = {1, 2, 3, 4, 5};
 
 // Typical loop
 for (int i = 0; i < my_vector.size(); ++i) {
@@ -622,12 +642,20 @@ for (auto i: my_vector) {
 :::
 
 ::: {.fragment data-code-focus="9-13"}
-- Using iterators, a bit more complex, `i` becomes a pointer
-to the value.
+- Using iterators: `i` is an **iterator** (pointer-like), and `*i` is the
+value it refers to.
 :::
 
 ::: {.fragment data-code-focus="15-18"}
 - The range-based for loop, simpler and cleaner.
+:::
+
+::: {.fragment}
+- **`auto`**: "compiler, work out the type for me" --- here
+  `std::vector<int>::iterator` and `int`. Deduced at **compile time**; the
+  variable still has one fixed type.
+- `auto i` gives you a **copy**. Use `auto & i` to modify the vector, and
+  `const auto & i` to read big objects without copying them.
 :::
 
 :::
@@ -635,7 +663,7 @@ to the value.
 
 ## Important keywords
 
-Types can go accompained by keywords:
+Types can go accompanied by keywords:
 
 ::: {.incremental}
 ```cpp
@@ -651,7 +679,7 @@ double fun(int * x)       // <6>
 3. `x` is still a copy, but it cannot be modified.
 4. `&`: passing by reference. Ideal for large objects. It can be modified.
 5. `const &`: passing by reference, but cannot be modified.
-6. `*`: passing by pointer. The value can be modified. **NOT RECOMENDED FOR C++**
+6. `*`: passing by pointer. The value can be modified. **NOT RECOMMENDED FOR C++**
 :::
 
 ## Important keywords: Example with pointers {style="font-size: 90%"}
@@ -663,9 +691,11 @@ The following code ([pointers.cpp](pointers.cpp)) illustrates how these keywords
 ```cpp
 #include <cstdio> // For the std version of printf
 
-void set_x_copy(int x, int y) {x = y;}; 
-void set_x(int * x, int y) {*x = y;};   
+void set_x_copy(int x, int y) {x = y;};
+void set_x(int * x, int y) {*x = y;};
 void set_x_ref(int & x, int y) {x = y;};
+// This would generate an error
+// void set_x_ref(const int & x, int y) {x = y;};
 
 int main() {
 
@@ -684,21 +714,36 @@ int main() {
 ```
 :::
 ::: {.column width="50%"}
-::: {.fragment data-code-focus="3,11-12"}
-- `set_x_copy`: `x` is passed by copy, and thus the value is not modified.
+::: {.fragment data-code-focus="3,13-14"}
+- `set_x_copy`: the `x` *inside* the function is a **new `int` at a different
+  address**, initialised from the caller's value. `x = y` writes there, the
+  caller's `x` is never touched --- and it is destroyed on return.
 :::
 
-::: {.fragment data-code-focus="4,13-14"}
-- `set_x`: `x` is passed by pointer, and thus the value is modified. `*x` access the value at `x`, and `&x` is it's memory address.
+::: {.fragment data-code-focus="4,15-16"}
+- `set_x`: `x` is a **pointer** --- its own variable, whose *value* is an
+  address. `&x` at the call site means "the address of `x`"; `*x = y` means
+  "write `y` to whatever lives at that address".
 :::
 
-::: {.fragment data-code-focus="5,15-16"}
-- `set_x_ref`: `x` is passed by reference, and thus the value is modified. Passed by reference is the preferred way in C++.
+::: {.fragment data-code-focus="5,17-18"}
+- `set_x_ref`: `x` is a **reference** --- an alias, a second name for the
+  caller's memory, with no storage of its own. `x = y` writes straight to it.
+- Note the **argument** is written the same way as in the copy case --- plain
+  `x`, not `&x`. Only the pointer version shows up at the call site. Here the
+  names help you, but in real code (`update(v)`) nothing at the call tells you
+  whether `v` can be modified: you have to read the **signature**.
+- Passing by reference is the preferred way in C++.
+:::
+
+::: {.fragment data-code-focus="6-7"}
+- With `const int & x` the compiler **refuses to build it**: you promised not to
+  modify what `x` refers to.
 :::
 :::
 :::
 
-::: {.fragment data-code-focus="1-20"}
+::: {.fragment data-code-focus="1-22"}
 
 To compile and run the code:
 
@@ -711,6 +756,86 @@ g++ -std=c++14 pointers.cpp -o pointers
 ./pointers
 ```
 :::
+
+## What is actually in memory?  {style="font-size: 90%"}
+
+Picture `main`'s `x` sitting at address `0x100`, holding `0`. Each call does
+something different with it:
+
+```{dot}
+//| fig-width: 9.5
+digraph refs {
+  rankdir=TB; bgcolor="transparent"; nodesep=0.35; ranksep=0.45;
+  node [shape=box, style="rounded,filled", fillcolor="#f2f2f2", color="#555555",
+        fontcolor="#222222", fontname="Helvetica", fontsize=12, penwidth=1.5,
+        margin="0.18,0.10"];
+  edge [color="#555555", penwidth=1.7, arrowsize=0.8];
+
+  subgraph cluster_copy {
+    label="set_x_copy(int x, int y)"; labelloc="t";
+    fontname="Helvetica"; fontsize=13; fontcolor="#666666";
+    color="#999999"; style=dashed; margin=12;
+    na [label="x\nin main()", shape=plaintext, style="", fontsize=13];
+    nx [label="x\nin set_x_copy()", shape=plaintext, style="", fontsize=13];
+    ma [label="0\nat 0x100"];
+    mx [label="3\nat 0x200"];
+    na -> ma; nx -> mx;
+  }
+
+  subgraph cluster_ptr {
+    label="set_x(int * x, int y)"; labelloc="t";
+    fontname="Helvetica"; fontsize=13; fontcolor="#666666";
+    color="#999999"; style=dashed; margin=12;
+    na3 [label="x\nin main()", shape=plaintext, style="", fontsize=13];
+    nx3 [label="x\nin set_x()", shape=plaintext, style="", fontsize=13];
+    p3  [label="0x100\nat 0x300"];
+    m3  [label="2\nat 0x100"];
+    na3 -> m3; nx3 -> p3;
+    p3 -> m3 [style=dashed, label=" *x ", fontname="Helvetica", fontsize=11, fontcolor="#777777"];
+  }
+
+  subgraph cluster_ref {
+    label="set_x_ref(int & x, int y)"; labelloc="t";
+    fontname="Helvetica"; fontsize=13; fontcolor="#666666";
+    color="#999999"; style=dashed; margin=12;
+    na2 [label="x\nin main()", shape=plaintext, style="", fontsize=13];
+    nx2 [label="x\nin set_x_ref()", shape=plaintext, style="", fontsize=13];
+    m2  [label="1\nat 0x100"];
+    na2 -> m2; nx2 -> m2;
+  }
+}
+```
+
+## What is actually in memory? (cont'd) {style="font-size: 85%"}
+
+::: {.incremental}
+- **`set_x_copy(int x, int y)`** --- the parameter `x` is a **brand-new `int` at
+  a different address** (say `0x200`), initialised with a copy of the caller's
+  value. `x = y` writes `3` to `0x200`; nothing at `0x100` is touched, so
+  `main`'s `x` is still `0`. On return, the parameter is destroyed.
+
+- **`set_x(int * x, int y)`** --- the parameter `x` is a **pointer**: a separate
+  variable (at, say, `0x300`) whose *value* is an address. `&x` at the call
+  means "the address of `x`", so the caller passes `0x100` and the parameter
+  holds `0x100`. `*x` means "the thing at the address stored in `x`", so
+  `*x = y` writes `2` to `0x100`.
+    - The pointer itself is destroyed on return --- that does not matter, since
+      what it *pointed at* was modified.
+
+- **`set_x_ref(int & x, int y)`** --- the parameter `x` is a **reference**: an
+  alias, a second name for the same memory at `0x100`, with **no storage of its
+  own**. `x = y` writes `1` straight to `0x100`.
+    - The **argument** is written exactly as in the copy case --- plain `x`, not
+      `&x`. Only the pointer announces itself at the call site, so for the other
+      two you must read the **signature** to know what will happen.
+:::
+
+. . .
+
+- Cost: copying a `std::vector<double>` with a million elements copies 8 MB; a
+  reference or a pointer copies an address (8 bytes).
+- In R you never choose --- arguments always *behave* like copies. In C++ you
+  decide, and `const &` gives you both: no copy, and a promise not to modify.
 
 ## Classes in C++
 
@@ -795,7 +920,7 @@ g++ -std=c++14 person.cpp -o person
 ./person
 ```
 
-Notice that the destroyer is called when `p1` and `p2` go out of scope (in reverse order).
+Notice that the destructor is called when `p1` and `p2` go out of scope (in reverse order).
 
 ## Classes in C++: Declaration and Implementation
 
@@ -958,7 +1083,7 @@ int main() {
 :::
 
 ::: {.fragment data-code-focus="17-18"}
-- The class is instantiated with `int` and `double`. The compiler with generate two classes during compilation.
+- The class is instantiated with `int` and `double`. The compiler will generate two classes during compilation.
 :::
 
 :::
@@ -982,8 +1107,6 @@ g++ -std=c++14 template_class.cpp -o template_class
 
 - The following is an optimized R function to do this:
 
-$A = \pi r^2$, thus $\pi = \frac{A}{r^2}$.
-
 ```{r}
 #| eval: true
 #| echo: true
@@ -1003,7 +1126,47 @@ set.seed(331)
 my_pi_sim(1e6)
 ```
 
-Let's see how we can do this in C++.
+Let's see *why* this works, and then how to do it in C++.
+
+## Why does throwing darts at a square give us pi?
+
+- Draw the unit circle (radius $r = 1$) inside the square $[-1, 1] \times [-1, 1]$.
+
+- The square has area $2 \times 2 = 4$. The circle has area $\pi r^2 = \pi$.
+
+- If we pick a point **uniformly at random** in the square, every location is
+  equally likely, so the probability of landing in the circle is just the ratio
+  of the areas:
+
+$$
+P(\text{point inside circle}) \;=\;
+\frac{\text{area of circle}}{\text{area of square}} \;=\; \frac{\pi}{4}.
+$$
+
+- We cannot compute that probability directly (it contains the $\pi$ we are
+  after), but we *can* estimate it: throw $n$ points and count the hits.
+
+## From a proportion to an estimate of pi
+
+- Let $\hat p = (\text{number of hits}) / n$. By the law of large numbers
+  $\hat p \to \pi/4$ as $n$ grows, so
+
+$$
+\hat\pi = 4 \hat p = 4 \times \frac{\text{number of hits}}{n}.
+$$
+
+- That is exactly the `* 4` in the R code and the `4.0*pi_approx/n_sims` in the
+  C++ code.
+
+- **Deciding if a point is inside**: the point $(x, y)$ is in the unit circle
+  when its distance to the origin is at most 1, i.e.
+  $\sqrt{x^2 + y^2} \le 1$.
+
+- **How accurate?** Each point is a Bernoulli trial, so
+  $\text{SE}(\hat\pi) = 4\sqrt{p(1-p)/n} \approx 1.64/\sqrt{n}$.
+  The error shrinks like $1/\sqrt{n}$: with $n = 5 \times 10^6$ we get about
+  $\pm 0.0007$, i.e. roughly three correct decimals. One extra digit costs
+  **100 times** more points --- which is why we care about speed.
 
 ## Simulating pi in C++
 
@@ -1011,13 +1174,15 @@ Let's see how we can do this in C++.
 ```cpp
 #include <vector>
 #include <random> // <1>
+#include <cmath>  // <2>
+#include <cstdio> // <2>
 int main() {
   
   // Setting the seed
-  std::mt19937 rng_engine; // <2>
-  rng_engine.seed(123); // <2>
+  std::mt19937 rng_engine; // <3>
+  rng_engine.seed(123); // <3>
 
-  std::uniform_real_distribution<double> dist(-1.0, 1.0); // <3>
+  std::uniform_real_distribution<double> dist(-1.0, 1.0); // <4>
 
   // Number of simulations
   size_t n_sims = 5e6;
@@ -1031,12 +1196,12 @@ int main() {
     double x = dist(rng_engine);
     double y = dist(rng_engine);
 
-    double dist = std::sqrt(
-        std::pow(x, 2.0) + std::pow(y, 2.0) // <4>
+    double d = std::sqrt(
+        std::pow(x, 2.0) + std::pow(y, 2.0) // <5>
         );
 
     // Checking if the point is inside the unit circle 
-    if (dist <= 1.0)
+    if (d <= 1.0)
       pi_approx += 1.0;
 
   }
@@ -1047,10 +1212,11 @@ int main() {
 
 }
 ```
-1. Library for random rumbers and stats distributions.
-2. Random number engine (used in comb. with the distributions).
-3. Uniform distribution between -1 and 1.
-4. `std::pow` is the power function.
+1. Library for random numbers and stats distributions.
+2. `std::sqrt`/`std::pow` live in `<cmath>`, `printf` in `<cstdio>`.
+3. Random number engine (used in comb. with the distributions).
+4. Uniform distribution between -1 and 1.
+5. `std::pow` is the power function.
 :::
 
 ```{bash}

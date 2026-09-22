@@ -1,5 +1,7 @@
 #include <vector>
 #include <random> // <1>
+#include <cmath>  // std::sqrt, std::pow
+#include <cstdio> // printf
 int main() {
   
   // Setting the seed
@@ -20,12 +22,12 @@ int main() {
     double x = dist(rng_engine);
     double y = dist(rng_engine);
 
-    double dist = std::sqrt(
+    double d = std::sqrt(
         std::pow(x, 2.0) + std::pow(y, 2.0) // <2>
         );
 
     // Checking if the point is inside the unit circle 
-    if (dist <= 1.0)
+    if (d <= 1.0)
       pi_approx += 1.0;
 
   }

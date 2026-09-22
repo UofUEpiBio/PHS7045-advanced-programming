@@ -4,3 +4,5 @@
 !*.html
 !*.hpp
 
+!figures/
+!figures/**
