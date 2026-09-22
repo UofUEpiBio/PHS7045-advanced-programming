@@ -140,8 +140,9 @@ Diagram by Kapooht, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:
 ::: {.column width="48%" .incremental}
 - Described by **John von Neumann in 1945** (the EDVAC report), and still the
   blueprint for almost every computer.
-- The key idea: **instructions live in the same memory as the data** --- to run
-  a different program you *load* one, instead of rewiring the machine.
+- Five canonical parts: a **memory**, a **control unit**, an **arithmetic/logic unit**,
+  and **input** and **output**.
+- Instructions sit in the same memory as the data. 
 :::
 :::
 
@@ -1170,31 +1171,27 @@ $$
   $\pm 0.0007$, i.e. roughly three correct decimals. One extra digit costs
   **100 times** more points --- which is why we care about speed.
 
-## Simulating pi in C++
+## Simulating pi in C++ {.scrollable}
 
-::: {layout-ncol="2" style="font-size: 80%"}
+::: {layout-ncol="2" style="font-size: 70%"}
 ```cpp
 #include <vector>
 #include <random> // <1>
 #include <cmath>  // <2>
 #include <cstdio> // <2>
 int main() {
-  
   // Setting the seed
   std::mt19937 rng_engine; // <3>
   rng_engine.seed(123); // <3>
-
   std::uniform_real_distribution<double> dist(-1.0, 1.0); // <4>
 
   // Number of simulations
   size_t n_sims = 5e6;
-
-  // Defining the data
   double pi_approx = 0.0;
+
   for (size_t i = 0u; i < n_sims; ++i)
   {
-
-    // Generating a point in the unit square
+    // A point in the unit square
     double x = dist(rng_engine);
     double y = dist(rng_engine);
 
@@ -1202,16 +1199,13 @@ int main() {
         std::pow(x, 2.0) + std::pow(y, 2.0) // <5>
         );
 
-    // Checking if the point is inside the unit circle 
+    // Is the point inside the unit circle?
     if (d <= 1.0)
       pi_approx += 1.0;
-
   }
 
   printf("pi approx to %.4f\n", 4.0*pi_approx/n_sims);
-
   return 0;
-
 }
 ```
 1. Library for random numbers and stats distributions.
