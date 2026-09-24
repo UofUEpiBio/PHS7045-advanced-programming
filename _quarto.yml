@@ -3,6 +3,7 @@ project:
   output-dir: _book
   resources:
     - 10-chpc-week/chpc_overview.pdf
+    - exams/01-midterm.html
     - exams/02-final.html
 
 book:
