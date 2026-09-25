@@ -1,5 +1,5 @@
 ---
-title: "Homework 03 - Functions, Profiling, and Rcpp"
+title: "Homework 02 - Functions, Profiling, and Rcpp"
 format:
   html:
     embed-resources: false
@@ -7,7 +7,7 @@ format:
 
 # Due date
 
-Thursday, October 31
+Friday, October 2
 
 # Background
 
