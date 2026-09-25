@@ -1,0 +1,257 @@
+---
+title: "Homework 03 - Bayesian Linear Regression with MCMC"
+subtitle: "PHS 7045: Advanced Programming — Fall 2026"
+format:
+  html:
+    embed-resources: false
+    toc: true
+---
+
+# Due date
+
+Thursday, October 8
+
+# Submission
+
+Your work lives in a **Git repository on your GitHub account**, and you submit
+it **in the commit message** of your final commit.
+
+1. Create a git repository for this assignment and commit your work to it as you go.
+   Commit whenever you finish something that works — not once at the end.
+
+2. Push your rendered report, the source `.qmd`, **and** your `.cpp` file. The
+   report must knit from a clean session without errors.
+
+3. When you are done, make a final commit whose message **tags both
+   instructors** and **includes the URL of this week's issue** in the course
+   repository:
+
+   ``` sh
+   git commit -a -m "Homework 03 done @gvegayon and @tm-pham https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/XX"
+   ```
+
+   Push after that commit, or the link will not appear in the issue.
+
+If your repository is private, add both instructors (`@gvegayon` and
+`@tm-pham`) as collaborators.
+
+# Learning goals
+
+- Translate a statistical model into code: write a **log-likelihood** and an
+  **unnormalized log posterior**.
+- Implement the **Metropolis-Hastings** algorithm from scratch, as a function
+  that takes *another function* (the log posterior) as an argument.
+- Diagnose an MCMC run: trace plots, burn-in, and acceptance rate.
+- Rewrite the sampler in **C++ with Rcpp**, verify it produces the *same* chain
+  as your R version, and measure the speedup.
+
+# Background
+
+## The model
+
+We observe $n$ outcomes $y_1, \dots, y_n$ and an $n \times k$ design matrix $X$
+(including a column of ones for the intercept). The linear regression model is
+
+$$
+y_i = x_i^\top \beta + \varepsilon_i, \qquad \varepsilon_i \sim \text{N}(0, \sigma^2),
+$$
+
+with unknown parameters $\beta \in \mathbb{R}^k$ and $\sigma > 0$.
+
+Because $\sigma$ must be positive, we will work with $\tau = \log \sigma$, which
+can take any real value. The full parameter vector is
+$\theta = (\beta_1, \dots, \beta_k, \tau)$, of length $k + 1$.
+
+## The likelihood
+
+Each $y_i$ is normal with mean $x_i^\top\beta$ and variance $\sigma^2 = e^{2\tau}$,
+so the log-likelihood is
+
+$$
+\log L(\theta \mid y, X) = -\frac{n}{2}\log(2\pi) - n\,\tau - \frac{1}{2e^{2\tau}} \sum_{i=1}^n \left(y_i - x_i^\top \beta\right)^2.
+$$
+
+The first term is a constant that does not depend on $\theta$, so you can drop it.
+
+## The prior
+
+We will use independent, vague normal priors on every parameter:
+
+$$
+\beta_j \sim \text{N}(0, 10^2), \quad j = 1, \dots, k, \qquad \tau \sim \text{N}(0, 10^2).
+$$
+
+## The posterior
+
+By Bayes' theorem, the posterior is proportional to likelihood times prior:
+
+$$
+p(\theta \mid y, X) \propto L(\theta \mid y, X)\, p(\theta).
+$$
+
+The normalizing constant, $p(y \mid X)$, is an integral we cannot compute
+easily. **MCMC does not need it.** All we need is the *unnormalized log
+posterior*:
+
+$$
+\log \tilde p(\theta \mid y, X) = \log L(\theta \mid y, X) + \sum_{j=1}^{k} \log p(\beta_j) + \log p(\tau).
+$$
+
+## The Metropolis-Hastings algorithm
+
+MCMC builds a sequence $\theta^{(1)}, \theta^{(2)}, \dots$ whose distribution
+converges to the posterior. Metropolis-Hastings does this with a
+propose-then-accept/reject step. Starting at some $\theta^{(0)}$, for each
+iteration $t = 1, \dots, T$:
+
+1. **Propose** a new value by adding normal noise to the current one (a random
+   walk):
+   $$
+   \theta^* = \theta^{(t-1)} + \epsilon, \qquad \epsilon \sim \text{N}(0, s^2 I_{k+1}),
+   $$
+   where $s$ is a tuning parameter you choose (the *proposal scale*).
+
+2. **Compute the Hastings ratio**:
+   $$
+   r = \frac{p(\theta^* \mid y, X)\; q(\theta^{(t-1)} \mid \theta^*)}{p(\theta^{(t-1)} \mid y, X)\; q(\theta^* \mid \theta^{(t-1)})},
+   $$
+   where $q(\cdot \mid \cdot)$ is the proposal density. Two things simplify
+   this ratio:
+
+   - The unknown normalizing constant appears in both numerator and
+     denominator, so it cancels. This is why the *unnormalized* posterior is
+     enough.
+   - The random-walk proposal is symmetric,
+     $q(\theta^* \mid \theta) = q(\theta \mid \theta^*)$, so the $q$ terms
+     cancel too.
+
+   Working on the log scale (to avoid numerical underflow), we are left with
+   $$
+   \log r = \log \tilde p(\theta^* \mid y, X) - \log \tilde p(\theta^{(t-1)} \mid y, X).
+   $$
+
+3. **Accept or reject**: draw $u \sim \text{U}(0, 1)$. If $\log u < \log r$, set
+   $\theta^{(t)} = \theta^*$ (accept). Otherwise set
+   $\theta^{(t)} = \theta^{(t-1)}$ (reject: the chain stays where it is).
+
+The first iterations depend on the starting value and are discarded as
+**burn-in**. The remaining draws are treated as a sample from the posterior.
+
+# Data
+
+Use the following code to simulate the data for this assignment. Because we
+know the true parameters, you will be able to check whether your sampler
+recovers them.
+
+```{r}
+#| label: data
+#| eval: false
+set.seed(7045)
+n <- 500
+X <- cbind(1, rnorm(n), rnorm(n))
+beta_true  <- c(1, 2, -1)
+sigma_true <- 1.5
+y <- as.vector(X %*% beta_true + rnorm(n, sd = sigma_true))
+```
+
+# Part 1: MCMC in R
+
+**1.** Write a function `log_post(theta, y, X)` that returns the unnormalized
+log posterior described above for a single parameter vector `theta` of length
+`ncol(X) + 1`. The last element of `theta` is $\tau = \log\sigma$.
+
+Evaluate it at a couple of parameter values and check that values close to the
+truth score higher than values far from it.
+
+**2.** Write a function
+
+```r
+mcmc_r <- function(log_post, theta0, n_iter, scale, ...)
+```
+
+that implements the Metropolis-Hastings algorithm. Its arguments are:
+
+- `log_post`: the function to sample from. `mcmc_r()` must not know anything
+  about linear regression; it only calls `log_post()`.
+- `theta0`: the starting value.
+- `n_iter`: the number of iterations.
+- `scale`: the proposal standard deviation $s$.
+- `...`: extra arguments passed on to `log_post()` (here, `y` and `X`).
+
+It should return an `n_iter` by `length(theta0)` matrix with one draw per row,
+and report the **acceptance rate** (the proportion of accepted proposals), for
+example as an attribute or as part of a list.
+
+::: {.callout-important}
+To be able to compare your R and C++ versions in Part 2, draw random numbers
+**in this exact order** in every iteration: first the proposal with
+`rnorm(length(theta), 0, scale)`, then `runif(1)`. Draw `u` every iteration,
+even if you could skip it.
+:::
+
+**3.** Run your sampler for 10,000 iterations starting from
+`theta0 = c(0, 0, 0, 0)`. Try at least three values of `scale` (for example,
+`0.005`, `0.05`, and `0.5`). For each, report the acceptance rate and show the
+trace plots of all four parameters. Which value would you keep, and why? What
+goes wrong with the other two?
+
+**4.** Using your preferred `scale`, discard a burn-in period (justify how many
+iterations you drop by looking at the trace plots) and report the posterior mean
+and a 95% credible interval for $\beta_1, \beta_2, \beta_3$, and $\sigma$
+(remember to transform $\tau$ back). Compare them with the true values and with
+the estimates from `lm(y ~ X - 1)`.
+
+# Part 2: MCMC in C++
+
+We will now rewrite the sampler using Rcpp. Put your C++ code in a separate
+file, `mcmc.cpp`, and load it from your report with `Rcpp::sourceCpp()`.
+
+**5.** Write `log_post_cpp()`, a C++ version of `log_post()` with the same
+arguments. Check that it returns the same value as your R version (up to
+floating-point tolerance) for several values of `theta`.
+
+Hint: `R::dnorm(x, mean, sd, true)` returns the log density of a single value.
+
+**6.** Write `mcmc_cpp(theta0, n_iter, scale, y, X)` that implements the full
+Metropolis-Hastings loop in C++, calling `log_post_cpp()` directly (not an R
+function). It should return the same output as `mcmc_r()`.
+
+Use `R::rnorm()` and `R::runif()` for random numbers. These use R's random
+number generator, so `set.seed()` controls them. If you drew random numbers in
+the order given in question 2, the following should return `TRUE`:
+
+```r
+set.seed(1); chain_r   <- mcmc_r(log_post, theta0, 10000, scale, y = y, X = X)
+set.seed(1); chain_cpp <- mcmc_cpp(theta0, 10000, scale, y, X)
+all.equal(chain_r, chain_cpp)
+```
+
+Show that it does. If it does not, explain why and fix it. Getting exactly
+the same chain is a strong check that both implementations are correct.
+
+**7.** Benchmark `mcmc_r()` against `mcmc_cpp()` with `bench::mark()` for
+10,000 iterations. Then increase the sample size (for example, $n = 5{,}000$)
+and benchmark again. Report the speedup in both cases and the memory each
+version allocates.
+
+**8.** Explain your results. Where does the R version spend its time? Why is
+the C++ version faster, and why is the speedup not larger? (Hint: think about
+which parts of `log_post()` are already vectorized in R, and use what you
+learned about profiling.)
+
+**9. (Optional.)** Write a version of the C++ sampler that takes the log
+posterior as an R function (an `Rcpp::Function` argument), like `mcmc_r()`
+does. It is more flexible, since it can sample from any model. Benchmark it
+against the other two. What does this tell you about calling R from C++?
+
+# Part 3: AI disclosure
+
+Per the course syllabus, briefly describe how you used AI tools on this
+assignment, if at all. Include which parts you used them for and what you
+changed about their output. "I did not use AI for this assignment" is a complete
+answer if it is true.
+
+---
+
+Code that runs but is unreadable will not receive full credit. Name your objects
+descriptively and comment your C++ code.
