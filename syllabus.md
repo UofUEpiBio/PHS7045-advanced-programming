@@ -105,11 +105,11 @@ The current course schedule is subject to change. Students will be notified of a
 | Sept. 8 and 10 | Functional programming |
 | Sept. 15 and 17 | Debugging and profiling |
 | Sept. 22 and 24 | Introduction to C++ |
-| Sept. 29 and Oct. 1 | C++ in R |
-| Oct. 6 and 8 | Parallel computing |
+| Sept. 29 and Oct. 1 | C++ in R; midterm project plan due Oct. 1 |
+| Oct. 6 and 8 | Parallel computing; feedback on midterm project plans Oct. 6 |
 | Oct. 13 and 15 | Fall Break - no class |
 | Oct. 20 and 22 | Bonus AI topics; Ollama |
-| Oct. 27 and 29 | Midterm project hackathon and lightning presentations |
+| Oct. 27 and 29 | Midterm project hackathon; R package due and lightning presentations Oct. 29 |
 | Nov. 3 and 5 | University of Utah CHPC introduction and coding agents |
 | Nov. 10 and 12 | Slurm and additional Slurm practice |
 | Nov. 17 and 19 | R packages I |

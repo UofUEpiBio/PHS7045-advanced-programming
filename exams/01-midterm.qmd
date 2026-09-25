@@ -1,17 +1,36 @@
 ---
-title: "Midterm"
+title: "Advanced Programming with R: Midterm"
 format:
   html:
     embed-resources: false
 ---
 
-## Due date
+## Timeline
 
-TBD
+| Date | Milestone |
+|---|---|
+| Thursday, October 1 | **Midterm plan due** (see [Midterm plan](#midterm-plan) below). |
+| Tuesday, October 6 | Instructors return feedback on your plan. |
+| October 6 -- 27 | Work on your project (no class October 13 and 15, Fall Break). |
+| Tuesday, October 27 | In-class hackathon: work on your project with instructor support. |
+| Thursday, October 29 | **R package and slides due before class**; in-class lightning presentations. |
+
+Dates follow the University of Utah [Fall 2026 academic calendar](https://registrar.utah.edu/academic-calendars/fall2026.php){target="_blank" rel="noopener"}; Fall Break runs October 10--18, so no deliverable falls on a university holiday. If you anticipate a conflict, contact both instructors as early as possible.
 
 ## Task
 
 Develop an R package that solves a problem.  This could be from your own research or you may get approval to do a related but modified example from ([posted projects](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects)).  
+
+## Midterm plan
+
+By **Thursday, October 1**, submit a short plan describing your project. The plan should include:
+
+* A working title.
+* A one-paragraph abstract describing the problem you want to solve and why it matters.
+* The course topics (at least 3, see [Requirements](#requirements)) you plan to incorporate.
+* The data (real or simulated) you will use to illustrate the package.
+
+We will return feedback on Tuesday, October 6. You may be asked to adjust the scope of your project before you start working on it.
 
 ## Deliverables
 

@@ -11,6 +11,10 @@ Welcome to Advanced Programming in R and HPC! The instructors are [George G. Veg
 library(data.table)
 dat <- fread("pages.csv")
 
+# fread does not unescape doubled quotes ("") in pages.csv, which breaks the
+# HTML links authored in the extra column.
+dat[, extra := gsub("\"\"", "\"", extra, fixed = TRUE)]
+
 urlgit <- "https://github.com/UofUEpiBio/PHS7045-advanced-programming/"
 urlraw <- "https://UofUEpiBio.github.io/PHS7045-advanced-programming"
 
