@@ -51,6 +51,22 @@ inline [return type] [class name]::[function name]([arguments]) {
 }
 ```
 
+### Where to look things up
+
+C++ has no equivalent of R's `?pow` or `apropos()`. The references below can be used to look up functions, their signatures, and the headers they live in.
+
+- [**cppreference.com**](https://en.cppreference.com/w/cpp) is the reference
+  the C++ community actually uses. Two pages will cover most of this lab:
+  [Standard library headers](https://en.cppreference.com/w/cpp/header), which
+  lists what lives where, and [Common mathematical
+  functions](https://en.cppreference.com/w/cpp/numeric/math), which documents
+  everything in `<cmath>` (`pow`, `sqrt`, `exp`, `log`, ...). The pages open with the full set of
+  overloads and can look intimidating. Scroll down to *Parameters*, *Return
+  value*, and especially the compilable *Example* at the bottom.
+- [**learncpp.com**](https://www.learncpp.com/) is a free, well-sequenced
+  tutorial. Use it when you want to understand a concept rather than look up a
+  signature.
+
 ### Exercise 1: Factorial
 
 Write a program that implements the `factorial` function. It should match the following results in R
@@ -86,6 +102,45 @@ for (int i = 0; i < 10; i++) {
 }
 ```
 
+::: {.callout-tip collapse="true"}
+## Tip (only check this if your output looks wrong)
+
+If your results come out as `0`, or as whole numbers where R gives you
+something else, the likely cause is **integer division**. In C++ the `/`
+operator looks at the *types* of its operands, not at what you meant. If both
+sides are `int`, you get integer division and the remainder is thrown away:
+
+```cpp
+int a = 7, b = 2;
+a / b;        // 3, not 3.5 -- the .5 is discarded
+```
+
+Since `factorial` returns an `int`, an expression such as
+
+```cpp
+return factorial(a) / (factorial(b) * factorial(a - b));
+```
+
+divides one `int` by another, truncates, and only then converts the result to
+the `double` the function returns. The fix is to make at least one operand a
+`double` *before* the division happens, which is what `static_cast` is for:
+
+```cpp
+return static_cast<double>(factorial(a)) /
+  (static_cast<double>(factorial(b)) * static_cast<double>(factorial(a - b)));
+```
+
+`static_cast<T>(expression)` converts `expression` to type `T` at compile time.
+It is the C++ way of writing the C-style cast `(double) x`, and it is preferred
+because it is easy to search for and because the compiler checks that the
+conversion actually makes sense. Note that the cast has to be on the operands,
+not on the result: `static_cast<double>(a / b)` is too late -- the truncation
+has already happened inside the parentheses.
+
+One more thing to watch: think about what your function should return when
+`b < 0` or `b > a`. R's `choose` gives `0` there.
+:::
+
 ### Exercise 3: implement the binom
 
 Write a program that implements the `dbinom` function. It should match the following results in R
@@ -102,6 +157,43 @@ for (int i = 0; i < 10; i++) {
     std::cout << b.dbinom(i) << std::endl;
 }
 ```
+
+::: {.callout-tip collapse="true"}
+## How do I raise a number to a power?
+
+C++ has no `^` operator for exponentiation -- `p ^ k` will not do what you want
+(`^` is bitwise XOR, and it does not even compile for `double`). Use `std::pow`
+from the `<cmath>` header instead:
+
+```cpp
+#include <cmath>
+
+std::pow(0.5, 3);   // 0.125
+std::pow(2.0, 10);  // 1024
+```
+
+`std::pow(base, exponent)` returns a `double`, and both arguments are converted
+to floating point first, so passing an `int` exponent such as your `k` is fine.
+
+For the binomial density you need two of these, one for the successes and one
+for the failures:
+
+$$
+P(Y = k) = \binom{n}{k} \, p^k \, (1 - p)^{\,n - k}
+$$
+
+so the second term has exponent `n - k`. Both are `int`s, which is no problem:
+the subtraction is done in integer arithmetic and the result is then converted
+for `std::pow`.
+
+Two small things to watch:
+
+- `std::pow` lives in `<cmath>`, so make sure that header is included at the
+  top of your file.
+- Mind your parentheses. `std::pow(1 - p, n - k)` is the failure term;
+  something like `std::pow(1 - p, n) - k` compiles just as happily and is not
+  what you meant, since everything involved is a number.
+:::
 
 ### Exercise 4: Print
 
