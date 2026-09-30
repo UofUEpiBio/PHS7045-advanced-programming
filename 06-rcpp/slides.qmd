@@ -242,8 +242,6 @@ bold_code <- function(x) {
 }
 ```
 
-::: {layout-ncol="2" style="font-size: 80%" .incremental}
-
 ```cpp
 #include<Rcpp.h> // <1>
 
@@ -272,11 +270,8 @@ NumericVector add1(NumericVector x) { // <4>
     returns a `r bold_code("NumericVector")`, is called `r bold_code("add1")`,
     has a single input element named  `r bold_code("x")` that is also a
     `r bold_code("NumericVector")`.
-:::
 
 ## Parts of "an Rcpp program" (cont'd) 
-
-::: {layout-ncol="2" style="font-size: 80%" .incremental}
 
 ```cpp
 #include<Rcpp.h>
@@ -310,7 +305,6 @@ NumericVector add1(NumericVector x) {
     the i-th element of `x` plus 1.
     
 8.  `r bold_code("return ans")` exists the function returning the vector `ans`.
-:::
 
 
 ## C++/Rcpp fundamentals
@@ -481,8 +475,6 @@ microbenchmark::microbenchmark(fibR(20), fibCpp(20))
 
 ## Exposing C++ classes to R
 
-::: {.columns style="font-size: 80%"}
-::: {.column width="50%"}
 ```{Rcpp}
 //| eval: true
 //| label: "person-class"
@@ -525,8 +517,7 @@ int print_person(SEXP person) {
   return 0;
 }
 ```
-:::
-::: {.column width="50%"}
+
 ::: {.fragment data-code-focus="3-17"}
 - We define a class `Person` with a constructor, three methods, and two private members.
 :::
@@ -540,9 +531,6 @@ int print_person(SEXP person) {
 
 ::: {.fragment data-code-focus="25-36"}
 - **(Unwrapping the class)** To unwrap the class, we use the `XPtr` constructor on an `SEXP` object (S expression, from when R was called S!). We use `->` to access the class methods.
-:::
-
-:::
 :::
 
 ::: {.fragment data-code-focus="1-36"}
