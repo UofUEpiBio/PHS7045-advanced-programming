@@ -1,5 +1,5 @@
 ---
-title: Lab 05 - Rcpp and C++
+title: Lab 06 - Rcpp and C++
 author: George G. Vega Yon, Ph.D.
 date-modified: 2024-09-23
 date: 2024-09-24
