@@ -41,7 +41,7 @@ Students must be able to write functions and submit solutions using an R dynamic
 
 The course will depend heavily on Git and GitHub for sharing course material and submitting work. Students will also use dynamic-reporting tools such as R Markdown and Quarto. These tools will be introduced during the first sessions of the course.
 
-Evaluation has four components: weekly labs, homework assignments, a midterm project, and a final project. Class participation will be measured through lab completion. Unless an assignment states otherwise, completed labs must be submitted through GitHub by the Sunday of the corresponding instructional week. Homework will consist of programming problems submitted as R Markdown or Quarto reports. For the midterm and final projects, students will address a programming or computational problem using methods taught in the course. [Example programming projects are available here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1).
+Evaluation has four components: weekly labs, homework assignments, a midterm project, and a final project. Class participation will be measured through lab completion. Unless an assignment states otherwise, completed labs must be submitted through GitHub by the Sunday of the corresponding instructional week. Homework will consist of programming problems submitted as R Markdown or Quarto reports. For the midterm and final projects, students will address a programming or computational problem using course topics taught by the applicable project deadline. [Example programming projects are available here](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects#example-programming-projects1).
 
 | Component | Weight |
 |---|---:|
@@ -109,7 +109,7 @@ The current course schedule is subject to change. Students will be notified of a
 | Oct. 6 and 8 | Parallel computing; feedback on midterm project plans Oct. 6 |
 | Oct. 13 and 15 | Fall Break - no class |
 | Oct. 20 and 22 | Bonus AI topics; Ollama |
-| Oct. 27 and 29 | Midterm project hackathon; R package due and lightning presentations Oct. 29 |
+| Oct. 27 and 29 | Midterm project hackathon; R functions and slides due and lightning presentations Oct. 29 |
 | Nov. 3 and 5 | University of Utah CHPC introduction and coding agents |
 | Nov. 10 and 12 | Slurm and additional Slurm practice |
 | Nov. 17 and 19 | R packages I |
