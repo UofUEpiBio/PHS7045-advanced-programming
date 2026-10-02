@@ -19,7 +19,7 @@ Dates follow the University of Utah [Fall 2026 academic calendar](https://regist
 
 ## Task
 
-Develop an R package that solves a problem.  This could be from your own research or you may get approval to do a related but modified example from ([posted projects](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects)).  
+Develop a small, reusable set of R functions that solves a problem. This could be from your own research, or you may get approval to do a related but modified example from the [posted projects](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects). Your submission is **not** an R package; we will cover package development later in the course.
 
 ## Midterm plan
 
@@ -27,36 +27,38 @@ By **Thursday, October 1**, submit a short plan describing your project. The pla
 
 * A working title.
 * A one-paragraph abstract describing the problem you want to solve and why it matters.
-* The course topics (at least 3, see [Requirements](#requirements)) you plan to incorporate.
-* The data (real or simulated) you will use to illustrate the package.
+* The course topics (at least 3; see [Requirements](#requirements)) you plan to incorporate.
+* The data (real or simulated) you will use to illustrate your functions.
 
 We will return feedback on Tuesday, October 6. You may be asked to adjust the scope of your project before you start working on it.
 
 ## Deliverables
 
-* R package with a vignette, at least 2-5 pages, including example of real data or simulation (70% of grade)
+* A GitHub repository containing well-documented R functions, a `README.md`, and a 2--5-page Quarto report. The report must explain the problem, show how to use the functions, and include an example using real data or a simulation (70% of grade).
 * Oral presentation of no more than 7 minutes (30% of grade)
 
 ## Requirements
 
 Basic requirements include:
 
-* R code is well documented
-* Package should be able to install
-* Available on github with README.md
-* Package sets a class with generic summary, plot, and print functions
+* Implement at least one user-facing R function and organize any supporting code into clearly named helper functions.
+* Document each function's purpose, inputs, returned value, and any important side effects or assumptions.
+* Make the code reproducible: the repository includes a `README.md` with setup and usage instructions, and the Quarto report renders successfully from a fresh R session.
+* Use Git and GitHub to track and share the work.
+* Include a brief statement in the `README.md` or Quarto report describing any use of AI tools, including how you checked their output.
 
 
-Further, the package should incorporate the content of least 3 topics, including: 
+Further, the project should substantively incorporate at least three of the following topics that will have been covered by the midterm deadline:
 
-* Rcpp
-* Vignette built in Quarto
-* Simulation and timing
-* *apply functions
-* data.table
-* parallel computing
+* Functional programming, including the `*apply` family or related functionals
+* R classes and S3 methods (for example, `print()`, `summary()`, or `plot()` methods), where appropriate for the problem
+* `data.table`
+* Simulation, vectorization, and/or performance timing
+* Debugging and profiling
+* C++ programming and/or Rcpp
+* Parallel computing
 
-Bonus points will be given for continuous integration.
+Quarto and Git/GitHub are required foundations of the submission rather than choices in this list. Continuous integration is welcome but is not required.
 
 
 ## Grading
