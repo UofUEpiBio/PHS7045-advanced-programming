@@ -18,7 +18,7 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who,homework,home
 10/20/26,9,Lecture and Lab,Bonus Track 1: More on AI,,,,,,,"Mui, George"
 10/22/26,9,Lecture and Lab,Bunus Track 2: Ollama,,,,,,,"Mui, George"
 10/27/26,10,Lecture,Midterm project: Hackathon,,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html,,,,"Mui, George"
-10/29/26,10,Lab,Midterm project: Presentations (lightning talk),,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html,,"R package and slides due before class",,"Mui, George",09-midterm/homework.html,09-midterm/homework.qmd
+10/29/26,10,Lab,Midterm project: Presentations (lightning talk),,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html,,"R functions and slides due before class",,"Mui, George",09-midterm/homework.html,09-midterm/homework.qmd
 11/3/26,11,Lecture and Lab,UofU's CHPC intro,,CHPC overview,10-chpc-week/chpc_overview.pdf,,"<a href=""10-chpc-week/IntroLinux-RClass.pdf"">Linux slides</a>, <a href=""10-chpc-week/using_r_at_chpc.pdf"">using R slides</a>, <a href=""10-chpc-week/RClass-Slurm.pdf"">Slurm slides</a>",,CHPC
 11/5/26,11,Lecture and Lab,UofU's CHPC coding agents,,lab,10-slurm-practice/lab.html,10-slurm-practice/lab.qmd,,,CHPC
 11/10/26,12,Lecture,Slurm,,slides,11-slurm-week1/slides.html,11-slurm-week1/slides.qmd,,,Mui

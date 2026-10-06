@@ -106,6 +106,8 @@ book:
           rel: noopener
     - part: "Midterm Project"
       chapters:
+        - text: "Midterm requirements"
+          href: exams/01-midterm.html
         - file: 09-midterm/homework.qmd
           target: _blank
           rel: noopener
