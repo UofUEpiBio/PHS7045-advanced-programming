@@ -19,7 +19,16 @@ Dates follow the University of Utah [Fall 2026 academic calendar](https://regist
 
 ## Task
 
-Develop a small, reusable set of R functions that solves a problem. This could be from your own research, or you may get approval to do a related but modified example from the [posted projects](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects). Your submission is **not** an R package; we will cover package development later in the course.
+Develop a small, reusable set of R functions that solves a problem. This could be from your own research, or you may get approval to do a related but modified example from the [posted projects](https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/projects). **You are not required to build an R package for the midterm.** Write your functions as regular R scripts (for example, in an `R/` folder) that your report sources. We will cover package development later in the course, and turning your project into a package will be part of the final project.
+
+## Getting started: use the template
+
+All midterm projects must start from the course template repository: [UofUEpiBio/advanced-programming-midterm](https://github.com/UofUEpiBio/advanced-programming-midterm){target="_blank" rel="noopener"}.
+
+1. On the template's GitHub page, click **Use this template** → **Create a new repository** and create the repository under your own account.
+2. Write your report in `report.qmd` and your presentation in `slides.qmd`; put data files in `data/`, and add your R (and C++, if any) code to the repository.
+3. If your project needs additional R packages, add them to the "Install dependencies" step of `.github/workflows/check-qmd-render.yaml`.
+4. Make sure the GitHub Actions workflow completes without errors, generating `report.pdf` and `slides.html`, before you submit.
 
 ## Midterm plan
 
@@ -34,8 +43,8 @@ We will return feedback on Tuesday, October 6. You may be asked to adjust the sc
 
 ## Deliverables
 
-* A GitHub repository containing well-documented R functions, a `README.md`, and a 2--5-page Quarto report. The report must explain the problem, show how to use the functions, and include an example using real data or a simulation (70% of grade).
-* Oral presentation of no more than 7 minutes (30% of grade)
+* A GitHub repository, created from the [template](#getting-started-use-the-template), containing well-documented R functions, a `README.md`, and a 2--5-page Quarto report (`report.qmd`). The report must explain the problem, show how to use the functions, and include an example using real data or a simulation (70% of grade).
+* Oral presentation of no more than 7 minutes using the template's `slides.qmd` (30% of grade)
 
 ## Requirements
 
@@ -43,7 +52,7 @@ Basic requirements include:
 
 * Implement at least one user-facing R function and organize any supporting code into clearly named helper functions.
 * Document each function's purpose, inputs, returned value, and any important side effects or assumptions.
-* Make the code reproducible: the repository includes a `README.md` with setup and usage instructions, and the Quarto report renders successfully from a fresh R session.
+* Make the code reproducible: the repository includes a `README.md` with setup and usage instructions, and the template's GitHub Actions workflow renders the report and slides without errors.
 * Use Git and GitHub to track and share the work.
 * Include a brief statement in the `README.md` or Quarto report describing any use of AI tools, including how you checked their output.
 
