@@ -21,7 +21,7 @@ bibliography: references.bib
 embed-resources: false
 ---
 
-# Fundamentals {background-color="#515A5A"}
+# Fundamentals
 
 ![](https://raw.githubusercontent.com/USCbiostats/hpc-with-r/df60e1cfdc0f848f4f0de5a0aa7d0833f4cfe3d5/fig/bulldog-teaches-baby-crawl.gif){fig-align="center" fig-alt="Animated GIF of a bulldog teaching a baby to crawl"}
 
@@ -40,36 +40,27 @@ Loosely, from R's perspective, we can think of HPC in terms of two, maybe three 
 (Checkout [CRAN Task View on HPC](https://cran.r-project.org/web/views/HighPerformanceComputing.html))
 
 
-## Some vocabulary for HPC 
+## Some vocabulary for HPC
 
+**High Throughput Computing Cluster (HTC Cluster)**
 
-::: {.columns layout-align="center"}
-::: {.column width="33%"}
-High Throughput Computing Cluster (HTC Cluster)
+![Open Science Grid Consortium (OSG) <https://osg-htc.org>](fig/OSG_Map.png){width=60% fig-align="center"}
 
-![Open Science Grid Consortium (OSG) <https://osg-htc.org>](fig/OSG_Map.png){width=80%}
-:::
-::: {.column width="33%"}
-Supercomputer (HPC Cluster)
+**Supercomputer (HPC Cluster)**
 
-![The Exascale-class HPE Cray EX Supercomputer at Oak Ridge National Laboratory (fastest as of June 2024)](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frontier_Supercomputer_%282%29.jpg/585px-Frontier_Supercomputer_%282%29.jpg){width=80%}
-:::
-::: {.column width="33%"}
-Embarassingly Parallel
+![The Exascale-class HPE Cray EX Supercomputer at Oak Ridge National Laboratory (fastest as of June 2024)](https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Frontier_Supercomputer_%282%29.jpg/585px-Frontier_Supercomputer_%282%29.jpg){width=60% fig-align="center"}
 
-![Downloaded from [Manning's "Modern Fortran"](https://livebook.manning.com/concept/fortran/addition)](fig/embarrasingly-parallel.png){width=80%}
-:::
-:::
+**Embarassingly Parallel**
+
+![Downloaded from [Manning's "Modern Fortran"](https://livebook.manning.com/concept/fortran/addition)](fig/embarrasingly-parallel.png){width=60% fig-align="center"}
 
 **In terms of scale**
 
-::: {layout-align="center"}
 HTC > HPC > Single node > Socket > Core > Thread | SIMD vectorization
-:::
 
-## What's "a core"? 
+## What's "a core"?
 
-![Source: Original figure from LUMI consortium documentation [@lumi2023]](https://raw.githubusercontent.com/gvegayon/appliedhpcr/e33949f25184bed5e84b02c356656782ddd5a46b/fig/socket-core-threads.svg){width=90% height=400px}
+![Source: Original figure from LUMI consortium documentation [@lumi2023]](https://raw.githubusercontent.com/gvegayon/appliedhpcr/e33949f25184bed5e84b02c356656782ddd5a46b/fig/socket-core-threads.svg){width=90% fig-align="center"}
 
 How many cores does your computer has?
 
@@ -79,10 +70,10 @@ How many cores does your computer has?
 parallel::detectCores()
 ```
 
-## What is parallel computing? 
+## What is parallel computing?
 
-::: {.columns}
-::: {.column width="40%"}
+### Serial computing
+
 ```r
 f <- function(n) n*2
 
@@ -92,17 +83,11 @@ f(1:4)
 - Using a single core.
 - One element at a time.
 - 3 idle cores.
-:::
-::: {.column width="60%"}
-![](fig/pll-computing-explained-serial.svg){width=450px fig-alt="Diagram showing serial computing: one core processes tasks one element at a time while other cores are idle"}
-:::
-:::
 
+![](fig/pll-computing-explained-serial.svg){width=450px fig-align="center" fig-alt="Diagram showing serial computing: one core processes tasks one element at a time while other cores are idle"}
 
-## What is parallel computing? 
+### Parallel computing
 
-::: {.columns}
-::: {.column width="40%"}
 ```r
 f <- function(n) n*2
 f_pll <- ...magic to parallelize f...
@@ -113,40 +98,21 @@ f_pll(1:4)
 - 4 elements at a time.
 - No idle cores.
 - 4 times faster.
-:::
-::: {.column width="60%"}
-![](fig/pll-computing-explained-parallel.svg){width=450px fig-alt="Diagram showing parallel computing: four cores each process one element simultaneously with no idle cores"}
-:::
-:::
 
+![](fig/pll-computing-explained-parallel.svg){width=450px fig-align="center" fig-alt="Diagram showing parallel computing: four cores each process one element simultaneously with no idle cores"}
 
-## {background-color="#515A5A" style="margin:auto;text-align:center;"}
+## When is it a good idea to go HPC?
 
-<text style="color:white;">Let's think before we start...</text>
+Let's think before we start...
 
-![](https://media.giphy.com/media/Dwclsfe6Gb91m/giphy.gif){style="width:500px" fig-alt="Animated GIF illustrating a thinking or decision-making moment"}
+![](https://media.giphy.com/media/Dwclsfe6Gb91m/giphy.gif){width=400px fig-align="center" fig-alt="Animated GIF illustrating a thinking or decision-making moment"}
 
-<text style="color:white;">When is it a good idea to go HPC?</text>
+![Ask yourself these questions before jumping into HPC!](fig/when_to_parallel.svg){fig-align="center" width="80%"}
 
-## When is it a good idea? 
-
-::: {.columns}
-
-::: {.column width="70%"}
-![Ask yourself these questions before jumping into HPC!](fig/when_to_parallel.svg){fig-align="center" width="100%"}
-:::
-
-::: {.column width="30%"}
-::: {.callout-tip title="Pro-tip" .fragment}
+::: {.callout-tip title="Pro-tip"}
 When in doubt, **profile** your code first! In R, you can use the [`profvis`](https://cran.r-project.org/package=profvis) package. which will give you a visual representation of where your code is spending most of the time.
 :::
-:::
 
-:::
-
-## When is it a good idea?
-
-::: {layout-ncol="2"}
 ### Things that are easily parallelizable
 
 - Bootstrapping.
@@ -162,23 +128,18 @@ When in doubt, **profile** your code first! In R, you can use the [`profvis`](ht
 - Any sequential algorithm.
 
 [^whenmatrix]: Parallelization of matrix operations is usually done via SIMD instructions, like those in GPUs and some CPUs. Most cases it applies via implicit parallelism (not at the user level).
-:::
 
-::: {.fragment .incremental}
-Good example usage case:
+### A good example usage case
 
 - Large simulation study running ABMs.
 - It took about **30 minutes** using R + the parallel package... using 50 threads!
-- It would have taken about 30 mins x 50 = **24 hours using a single thread**. 
-:::
+- It would have taken about 30 mins x 50 = **24 hours using a single thread**.
 
 ## Overhead cost
 
-::: {style="font-size:80%"}
 - Parallelization is not free: Most cost is in sending+receiving data.
 
 - In R (and other flavors), you can mitigate by (i) reducing the amount of data communicated, and (ii) reducing the number of times you communicate.
-:::
 
 ```{r}
 #| label: overhead-cost
@@ -269,7 +230,7 @@ par(op)
 ```
 
 
-# Parallel computing in R {background-color="#515A5A"}
+# Parallel computing in R
 
 ![](https://raw.githubusercontent.com/USCbiostats/hpc-with-r/master/fig/spider-toddler.gif){fig-align="center" fig-alt="Spiderman teaching a toddler to walk"}
 
@@ -281,59 +242,49 @@ we'll focus on the following R-packages for **explicit parallelism**
 
 Some examples:
 
-> *   [**parallel**](https://cran.r-project.org/package=parallel): R package that provides '[s]upport for parallel computation,
+*   [**parallel**](https://cran.r-project.org/package=parallel): R package that provides '[s]upport for parallel computation,
     including random-number generation'.
 
-> *   [**foreach**](https://cran.r-project.org/package=foreach): R package for 'general iteration over elements' in parallel fashion.
+*   [**foreach**](https://cran.r-project.org/package=foreach): R package for 'general iteration over elements' in parallel fashion.
 
-> *   [**future**](https://cran.r-project.org/package=future): '[A] lightweight and
+*   [**future**](https://cran.r-project.org/package=future): '[A] lightweight and
     unified Future API for sequential and parallel processing of R
     expression via futures.'
 
-> *   [**slurmR**](https://cran.r-project.org/package=slurmR): R package for working with
+*   [**slurmR**](https://cran.r-project.org/package=slurmR): R package for working with
     the Slurm Workload Manager (by yours truly).
-    
+
 Implicit parallelism, on the other hand, are out-of-the-box tools that allow the
 programmer not to worry about parallelization, e.g. such as
 [**gpuR**](https://cran.r-project.org/package=gpuR) for Matrix manipulation using
 GPU, [**tensorflow**](https://cran.r-project.org/package=tensorflow)
 
----
-
 And there's also a more advanced set of options
 
-> *   [**Rcpp**](https://cran.r-project.org/package=Rcpp) + [OpenMP](https://www.openmp.org):
+*   [**Rcpp**](https://cran.r-project.org/package=Rcpp) + [OpenMP](https://www.openmp.org):
     [Rcpp](https://cran.r-project.org/package=Rcpp) is an R package for integrating
     R with C++, and OpenMP is a library for high-level parallelism for C/C++ and
     Fortran.
 
-> *   A ton of other type of resources, notably the tools for working with 
+*   A ton of other type of resources, notably the tools for working with
     batch schedulers such as Slurm, HTCondor, etc.
-    
+
 ## The parallel package
 
-::: {.columns}
-::: {.column width="50%"}
 - Explicit parallelism.
 - Parallel computing as multiple R sessions.
 - Clusters can be made of both local and remote sessions
 - Multiple types of cluster: `PSOCK`, `Fork`, `MPI`, etc.
-:::
-::: {.column width="50%"}
-![](fig/parallel-package.svg){fig-alt="Diagram showing the R parallel package architecture with clusters composed of local and remote R sessions"}
-:::
-:::
+
+![](fig/parallel-package.svg){width=70% fig-align="center" fig-alt="Diagram showing the R parallel package architecture with clusters composed of local and remote R sessions"}
 
 ## Parallel workflow
 
 (Usually) We do the following:
 
-::: {.fragment}
 1.  Create a `PSOCK/FORK` (or other) cluster using `makePSOCKCluster`/`makeForkCluster`
     (or `makeCluster`)
-:::
 
-::: {.fragment}
 2.  Copy/prepare each R session (if you are using a `PSOCK` cluster):
 
     a.  Copy objects with `clusterExport`
@@ -341,15 +292,10 @@ And there's also a more advanced set of options
     b.  Pass expressions with `clusterEvalQ`
 
     c.  Set a seed
-:::
 
-::: {.fragment}
-3.  Do your call: `parApply`, `parLapply`, etc. 
-:::
+3.  Do your call: `parApply`, `parLapply`, etc.
 
-::: {.fragment}
 4.  Stop the cluster with `clusterStop`
-:::
 
 ## Types of clusters
 
@@ -364,7 +310,7 @@ Using PSOCK, the [`slurmR`](https://cran.r-project.org/package=slurmR){target="_
 
 [^mpi]: Requires the [`Rmpi`](https://cran.r-project.org/package=Rmpi) package
 
-# Hands-on {background-color="#515A5A"}
+# Hands-on
 
 ![](https://i.imgflip.com/38jiku.jpg){fig-align="center" fig-alt="Emergency broadcat: Your R code will get some seriuos speed boost" width="50%"}
 
@@ -373,7 +319,6 @@ Using PSOCK, the [`slurmR`](https://cran.r-project.org/package=slurmR){target="_
 ```{r}
 #| label: parallel-ex-psock
 #| echo: true
-#| code-line-numbers: "|2,3|6,7,8|11,12,13"
 # 1. CREATING A CLUSTER
 library(parallel)
 cl <- makePSOCKcluster(4)    
@@ -390,7 +335,6 @@ clusterEvalQ(cl, {
 ```
 
 ```{r}
-#| code-line-numbers: "|2"
 #| echo: true
 # 4. STOP THE CLUSTER
 stopCluster(cl)
@@ -428,7 +372,6 @@ str(y)
 #| echo: true
 #| strip-white: false
 #| code-annotations: hover
-#| output-location: column
 #| collapse: true
 
 
@@ -452,7 +395,6 @@ ans[,1:3]
 ```{r}
 #| label: lots-of-lm-parallel
 #| echo: true
-#| output-location: column
 #| collapse: true
 cl <- parallel::makePSOCKcluster(4L) # <1>
 ans <- parallel::parApply(           # <2>
@@ -471,8 +413,7 @@ ans[,1:3]
 
 Both results should be the same.
 
-
------
+### Benchmarking
 
 Are we going any faster? The `microbenchmark` package can help us with that:
 
@@ -587,7 +528,7 @@ ans_pll <- my_boot_pll(y, X, cl, B=50)
 head(ans_pll)
 ```
 
----
+### Benchmarking
 
 How much faster?
 
@@ -634,7 +575,6 @@ Let's start with the naive approach: fitting the model and returning the full ou
 #| label: overhead-cost-run
 #| echo: true
 #| cache: true
-#| code-line-numbers: "|2,7"
 library(parallel)
 cost_serial <- system.time(lapply(1:ncol(X), function(i) lm(y ~ X[,i])))
 
@@ -650,7 +590,6 @@ stopCluster(cl)
 ```{r}
 #| label: overhead-cost-output-table-naive
 #| echo: false
-#| code-line-numbers: "|2,7"
 data.frame(
   Serial           = cost_serial["elapsed"],
   `Parallel naive` = cost_pll["elapsed"],
@@ -668,8 +607,6 @@ The problem: we are returning a lot of information that we may not need:
 format(ncol(X) * object.size(lm(y ~ X[,1])), units="GB")
 ```
 
----
-
 ## Ex 4: Overhead cost - Less receiving
 
 Instead of capturing the full output, we can just return the coefficients.
@@ -677,7 +614,6 @@ Instead of capturing the full output, we can just return the coefficients.
 ```{r}
 #| label: overhead-cost-coef-only
 #| echo: true
-#| code-line-numbers: "4"
 cl <- makePSOCKcluster(4)
 clusterExport(cl, c("X", "y"))
 cost_pll_coef <- system.time(
@@ -709,7 +645,6 @@ Since we only get coefficients, we can use a lighter version of `lm` called `lm.
 ```{r}
 #| label: overhead-cost-lm-fit-lite
 #| echo: true
-#| code-line-numbers: "5"
 cl <- makePSOCKcluster(4)
 X1 <- cbind(1, X)
 clusterExport(cl, c("X1", "y"))
@@ -722,7 +657,6 @@ cost_pll_lite <- system.time({
 stopCluster(cl)
 ```
 
-::: {style="font-size:70%"}
 ```{r}
 #| label: overhead-cost-output-table-lite
 #| echo: false
@@ -736,15 +670,11 @@ data.frame(
   ) |> t() |> knitr::kable()
 ```
 
-:::
-
 ::: {.callout-tip title="Pro-tip"}
 Using a Fork cluster instead of a PSOCK cluster can further reduce the overhead cost. Both `X` and `y` would have been automatically available in the Fork cluster at 0 cost.
 :::
 
 ## Conclusion
-
-::: {.incremental}
 
 - Parallel computing is a powerful tool to speed up your ~R~ code.
 
@@ -756,23 +686,10 @@ Using a Fork cluster instead of a PSOCK cluster can further reduce the overhead 
   1. Reduce the amount of data communicated (send/receive).
   2. Pass only what you need (*i.e.*, communicated data x2).
   3. Use lighter versions of functions when possible.
-:::
 
-## {style="text-align:center!important;"}
-
-```{r thanks, out.width="300px", echo=FALSE, fig.alt="Animated GIF of a runner celebrating a fast finish, representing speed gains from parallel computing"}
+```{r thanks, out.width="300px", echo=FALSE, fig.align="center", fig.alt="Animated GIF of a runner celebrating a fast finish, representing speed gains from parallel computing"}
 knitr::include_graphics("fig/speed.gif")
 ```
-
-
-### Thanks!
-
-<p style="text-align:center!important;">
-{{< fa brands github >}}   [gvegayon](https://github.com/gvegayon/) <br>
-{{< fa home >}} [ggvy.cl](https://ggvy.cl)<br>
-{{< fa envelope >}} [george.vegayon@utah.edu](mailto:george.vegayon@utah.edu) <br>
-<text style="color:gray;font-size:80%">Presentation created with {{< fa heart >}} and [quarto.org](https://quarto.org)</text>
-</p>
 
 ## See also
 
@@ -810,8 +727,6 @@ pcol <- ifelse(
 plot(p, col=pcol, pch=18)
 ```
 
-## 
-
 The R code to do this
 
 ```{r simpi, echo=TRUE}
@@ -827,7 +742,7 @@ pisim <- function(i, nsim) {  # Notice we don't use the -i-
 }
 ```
 
-##
+Now we run it in serial and in parallel:
 
 ```{r parallel-ex2, echo=TRUE, cache=TRUE}
 library(parallel)
