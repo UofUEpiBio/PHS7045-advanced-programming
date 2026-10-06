@@ -3,7 +3,6 @@ project:
   output-dir: _book
   resources:
     - 10-chpc-week/chpc_overview.pdf
-    - exams/01-midterm.html
     - exams/02-final.html
 
 book:
@@ -106,8 +105,9 @@ book:
           rel: noopener
     - part: "Midterm Project"
       chapters:
-        - text: "Midterm requirements"
-          href: exams/01-midterm.html
+        - file: exams/01-midterm.qmd
+          target: _blank
+          rel: noopener
         - file: 09-midterm/homework.qmd
           target: _blank
           rel: noopener
