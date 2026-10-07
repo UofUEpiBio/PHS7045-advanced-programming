@@ -1,8 +1,5 @@
 ---
 title: "Advanced Programming with R: Midterm"
-format:
-  html:
-    embed-resources: false
 ---
 
 ## Timeline
