@@ -7,7 +7,7 @@ format:
 
 # Due date
 
-Tuesday, October 13
+Tuesday, October 20
 
 # Background
 

@@ -12,10 +12,10 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who,homework,home
 9/29/26,6,Lecture,C++ in R,,slides,06-rcpp/slides.html,06-rcpp/slides.qmd,,,George
 10/1/26,6,Lab,C++ in R,,lab,06-rcpp/lab.html,06-rcpp/lab.qmd,"<a href=""https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html"" target=""_blank"" rel=""noopener"">Midterm plan due</a>",,George
 10/6/26,7,Lecture,Parallel Computing,,slides,07-parallel-computing/slides.html,07-parallel-computing/slides.qmd,"<a href=""https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html"" target=""_blank"" rel=""noopener"">Midterm plan feedback</a>",,George
-10/8/26,7,Lab,Parallel Computing,,lab,07-parallel-computing/lab.html,07-parallel-computing/lab.qmd,Homework due Tuesday 10/13,,George,09-midterm/homework.html,09-midterm/homework.qmd
+10/8/26,7,Lab,Parallel Computing,,lab,07-parallel-computing/lab.html,07-parallel-computing/lab.qmd,,,George
 10/13/26,8,Break,Fall Break,,,,,,,
 10/15/26,8,Break,Fall Break,,,,,,,
-10/20/26,9,Lecture and Lab,Bonus Track 1: More on AI,,,,,,,"Mui, George"
+10/20/26,9,Lecture and Lab,Bonus Track 1: More on AI,,,,,Homework due Tuesday 10/20,,"Mui, George",09-midterm/homework.html,09-midterm/homework.qmd
 10/22/26,9,Lecture and Lab,Bunus Track 2: Ollama,,,,,,,"Mui, George"
 10/27/26,10,Lecture,Midterm project: Hackathon,,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html,,,,"Mui, George"
 10/29/26,10,Lab,Midterm project: Presentations (lightning talk),,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/01-midterm.html,,"R functions and slides due before class",,"Mui, George"
