@@ -92,6 +92,84 @@ bench::mark(serial=serial_sum(x),parallel=parallel_sum(x),relative=TRUE)
 
 
 
-**Part 2**:
+**Part 2 (Reproducible parallel simulations)**:
 
-Using your homework 1 solution, use parallel computing to generate replicates of the trial design.  Compare the timing when not using parallel computing versus when using parallel computing.  (If you used parallel computing in your submission, remove or modify the parallel computing component and compare the timing).
+When we parallelize a simulation, each worker draws its own random numbers. If we only call `set.seed()` once in the main session, the results will depend on *how* the work was split across workers (and, with `parLapply()`, the workers may not be seeded at all). A simulation study should give the **same answer whether it runs in serial or with 2, 4, or 16 cores**. In this part, you will write a power analysis that satisfies that requirement.
+
+*The problem.* We want to know the empirical power to detect a treatment effect in a probit model. For each subject $i = 1, \dots, n$:
+
+$$
+\begin{aligned}
+X_i & \sim \mbox{N}(0, 1) \\
+D_i & \in \{0, 1\}, \quad \mbox{Pr}(D_i = 1) = 0.5 \quad \mbox{(exactly } n/2 \mbox{ treated and } n/2 \mbox{ controls)} \\
+Y_i \mid X_i, D_i & \sim \mbox{Bernoulli}(p_i), \quad p_i = \Phi(\beta_0 + \beta_D D_i + \beta_X X_i)
+\end{aligned}
+$$
+
+where $\Phi$ is the standard normal CDF, $X_i$ and $D_i$ are independent, and $(\beta_0, \beta_D, \beta_X) = (0, 0.5, 1)$. The covariate has a large effect relative to the treatment, which makes the treatment effect harder to detect.
+
+For each simulated dataset, fit the probit model `glm(y ~ d + x, family = binomial(link = "probit"))` and test
+
+$$
+H_0: \beta_D = 0 \quad \mbox{vs} \quad H_1: \beta_D > 0
+$$
+
+with a one-sided Wald test at $\alpha = 0.05$, i.e., reject if $z = \hat\beta_D / \widehat{\mbox{se}}(\hat\beta_D) > \Phi^{-1}(0.95)$. The empirical power for a sample size $n$ is the proportion of the $R$ simulated datasets in which we reject $H_0$:
+
+$$
+\widehat{\mbox{Power}}(n) = \frac{1}{R}\sum_{r=1}^R \mathbb{1}\left(z_r > \Phi^{-1}(0.95)\right)
+$$
+
+Compute the empirical power for $n \in \{100, 200, \dots, 1000\}$ using $R = 500$ replicates per sample size.
+
+*Requirement.* The results must not change with the number of cores. Running the simulation in serial (e.g., with `lapply()`) must yield exactly the same results as running it in parallel (e.g., with `parallel::parLapply()` or `parallel::mclapply()`). A simple way to achieve this is to generate **one seed per simulation (sample size $\times$ replicate)** up front, in the main session, and call `set.seed()` with that seed at the start of each simulation. That way, each simulation's random numbers depend only on its own seed, not on which worker runs it or in what order.
+
+Follow this outline:
+
+```{r, eval=FALSE}
+library(parallel)
+
+# 1. A function that simulates ONE dataset of size n using a given seed,
+#    fits the probit model, and returns TRUE if H0 is rejected
+sim_one <- function(n, seed, beta = c(0, 0.5, 1), alpha = 0.05) {
+
+  set.seed(seed)
+
+  # Simulate x, d (exactly n/2 treated), and y
+
+  # Fit the probit model and extract the z-value for d
+
+  # Return TRUE/FALSE
+
+}
+
+# 2. The simulation grid: one row per (sample size, replicate), with its
+#    own seed drawn ONCE in the main session
+set.seed(7045)
+sizes <- seq(100, 1000, by = 100)
+nsim  <- 500
+grid  <- expand.grid(rep = 1:nsim, n = sizes)
+grid$seed <- sample.int(.Machine$integer.max, nrow(grid))
+
+# 3. Run the simulation in serial
+ans_serial <- lapply(seq_len(nrow(grid)), function(i) {
+  sim_one(grid$n[i], grid$seed[i])
+})
+
+# 4. Run the simulation in parallel (create the cluster, export what
+#    the workers need, run parLapply, stop the cluster)
+
+# 5. Check that both are the same and compute the power by sample size
+identical(ans_serial, ans_parallel)
+tapply(unlist(ans_parallel), grid$n, mean)
+```
+
+Then:
+
+a. Verify that the results are `identical()` when using 1, 2, and 4 cores.
+
+b. Compare the timing of the serial and parallel versions.
+
+c. Plot the empirical power as a function of $n$. What is the smallest sample size (in the grid) that achieves 80% power?
+
+d. What happens if, instead of seeding each simulation, you call `set.seed(7045)` once before `parLapply()` (or use `clusterSetRNGStream(cl, 7045)`) and drop the `set.seed(seed)` line from `sim_one()`? Do the results still match the serial version? Do they change with the number of cores? Why?
