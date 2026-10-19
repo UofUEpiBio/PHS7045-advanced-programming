@@ -22,7 +22,7 @@ Welcome to Advanced Programming in R and HPC! The instructors are [George G. Veg
 | 7 | 10/8/26 | Lab | Parallel Computing | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/07-parallel-computing/lab.html" target="_blank" rel="noopener">lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/07-parallel-computing/lab.qmd" target="_blank" rel="noopener">source</a>) |
 | 8 | 10/13/26 | Break | Fall Break |  |
 | 8 | 10/15/26 | Break | Fall Break |  |
-| 9 | 10/20/26 | Lecture and Lab | Bonus Track 1: More on AI |  |
+| 9 | 10/20/26 | Lecture and Lab | Bonus Track 1: More on AI (Prompt, Run, Verify) | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/08-AI-bonus-track/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/08-AI-bonus-track/slides.qmd" target="_blank" rel="noopener">source</a>)<br><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/08-AI-bonus-track/lab.html" target="_blank" rel="noopener">lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/08-AI-bonus-track/lab.qmd" target="_blank" rel="noopener">source</a>) |
 | 9 | 10/22/26 | Lecture and Lab | Bunus Track 2: Ollama |  |
 | 10 | 10/27/26 | Lecture | Midterm project: Hackathon |  |
 | 10 | 10/29/26 | Lab | Midterm project: Presentations (lightning talk) | <a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/09-midterm/homework.html" target="_blank" rel="noopener">Homework 3</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/tree/main/09-midterm/homework.qmd" target="_blank" rel="noopener">source</a>) |

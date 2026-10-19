@@ -106,6 +106,14 @@ book:
         - file: 07-parallel-computing/lab.qmd
           target: _blank
           rel: noopener
+    - part: "Bonus Track: More on AI"
+      chapters:
+        - file: 08-AI-bonus-track/slides.qmd
+          target: _blank
+          rel: noopener
+        - file: 08-AI-bonus-track/lab.qmd
+          target: _blank
+          rel: noopener
     - part: "Midterm Project"
       chapters:
         - file: exams/01-midterm.qmd

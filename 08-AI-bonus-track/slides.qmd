@@ -1,0 +1,417 @@
+---
+title: "Prompt, Run, Verify"
+subtitle: "PHS 7045: Advanced Programming -- Bonus Track 1: More on AI"
+author:
+  - "Thi Mui Pham, Ph.D."
+date: October 20, 2026
+bibliography: references.bib
+---
+
+::: {.callout-note}
+## Attribution
+
+This session is based on the workshop *Prompt, Run, Verify: Using LLMs for Data Analysis in Public Health* by Heather Mattie, Ph.D. (Department of Biostatistics, Harvard T.H. Chan School of Public Health) [@mattiePromptRunVerify2026]. The original slides, student guide, analysis walkthrough, and dataset are available at <https://github.com/hmattie/Prompt-Run-Verify-Workshop>{target="_blank"}. We adapted the material to the this course. 
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(readr)
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+dat_raw <- read_csv("nhanes_workshop.csv", show_col_types = FALSE)
+```
+
+## Where we are
+
+In week 1 we talked about what an AI agent is, how context works, why models hallucinate, and how we plan to use AI in this class. Today, we take a step back and cover key principles to **checking what the AI gave you**.
+
+This lecture and lab are interleaved: each idea is followed by a short activity. Work in **pairs** and keep your answers, prompts, and code in one Quarto document, `lab08.qmd`; the full instructions for each activity are in [Lab 08](lab.qmd).
+
+| Time | What we do |
+|---|---|
+| 0--5 | Would you submit this? |
+| 5--10 | Words versus numbers |
+| 10--15 | **Activity 1:** ask your model for 20 decimals |
+| 15--18 | Where did the number come from? |
+| 18--22 | Three typical errors in LLM-written code |
+| 22--34 | **Activity 2:** spot the bug |
+| 34--40 | Debrief: the silent bug that changed the story |
+| 40--47 | A framework: Plan, Protect, Prompt, Run, Verify, Own |
+| 47--60 | **Activity 3:** prompt, run, verify |
+| 60--65 | When you cannot share the data |
+| 65--78 | **Activity 4:** the no-upload workflow, test first |
+| 78--82 | **Activity 5:** own it |
+| 82--90 | Debugging with an LLM, who to ask, dos and don'ts |
+
+Before we start: download [`nhanes_workshop.csv`](nhanes_workshop.csv) into a folder `lab08/` in your class repository and create `lab08.qmd` next to it (see the setup section of the lab). You will need your VS Code agent from Lab 00 and a plain chat window.
+
+# Would you submit this?
+
+## An LLM ran this regression in 10 seconds
+
+Suppose you upload a CSV with 1,000 US adults from the NHANES survey to your favorite LLM and type:
+
+::: {.callout-note collapse="true"}
+## What is NHANES?
+The National Health and Nutrition Examination Survey (NHANES) is run by the US Centers for Disease Control and Prevention (CDC). Every two years it samples about 10,000 people who represent the US population. Each participant has a home interview and a physical exam with lab tests, so variables like BMI and blood pressure are measured, not self-reported. Our dataset is a 1,000-person sample from the 2009--2012 cycles, taken from the [`NHANES` R package](https://cran.r-project.org/package=NHANES){target="_blank"} [@prykeNHANES2015]. It was modified for teaching, so don't use it for research or population estimates.
+:::
+
+> Fit a linear regression of systolic BP on BMI, age, sex, and race.
+
+Ten seconds later you get this table and a summary paragraph:
+
+```{r}
+#| label: opening-table
+#| echo: false
+fit_bug <- lm(sbp ~ bmi + age + sex + race,
+              data = mutate(dat_raw, bmi = if_else(bmi == 999, NA, bmi)))
+tab <- summary(fit_bug)$coefficients
+tab <- data.frame(
+  Term     = rownames(tab),
+  Estimate = round(tab[, "Estimate"], 3),
+  SE       = round(tab[, "Std. Error"], 3),
+  p        = ifelse(tab[, "Pr(>|t|)"] < 0.001, "<0.001", round(tab[, "Pr(>|t|)"], 3)),
+  row.names = NULL
+)
+knitr::kable(tab)
+```
+
+> **The LLM's summary:** "BMI is significantly associated with higher systolic BP. Race is not associated with blood pressure."
+
+Would you submit this? Yes, no, or not sure? Keep your answer in mind; we come back to this table in about half an hour.
+
+# Words are its native language. Numbers are not.
+
+## Text versus numbers
+
+**Text is the LLM's strength.** Words get their meaning from the company they keep: "hypertension" sits near "blood pressure", so predictions are usually sensible. Code is text with a strict grammar, and there is a lot of R (and C++, and Python) on the internet to learn from. This is why code generation works as well as it does.
+
+**Numbers are its weakness.** A number may be split into chunks like `120`, `.`, `52`. The model predicts plausible digits, one chunk at a time. A mean, a standard deviation, or a p-value typed into a chat reply can look right and be wrong, with no change in the model's confidence. This is the same mechanism that produces the fake citations we discussed in week 1: the output is plausible text, not a computed fact.
+
+::: {.callout-important}
+## The rule
+Trust numbers that **code printed**. Check numbers the **LLM typed**.
+:::
+
+::: {.callout-tip icon="false"}
+## Activity 1 (5 minutes): ask your model for 20 decimals
+
+Lab 08, Task 1. Paste 25 blood pressure readings into a plain chat with code execution off and ask for the mean and the sample standard deviation, both to 20 decimal places. Then paste the same values into a new chat with code execution on. Compare both answers with the exact values below.
+:::
+
+## Where did the number come from?
+
+The exact answers:
+
+| Statistic | Exact value to 20 decimal places |
+|---|---|
+| Mean | 120.52000000000000000000 |
+| Sample SD | 17.41436188896969029564 |
+
+The mean is a sum divided by 25, so it ends after two decimals. The sample variance is exactly 303.26, so the SD is $\sqrt{303.26}$, an irrational number whose digits never end or repeat. Nobody can recall those digits from memory, and neither can a model: it has to compute them, and without code it cannot. So it does what it always does and predicts digits that look right. Often the first few are correct, because a model can estimate a square root roughly, and everything after that is invented. The reply sounds exactly as confident at decimal 20 as at decimal 1.
+
+Now look at what R says:
+
+```{r}
+#| label: try-it
+#| echo: true
+x <- c(130, 118, 100, 119, 96, 90, 120, 148, 114, 130, 99, 124, 131,
+       130, 148, 98, 118, 114, 113, 134, 116, 143, 158, 112, 110)
+sprintf("%.20f", sd(x))
+```
+
+R agrees with the exact value only through the 15th decimal. That is not a bug in R. A double holds about 15 to 16 significant digits, and `sprintf()` happily prints digits past that limit which carry no information. To get more, you need arbitrary-precision arithmetic, such as the `Rmpfr` package in R or the `decimal` module in Python.
+
+Your code-on chat most likely got all 20 decimals right. Look at its code: it probably used Python's `decimal` module with a high precision rather than ordinary floats. That is what made it right, not the fact that code ran. The same request run through `numpy.std()` would have printed 20 confident decimals with the last few wrong.
+
+Two lessons. First, a number typed without code is a prediction, and it gets worse exactly where you cannot check it by eye. Second, "trust what code printed" still requires knowing what the code can compute. In practice nobody needs 20 decimals of a standard deviation, but the same thing happens quietly with p-values of $10^{-20}$, likelihoods that underflow to zero, and sums of millions of small numbers.
+
+Models learn approximate algorithms for arithmetic during training, and for short vectors with simple numbers they often get the mean exactly right. Research suggests this is not simple recall of memorized answers: small transformers trained from scratch on addition can learn exact digit-wise algorithms [@quirkeUnderstandingAddition2024], while mid-sized LLMs appear to represent numbers as helices and add them with a trigonometric “Clock” mechanism, alongside learned heuristics [@kantamneniTrigonometryAddition2025]. These mechanisms are imperfect, and accuracy degrades as the problems get longer and more complex.
+
+Four ways to get a result, four levels of trust:
+
+| How the number was produced | What it means | Trust |
+|---|---|---|
+| **Typed in the chat** | Predicted, not computed. No code to inspect. | Low. Never report it. |
+| **The chat ran code for you** | Computed, but often in Python even if you asked for R, in a sandbox session you cannot rerun later. | Medium. Fine for exploring. |
+| **An agent ran code in your repository** | Computed, visible, saved in a `.qmd` you can rerun, share, and defend. | Good. This is what goes in your report. |
+| **An agent ran code in your repository against tests *you* wrote** | Computed, and checked against an answer you knew in advance. | Best. This is what we want in this class. |
+
+# Loud bugs and silent bugs
+
+## Three typical errors in LLM-written R code
+
+Adapted from @dellavedovaFourBestPractices2026.
+
+| Error | Example | How you'd notice | The fix |
+|---|---|---|---|
+| **Invented function** | `standardize(age)`: not a real function, not in any package you loaded | R stops: "could not find function". `?standardize` finds nothing. | Tell the LLM the function does not exist. |
+| **Outdated syntax** | `summarise_each(funs(mean))` | A deprecation warning in the console. | Ask for the current, non-deprecated version. |
+| **Bad statistical advice** | t-test on heavily skewed data; chi-square with tiny expected counts; no multiple-testing correction | Nothing. The code runs. Only your training catches it. | Check with a human expert. |
+
+The most dangerous one throws no error. Code can run without errors and still be wrong, and an LLM is very good at writing code that runs.
+
+::: {.callout-tip icon="false"}
+## Activity 2 (12 minutes): spot the bug
+
+Lab 08, Task 2. Four chunks an LLM wrote from prompts that did not include the codebook: a scatterplot, a regression, a filtered mean, and a C++ factorial. All four have a problem; only one of them is a "loud" error. For each discuss whether R complained, whether the result is plausible, and what would you change in the code or in the prompt. Do it without AI first, then ask your agent "Is anything wrong with this code or its output?" and see whether it finds the silent ones.
+:::
+
+## Debrief: the silent bug that changed the story
+
+**Bug A, the loud one.** ggplot layers are joined with `+`, not `%>%`. R stops and even suggests the fix. Paste the error into an LLM and it will fix it. (The corrected plot still has the 999s in it. Read the axes.)
+
+**Bug C, the silent one that returns nothing.** The data say `"female"`; the LLM guessed `"Female"`. The filter matched zero rows and the mean of nothing is `NaN`. No error, no warning. Check $n$ at every step.
+
+**Bug D, the silent one with no data at all.** Ask an agent for a factorial function and you will very likely get this:
+
+```{r}
+#| label: write-factorial
+#| echo: false
+writeLines(c(
+  "#include <iostream>",
+  "",
+  "int factorial(int k) {",
+  "  int ans = 1;",
+  "  for (int i = 2; i <= k; ++i) ans *= i;",
+  "  return ans;",
+  "}",
+  "",
+  "int main() {",
+  "  for (int k = 10; k <= 14; ++k)",
+  "    std::cout << k << \"! = \" << factorial(k) << std::endl;",
+  "  return 0;",
+  "}"
+), "factorial.cpp")
+```
+
+```{r}
+#| label: show-factorial
+#| echo: false
+#| class-output: cpp
+cat(readLines("factorial.cpp"), sep = "\n")
+```
+
+It compiles without a single warning and runs:
+
+```{bash}
+#| label: run-factorial
+#| echo: true
+g++ -std=c++14 -Wall factorial.cpp -o factorial
+./factorial
+```
+
+```{r}
+#| label: r-factorial
+#| echo: true
+factorial(10:14)
+```
+
+From $13!$ on, the `int` overflows and the program prints confident nonsense. (Strictly, signed overflow is undefined behavior in C++; on your machine it most likely wraps around, which is why the numbers look like numbers.) The only way to catch this is to compare against a known answer, which is exactly what you did in the C++ lab when you checked your `factorial()`, `choose()`, and `dbinom()` against R's. The agent that wrote it would have caught it too, had you given it `factorial(1:15)` from R as the test.
+
+**Bug B, the silent one that changed the story: back to the opening table.** The regression you saw at the start treated `race`, stored as the integers 1 to 5, as a number instead of a category. Here is what changes when we fix that:
+
+```{r}
+#| label: closing-table
+#| echo: false
+dat <- dat_raw |>
+  mutate(
+    bmi  = if_else(bmi == 999, NA, bmi),
+    race = factor(race, levels = 1:5,
+                  labels = c("White", "Black", "Mexican American",
+                             "Other Hispanic", "Other/Multiracial"))
+  )
+fit_ok <- lm(sbp ~ bmi + age + sex + race, data = dat)
+ci <- confint(fit_ok)
+b_bug <- summary(fit_bug)$coefficients
+b_ok  <- summary(fit_ok)$coefficients
+fmt <- function(est, p) sprintf("%.2f, p = %.3f", est, p)
+knitr::kable(data.frame(
+  " " = c("BMI (per 1 kg/m²)", "Black vs. White", "Headline a reader takes away"),
+  "Race as a number (bug)" = c(
+    fmt(b_bug["bmi", 1], b_bug["bmi", 4]),
+    "hidden",
+    "\"BMI matters; race doesn't\""),
+  "Race as a category (correct)" = c(
+    fmt(b_ok["bmi", 1], b_ok["bmi", 4]),
+    sprintf("+%.1f mmHg (95%% CI %.1f to %.1f)", b_ok["raceBlack", 1],
+            ci["raceBlack", 1], ci["raceBlack", 2]),
+    "\"BMI uncertain; a clear Black–White difference\""),
+  check.names = FALSE
+))
+```
+
+With `race` as a number, `lm()` estimated one slope "per unit of race." No error, no warning, a clean table. The only clue was **one** race row where there should have been **four**. One mis-coded variable reversed the BMI finding and hid a health disparity.
+
+The code was fine. The prompt was missing one sentence. And nobody checked. Which of the four bugs is most likely to end up in a published paper? This one.
+
+# A framework for coding with an LLM
+
+## Plan, Protect, Prompt, Run, Verify, Own
+
+How do you keep Bug B out of your work? A habit loop for any time you use an LLM to help with analysis or code. The right-hand column maps each step onto things we have already done in this course.
+
+| Step | What you do | In this course |
+|---|---|---|
+| **1. Plan** | Know the question, outcome, exposure, covariates, and why this model, *before* you ask. | Planning mode (Lab 00, Task 3): a strong model writes the plan, a cheaper model executes it. Your midterm plan. |
+| **2. Protect** | Classify the data. Check your data use agreement (DUA) and IRB protocol. An approved tool is not an approved use. Unsure? Don't upload. | Everything in your context window leaves your machine. Your `AGENTS.md` can say what the agent may read. A local model keeps everything on your machine. |
+| **3. Prompt** | Context + objective + expected format. Share *structure*, never records. | The GitHub issues George assigned to Copilot: detailed instructions, in a repository with documentation and tests. |
+| **4. Run** | Run the code yourself, in a `.qmd` you can rerun. Read every message and warning. | Everything you submit is a rendered Quarto document. |
+| **5. Verify** | Runs cleanly? Right $n$ and types? Plausible values? Right answer on a tiny test? Right model? | Profiling week: measure, don't guess. C++ week: compare against R. |
+| **6. Own** | Explain every line. Disclose AI use. Have a person review methods and interpretation. | Syllabus: you are responsible for every line you submit, and you must have an AI critique your correctness, efficiency, and style. |
+
+## Step 3: Prompt. Say what you want, not how to do it
+
+A good prompt has three parts.
+
+**Context.** The things the model would otherwise guess:
+
+> I have a data frame called `dat` with 1,000 rows, in R with dplyr and ggplot2. `sex` is `"female"` / `"male"` (lowercase). `race` is an integer code 1 to 5 for a *categorical* variable. `bmi` uses 999 for missing.
+
+**Objective.** What you need, not which function to call:
+
+> I want a table of mean systolic blood pressure by race/ethnicity, with the number of people and the number of missing values in each group.
+
+Not: "Give me `group_by(race) %>% summarize(mean(sbp))`." If you already know the function, you don't need the model; if you don't, letting it pick and then looking the function up with `?` is how you learn.
+
+**Format.** How you want the answer:
+
+> One commented R chunk I can paste into a Quarto document. Explain each line, because I'm learning.
+
+Notice what the context did: lowercase, integer-coded category, 999. Each of these was one of the bugs you just found, and each costs one sentence to prevent.
+
+## Step 5: Verify. Five checks before you trust a result
+
+Only the first check catches a loud bug; the other four catch silent ones.
+
+| Check | Ask yourself | In R |
+|---|---|---|
+| **1. Runs cleanly** | Any errors, warnings, or "Removed N rows" messages? | Read the whole console, not just the last line |
+| **2. Right shape** | Right number of rows and columns? Right types? Is a category stored as a number? | `dim()`, `str()`, `glimpse()`, `nobs(model)` |
+| **3. Plausible values** | Right orders of magnitude? Do totals add up? Codes like 999 hiding as data? | `summary()`, `table()`, `colSums(is.na(dat))` |
+| **4. Known answer** | Does the code give the right answer on 6 rows you can check by hand? | A small `data.frame()` test; `stopifnot()`; `testthat` |
+| **5. Right question** | Does this model answer my research question? Is the interpretation right? | Your training, your advisor |
+
+::: {.callout-tip icon="false"}
+## Activity 3 (13 minutes): prompt, run, verify
+
+Lab 08, Task 3. Redo the opening regression with your agent: first without the codebook, then with it. Run the code yourself, then run the five checks and write one line per check. Finish by asking the agent for a two-sentence manuscript summary and hunting for "significant", "causes", "reduces", and "risk".
+:::
+
+# When you cannot share the data
+
+## Step 2: Protect. An approved tool is not an approved use
+
+| Keep out of the chat | Share instead |
+|---|---|
+| Records: rows of data, even "just the first 5" | The codebook |
+| Identifiers, dates, small cells | Column names and types (`str()`, `glimpse()`) |
+| Anything your DUA or IRB protocol limits | Coding rules: levels, missing codes |
+| Data above the tool's approved security level | A fake dataset with the same shape |
+
+This matters more with coding agents than with a chat window. An agent working in your repository can read any file in it, and some will happily `head()` a CSV to "understand the data." If the data cannot leave the approved environment, the agent should not be running there, or the data should not be in the folder.
+
+In the lab we keep the agent away from the data by giving it its own folder in a separate VS Code window. That is a convention, not a security boundary. An agent with shell access can often read files outside the folder that is open; how far it can go depends on the tool and on the permissions you grant it. For real protected data, don't run a cloud agent on a machine that holds the data. Use the approved environment, or a model that runs locally (for example with Ollama).
+
+## The no-upload workflow
+
+Pretend the dataset is an electronic health record extract with protected health information. It cannot go into a chat and it cannot sit in a folder a cloud agent is reading. You can still get help with the code:
+
+| Step | What you do | What the AI sees |
+|---|---|---|
+| **1. Describe** | Paste the codebook, not the data. | Column names, types, levels, missing codes |
+| **2. Simulate** | Ask for a 50-row synthetic dataset with the same structure. | Nothing new |
+| **3. Develop** | Get the code working on the fake data. | Fake data, your code, error messages |
+| **4. Run** | Run the finished code on the real data, in the approved environment. | Nothing. The AI is not involved in this step. |
+
+A prompt template for step 1:
+
+```{.default}
+Context: I'm working in R with [dplyr / data.table / base R]. My data frame
+`[name]` has [N] rows. I can't share the data because of privacy rules.
+Columns:
+- [variable] ([type], [range or levels], [how missing is coded])
+- ...
+
+Objective: I want [the result you need, e.g. "the mean BMI for people with
+and without diabetes"].
+
+Format: One commented R code chunk. First, write code that creates a fake
+50-row data frame with this exact structure so I can test the code without
+real data.
+```
+
+The details that matter most are the ones an LLM would otherwise guess: text case, categories stored as numbers, and missing-value codes.
+
+This is also the workflow for the CHPC weeks coming up: develop on your laptop against fake data, then run the finished script on the cluster where the real data lives. The other option is to bring the model to the data: run a model locally, for example with Ollama, so nothing leaves the machine.
+
+Add one twist for this course: write the known-answer test (check 4) *before* you prompt, and put it in the prompt. The agent's job becomes "make this test pass" instead of "write something that looks right."
+
+::: {.callout-tip icon="false"}
+## Activity 4 (13 minutes): the no-upload workflow, test first
+
+Lab 08, Task 4. Create a folder with no data in it, outside your class repository, and open it in a new VS Code window. By hand, save a six-row known-answer test for a function `mean_sbp_by_group(dat, group)` there and add a check of your own. Then paste a prompt that describes the data's structure (no rows) and asks the agent for a 50-row fake dataset and a function that passes your test. Finally, run the function on the real data in the folder the agent never saw.
+:::
+
+::: {.callout-tip icon="false"}
+## Activity 5 (4 minutes): own it
+
+Lab 08, Task 5. Ask a *different* agent or model to review your document for correctness, efficiency, and style; note what you accept and reject. Write a three-sentence AI-use disclosure. Commit and push with your prompts in the document.
+:::
+
+# Closing
+
+## Debugging with an LLM
+
+LLMs fix loud bugs. You find silent ones.
+
+**Loud: R stops.**
+
+- Paste the full error message and the code.
+- Ask: "What does this error mean, and how do I fix it?"
+- Rerun, and read the new messages.
+- Don't understand the fix? Ask it to explain line by line. This is where the `AGENTS.md` from Lab 00 pays off: it tells the agent to help you learn rather than hand you a solution.
+
+**Silent: R finishes.**
+
+- Check $n$ at every step.
+- Check types with `str()` or `glimpse()`.
+- Test on 6 rows where you know the answer.
+- Ask pointed questions: "Is `race` treated as categorical in this model?" A vague "is this right?" tends to get a vague "yes".
+
+## LLM, documentation, or a human?
+
+| Ask the LLM | Read the documentation | Ask a person |
+|---|---|---|
+| "How do I do X in R?" | Exactly what a function does (`?function_name`) | Which test or model to use |
+| Decoding an error message | Every argument, not just the common ones | Interpreting your results |
+| Writing repetitive code | Package vignettes (`browseVignettes()`) | Study design and sample size |
+| Explaining code you wrote | Whether syntax is current or deprecated | "Something feels off" |
+
+## Dos and don'ts
+
+**Do**
+
+- Describe your data's structure (codebook, column names and types) instead of pasting records.
+- Say what you want, not how. Let the model pick functions, then look them up.
+- Write the known-answer test before the prompt.
+- Read every warning and check the number of people at every step.
+- Keep everything in a reproducible Quarto document, including the prompts you used.
+- Ask: "What assumptions does this method require, and how do I check them?"
+- Ask your advisor or a statistician about model choice and interpretation.
+
+**Don't**
+
+- Upload PHI, restricted, or DUA-covered data, not even "just the first few rows." Don't point a cloud agent at a folder that contains them.
+- Report numbers the model typed in its reply. Report only what your code printed.
+- Accept "significant", "causes", or "strong effect" without checking.
+- Submit code you can't explain line by line.
+- Assume two runs or two models give the same answer.
+- Let the LLM choose your statistical method.
+- Skip learning the language because an LLM can write it. You can't check what you don't understand.
+
+Finish `lab08.qmd` at home if you did not get through everything; it is due Sunday as usual.
+
+# References
