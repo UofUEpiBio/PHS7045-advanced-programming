@@ -84,6 +84,9 @@ book:
         - file: 05-cpp/lab.qmd
           target: _blank
           rel: noopener
+        - file: 05-cpp/lab-solutions.qmd
+          target: _blank
+          rel: noopener
     - part: "C++ in R"
       chapters:
         - file: 06-rcpp/slides.qmd
@@ -101,6 +104,14 @@ book:
           target: _blank
           rel: noopener
         - file: 07-parallel-computing/lab.qmd
+          target: _blank
+          rel: noopener
+    - part: "Bonus Track: More on AI"
+      chapters:
+        - file: 08-AI-bonus-track/slides.qmd
+          target: _blank
+          rel: noopener
+        - file: 08-AI-bonus-track/lab.qmd
           target: _blank
           rel: noopener
     - part: "Midterm Project"

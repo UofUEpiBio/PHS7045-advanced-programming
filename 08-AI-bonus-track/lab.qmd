@@ -1,0 +1,420 @@
+---
+title: "Lab 08 - Prompt, Run, Verify"
+author:
+  - "Thi-Mui Pham, Ph.D."
+date: October 20, 2026
+format:
+  html:
+    embed-resources: false
+---
+
+::: {.callout-note}
+## Attribution
+
+This lab is based on the workshop *Prompt, Run, Verify: Using LLMs for Data Analysis in Public Health* by Heather Mattie, Ph.D. (Harvard T.H. Chan School of Public Health). The dataset, the codebook, and the "Spot the bug" exercise come from her materials, available at <https://github.com/hmattie/Prompt-Run-Verify-Workshop>{target="_blank"}. We adapted the tasks to the coding agents and workflow used in this course.
+:::
+
+## Learning goals
+
+- Tell apart numbers an LLM *typed* from numbers code *printed*.
+- Find silent bugs in AI-generated code: code that runs cleanly and is wrong.
+- Write a known-answer test *before* prompting, and make the agent's job "pass this test."
+- Practice the no-upload workflow for data you cannot share: describe, fake, develop, run.
+- Disclose and own your AI use.
+
+## Lab description
+
+Work in **pairs**. Use the agents you set up in Lab 00 (Codex, Claude, or Antigravity in VS Code); for Task 1 you will also want a plain chat window. Keep a record of **every prompt you send and a short note on what came back**, as in all our labs; this is part of the deliverable.
+
+Submit a single Quarto document (`lab08.qmd`) and its rendered HTML through GitHub by Sunday, as usual. Whatever you do not finish in class, finish at home.
+
+### Setup (before the session starts)
+
+1. Download [`nhanes_workshop.csv`](nhanes_workshop.csv) into a new folder `lab08/` in your class repository.
+2. Create `lab08.qmd` in the same folder. Load the data:
+
+```{r}
+#| eval: false
+library(readr)
+library(dplyr)
+library(ggplot2)
+dat <- read_csv("nhanes_workshop.csv", show_col_types = FALSE)
+```
+
+3. Read the codebook below. **Do not** give it to the agent yet.
+
+### Codebook
+
+`nhanes_workshop.csv`: 1,000 adults aged 20 and older, a random sample from the public [`NHANES` R package](https://cran.r-project.org/package=NHANES) (National Health and Nutrition Examination Survey, 2009--2012). It is public data and safe to upload. For teaching, the data were changed in two ways that an LLM won't notice unless you tell it: missing BMI values are coded as 999, and race/ethnicity is stored as the numbers 1--5.
+
+| Variable | Type | Description | Values or units | Missing coded as |
+|---|---|---|---|---|
+| `study_id` | text | Participant ID (made up for the workshop) | P0001--P1000 | none |
+| `age` | number | Age at screening | years, 20--80 (80 = 80 or older) | none |
+| `sex` | text | Sex | `"female"` or `"male"` (lowercase) | none |
+| `race` | integer, **categorical** | Race/ethnicity | 1 = White, 2 = Black, 3 = Mexican American, 4 = Other Hispanic, 5 = Other/Multiracial | none |
+| `education` | text | Highest education completed | 8th Grade; 9 - 11th Grade; High School; Some College; College Grad | blank |
+| `bmi` | number | Body mass index | kg/m² | **999** |
+| `sbp` | number | Systolic blood pressure (average of readings) | mmHg | blank |
+| `diabetes` | text | Ever told by a health professional they have diabetes | `"No"` or `"Yes"` | blank |
+| `phys_active` | text | Does moderate or vigorous sports, fitness, or recreation | `"No"` or `"Yes"` | blank |
+| `ever_smoker` | text | Smoked at least 100 cigarettes in lifetime | `"No"` or `"Yes"` | blank |
+
+These are teaching data; don't use them for research or population estimates.
+
+## How to use the prompts
+
+Every grey box labeled with a prompt number (P1, P2, ...) is a complete prompt: hover over it, click the copy button in its top-right corner, and paste the whole box into the chat or agent in one go. Do not edit the wording unless a task says so; comparing answers only works if everybody sends the same prompt.
+
+## Task 1: Ask your model for 20 decimals (5 minutes)
+
+**Round 1.** Open a plain chat window (not your coding agent) and, if your model has a code execution option, turn it **off**. Paste this whole block:
+
+```{.default}
+P0a
+Here are 25 systolic blood pressure readings:
+130, 118, 100, 119, 96, 90, 120, 148, 114, 130, 99, 124, 131,
+130, 148, 98, 118, 114, 113, 134, 116, 143, 158, 112, 110
+
+Don't run any code or use any tools. Just tell me the mean and the sample
+standard deviation, both to 20 decimal places.
+```
+
+**Round 2.** Start a new chat with code execution **on**, and paste this whole block:
+
+```{.default}
+P0b
+Here are 25 systolic blood pressure readings:
+130, 118, 100, 119, 96, 90, 120, 148, 114, 130, 99, 124, 131,
+130, 148, 98, 118, 114, 113, 134, 116, 143, 158, 112, 110
+
+Calculate the mean and the sample standard deviation, both to 20 decimal
+places. Show me the exact code you ran and tell me which language it was in.
+```
+
+In your document, record the model's name and both answers. Then compare them, digit by digit, with the exact values:
+
+| Statistic | Exact value to 20 decimal places |
+|---|---|
+| Mean | 120.52000000000000000000 |
+| Sample SD | 17.41436188896969029564 |
+
+For each answer, at which decimal does it first go wrong? Finally, run this in R and do the same comparison:
+
+```{r}
+#| label: task1-check
+#| eval: false
+x <- c(130, 118, 100, 119, 96, 90, 120, 148, 114, 130, 99, 124, 131,
+       130, 148, 98, 118, 114, 113, 134, 116, 143, 158, 112, 110)
+sprintf("%.20f", mean(x))
+sprintf("%.20f", sd(x))
+```
+
+Why does R also get the SD wrong after a certain decimal? If the code-on chat got all 20 decimals right, what in its code made that possible?
+
+::: {.callout-tip collapse="true"}
+## Hint: getting more than 15 decimals in R
+
+R stores numbers as doubles, which hold about 15 to 16 **significant digits**. The SD has two digits before the decimal point, so R runs out of precision after about the 15th decimal. `options(digits = 22)` and `sprintf("%.20f", ...)` do not help: they print more digits but do not compute more, so the extra digits carry no information.
+
+To compute more digits you need arbitrary-precision arithmetic. In R, the [`Rmpfr`](https://cran.r-project.org/package=Rmpfr){target="_blank"} package does this. Convert your numbers with `mpfr()` and choose a precision in bits; `mean()`, `sum()`, and `sqrt()` then work as usual. Try it with `precBits = 128` and compare with the exact values above.
+:::
+
+## Task 2: Spot the bug (12 minutes)
+
+Each chunk below is code an LLM wrote from a prompt that did **not** include the codebook. All four have a problem. Only one of them tells you so.
+
+**First, without AI.** Paste each chunk into `lab08.qmd`, run it, and answer with your partner:
+
+1. Did R (or the compiler) complain?
+2. Is the result **plausible**? Check the number of people, the values, and the number of estimates.
+3. What would you change, **in the code or in the prompt**?
+
+**Then, with AI.** Once you have your own answers, paste prompts P-A to P-D into your VS Code agent (with `lab08/` open, so it can run the R code on the CSV). Did it find the silent ones?
+
+### Bug A
+
+> **Original prompt:** "Make a scatterplot of BMI vs. systolic blood pressure with a trend line."
+
+```{r}
+#| label: bug-a
+#| eval: false
+dat %>%
+  ggplot(aes(x = bmi, y = sbp)) %>%
+  geom_point(alpha = 0.3) %>%
+  geom_smooth(method = "lm")
+```
+
+```{.default}
+P-A
+The file nhanes_workshop.csv in this folder is read into R with
+dat <- readr::read_csv("nhanes_workshop.csv"). An LLM wrote the code below
+for the request "Make a scatterplot of BMI vs. systolic blood pressure with a
+trend line." Run it. Is anything wrong with this code or its output?
+
+library(dplyr)
+library(ggplot2)
+dat %>%
+  ggplot(aes(x = bmi, y = sbp)) %>%
+  geom_point(alpha = 0.3) %>%
+  geom_smooth(method = "lm")
+```
+
+### Bug B
+
+> **Original prompt:** "Fit a linear regression of systolic BP on BMI, age, sex, and race."
+
+```{r}
+#| label: bug-b
+#| eval: false
+fit <- lm(sbp ~ bmi + age + sex + race, data = dat)
+summary(fit)$coefficients %>% round(3)
+```
+
+```{.default}
+P-B
+The file nhanes_workshop.csv in this folder is read into R with
+dat <- readr::read_csv("nhanes_workshop.csv"). An LLM wrote the code below
+for the request "Fit a linear regression of systolic BP on BMI, age, sex, and
+race." Run it. Is anything wrong with this code or its output?
+
+library(dplyr)
+fit <- lm(sbp ~ bmi + age + sex + race, data = dat)
+summary(fit)$coefficients %>% round(3)
+```
+
+### Bug C
+
+> **Original prompt:** "What is the mean systolic blood pressure for women?"
+
+```{r}
+#| label: bug-c
+#| eval: false
+dat %>%
+  filter(sex == "Female") %>%
+  summarize(n = n(), mean_sbp = mean(sbp, na.rm = TRUE))
+```
+
+```{.default}
+P-C
+The file nhanes_workshop.csv in this folder is read into R with
+dat <- readr::read_csv("nhanes_workshop.csv"). An LLM wrote the code below
+for the request "What is the mean systolic blood pressure for women?" Run it.
+Is anything wrong with this code or its output?
+
+library(dplyr)
+dat %>%
+  filter(sex == "Female") %>%
+  summarize(n = n(), mean_sbp = mean(sbp, na.rm = TRUE))
+```
+
+### Bug D
+
+> **Original prompt:** "Write a `factorial` function in C++ for my `Binom` class from Lab 05."
+
+Save this as `factorial.cpp`, then compile and run it with `g++ -std=c++14 -Wall factorial.cpp -o factorial && ./factorial`. Compare with `factorial(10:14)` in R.
+
+```cpp
+#include <iostream>
+
+int factorial(int k) {
+  int ans = 1;
+  for (int i = 2; i <= k; ++i) ans *= i;
+  return ans;
+}
+
+int main() {
+  for (int k = 10; k <= 14; ++k)
+    std::cout << k << "! = " << factorial(k) << std::endl;
+  return 0;
+}
+```
+
+```{.default}
+P-D
+An LLM wrote the C++ function below for the request "Write a factorial
+function in C++ for my Binom class." It compiles without warnings with
+g++ -std=c++14 -Wall. Is anything wrong with it?
+
+int factorial(int k) {
+  int ans = 1;
+  for (int i = 2; i <= k; ++i) ans *= i;
+  return ans;
+}
+```
+
+**Discuss:** Which of the four is most likely to end up in a published paper or a released package? Why?
+
+## Task 3: Prompt, run, verify (13 minutes)
+
+Now do the opening regression from the lecture properly, with your agent, and verify each step. Use **one** chat for P1, P2, and P3, in that order.
+
+### Round 1: without the codebook
+
+Open `lab08/` in VS Code and paste this into your agent:
+
+```{.default}
+P1
+There is a CSV in this folder with data on US adults. Give me an overview of
+the variables, their types, and any values that look unusual. Then write the R
+code to do the same check myself, in a chunk I can paste into lab08.qmd.
+```
+
+Before reading the agent's answer, run the code it gave you and look at the output yourself. Then compare:
+
+- Did the agent notice that `race` is stored as a number? That `bmi` has a maximum of 999?
+- Did it *type* any numbers (a mean, a count) that differ from what the code printed?
+
+### Round 2: with the codebook
+
+```{.default}
+P2
+The codebook says: bmi = 999 means missing. race is a categorical variable
+coded 1 = White, 2 = Black, 3 = Mexican American, 4 = Other Hispanic,
+5 = Other/Multiracial. sex is "female"/"male", lowercase.
+
+Clean the data accordingly. Then fit a linear regression of systolic BP (sbp)
+on BMI, age, sex, and race/ethnicity, and show the coefficient table with 95%
+confidence intervals. Give me the R code, with comments, in one chunk.
+```
+
+### Verify
+
+Run the five checks from the lecture and write one line per check in your document:
+
+1. **Runs cleanly.** Any warnings? Any "Removed N rows" messages?
+2. **Right shape.** How many rows in `dat`? How many people in the model (`nobs(fit)`)? Where did the difference go?
+3. **Plausible values.** `summary(dat$bmi)` after cleaning. Does the race table have five levels with sensible counts?
+4. **Known answer.** How many coefficient rows should a categorical `race` with 5 levels produce? Does it?
+5. **Right question.** The data are cross-sectional. Paste P3, then read the summary looking for "significant", "causes", "reduces", or "risk". Would you keep its wording?
+
+```{.default}
+P3
+Write a two-sentence summary of these regression results for the Results
+section of a public health manuscript.
+```
+
+Finally, compare the coefficient table with the one from Bug B in Task 2. What changed, and why?
+
+## Task 4: The no-upload workflow, test first (13 minutes)
+
+Pretend `nhanes_workshop.csv` is an EHR extract with protected health information. It cannot go in a chat, and a cloud agent must not read it.
+
+Your goal is a function, `mean_sbp_by_group(dat, group)`, that returns, for each level of `group`, the number of people, the number of missing `sbp` values, and the mean `sbp` among the non-missing.
+
+### Step 0: set up a clean folder and write the test, by hand
+
+1. Create a folder `lab08-noupload/` **outside your class repository**, for example on your Desktop, with no data in it. Do not put it next to `lab08/`: an agent can see everything in the folder that is open, including sibling folders when the whole repository is open.
+2. Open it in a **new VS Code window** (File > New Window, then File > Open Folder). Do not add it to your existing workspace with "Add Folder to Workspace"; a multi-root workspace lets the agent see both folders.
+3. Open your agent's chat panel in that new window. This is the only folder the agent should work in for this task.
+4. Without AI, save the following as `test-mean-sbp.R` in that folder. Then add **at least one more check** of your own at the bottom. Think about what could go wrong silently: what should happen to a group with *all* `sbp` missing? To a `group` column that is numeric?
+
+```{r}
+#| label: known-answer
+#| eval: false
+# test-mean-sbp.R: known-answer test for mean_sbp_by_group()
+source("mean-sbp.R")
+
+test <- data.frame(
+  sex = c("female", "female", "female", "male", "male", "male"),
+  sbp = c(120, 130, NA, 140, 150, 160)
+)
+# Expected by hand: female -> n = 3, missing = 1, mean = 125
+#                   male   -> n = 3, missing = 0, mean = 150
+
+res <- mean_sbp_by_group(test, "sex")
+stopifnot(
+  nrow(res) == 2,
+  res$n[res$sex == "female"] == 3,
+  res$n_missing[res$sex == "female"] == 1,
+  isTRUE(all.equal(res$mean_sbp[res$sex == "female"], 125)),
+  isTRUE(all.equal(res$mean_sbp[res$sex == "male"], 150))
+)
+
+# Your additional check(s) here
+
+cat("All tests passed\n")
+```
+
+### Step 1: describe, don't upload
+
+In the chat panel of the `lab08-noupload/` window, paste this whole block. It describes the data's structure only, never its rows. The prompt asks the agent to run your test with `Rscript`, so **approve** the agent's request to run that command when it asks; otherwise it will write the code and stop without testing it. If the agent reports that `Rscript` is not found (common on Windows), tell it the full path, for example `"C:\Program Files\R\R-4.5.1\bin\Rscript.exe"`, or run the test yourself in the R console with `source("test-mean-sbp.R")` and paste the output back.
+
+```{.default}
+P4
+Context: I'm working in R with dplyr. My data frame `dat` has 1,000 rows. I
+can't share the data because of privacy rules. Its columns are:
+- study_id (character, "P0001" to "P1000")
+- age (numeric, years, 20 to 80; no missing)
+- sex (character, "female" or "male", lowercase; no missing)
+- race (integer 1 to 5, categorical: 1 = White, 2 = Black, 3 = Mexican
+  American, 4 = Other Hispanic, 5 = Other/Multiracial; no missing)
+- education (character: "8th Grade", "9 - 11th Grade", "High School",
+  "Some College", "College Grad"; missing is blank)
+- bmi (numeric, kg/m2; missing is coded as 999)
+- sbp (numeric, systolic blood pressure in mmHg; missing is NA)
+- diabetes, phys_active, ever_smoker (character, "No" or "Yes"; missing is NA)
+
+Objective: a function mean_sbp_by_group(dat, group), where group is the name
+of a column as a string. For each level of that column it returns a data
+frame with the group column, n (number of people), n_missing (number of
+missing sbp), and mean_sbp (mean sbp among non-missing values).
+
+Format: Two files in this folder. First, fake-data.R, which creates a 50-row
+fake data frame `dat` with exactly this structure, including a few 999s in
+bmi and a few NAs in sbp. Second, mean-sbp.R, which defines
+mean_sbp_by_group() with comments. Do not edit test-mean-sbp.R. Then run
+Rscript test-mean-sbp.R and keep fixing mean-sbp.R until it prints
+"All tests passed". Tell me how many attempts it took.
+```
+
+### Step 2: develop on fake data
+
+Check the agent's work yourself: run `fake-data.R` and look at the fake data (does it have 999s and lowercase `sex`?), then run `test-mean-sbp.R`. Did the agent edit your test file even though you told it not to? Record how many attempts it reported.
+
+### Step 3: run on the real data
+
+Copy `mean-sbp.R`, `fake-data.R`, and `test-mean-sbp.R` into `lab08/` (the "approved environment" where the data live, and the folder you submit), then paste this chunk into `lab08.qmd`:
+
+```{r}
+#| label: real-data
+#| eval: false
+source("mean-sbp.R")
+dat <- readr::read_csv("nhanes_workshop.csv", show_col_types = FALSE) |>
+  mutate(
+    bmi  = na_if(bmi, 999),
+    race = factor(race, levels = 1:5,
+                  labels = c("White", "Black", "Mexican American",
+                             "Other Hispanic", "Other/Multiracial"))
+  )
+mean_sbp_by_group(dat, "sex")
+mean_sbp_by_group(dat, "race")
+```
+
+Does the `sex` result match what you found in Task 3 and in Bug C?
+
+## Task 5: Own (4 minutes)
+
+1. Following the class policy, open a **different** agent or model than the one you used so far, in `lab08/`, and paste this:
+
+```{.default}
+P5
+Review lab08.qmd and mean-sbp.R in this folder for (a) correctness, (b)
+efficiency, and (c) coding style. Give me at most five concrete points, most
+important first. Do not rewrite the files.
+```
+
+   Summarize its feedback in three bullets and say which points you accepted and which you rejected, and why.
+
+2. Write a three-sentence **AI-use disclosure** for this lab: which tools, for which tasks, and what you verified yourself.
+3. Commit and push. Make sure your prompts are in the document.
+
+## Deliverable
+
+A rendered `lab08.qmd` with:
+
+- The model's name, its answers to P0a and P0b in Task 1, R's answers, and the decimal at which each one first goes wrong.
+- Your answers to the three questions for Bugs A--D, and whether your agent found the silent ones.
+- The prompts P1--P5 (and any follow-ups), the code you ran, and the five verification checks from Task 3.
+- Your known-answer test, the number of iterations it took the agent to pass it, and the results on the real data.
+- The second agent's review and your AI-use disclosure.

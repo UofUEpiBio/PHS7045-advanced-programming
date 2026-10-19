@@ -1,0 +1,554 @@
+---
+title: "Lab 05 - C++ (Solutions)"
+subtitle: "PHS 7045: Advanced Programming"
+format:
+  html:
+    embed-resources: true
+---
+
+## Overview
+
+The solution is split into two files, the way the `Summarizer` example in the
+lecture is: [`binom.hpp`](binom.hpp) holds the class and its member functions,
+and [`lab-solutions.cpp`](lab-solutions.cpp) holds only `main()` and starts
+with `#include "binom.hpp"`. Quotes (instead of angle brackets) tell the
+compiler to look for the header next to the source file. To compile and run:
+
+```bash
+g++ -std=c++17 -Wall -o lab-solutions lab-solutions.cpp
+./lab-solutions
+```
+
+Only the `.cpp` file is passed to the compiler; the header is pulled in by the
+`#include`. The header is wrapped in an include guard
+
+```cpp
+#ifndef BINOM_HPP
+#define BINOM_HPP
+// ... contents ...
+#endif
+```
+
+so that including it twice in the same translation unit does not define the
+class twice. The member functions are defined `inline` for the same reason:
+their definitions live in a header that may be included from several `.cpp`
+files.
+
+Keeping everything in one `.cpp` file also works and is what you would do for
+a throwaway program. The split starts paying off as soon as more than one
+program needs the class.
+
+The class declaration is the one given in the lab. Notice that all four member
+functions are declared `const`: they only read `n` and `p`, they never modify
+the object.
+
+```cpp
+#include <cmath>
+#include <cstdio>
+
+class Binom {
+private:
+  int n;
+  double p;
+
+public:
+  Binom(int n_, double p_) : n(n_), p(p_) {};
+  int factorial(int k) const;
+  double choose(int a, int b) const;
+  double dbinom(int k) const;
+  void print(int k) const;
+};
+```
+
+The member-initializer list (`: n(n_), p(p_)`) is preferred over assigning
+inside the body of the constructor: the members are initialized directly
+instead of being default-constructed and then overwritten.
+
+To see why, it helps to know that every constructor runs in two phases. First
+all data members are initialized, in the order in which they are *declared* in
+the class; this happens before the opening `{` of the body is reached. Only
+then does the body run, with every member already holding a value. The
+initializer list is our only chance to take part in the first phase -- any
+member we leave out of it is initialized for us, by calling its default
+constructor.
+
+Note that `n(n_)` is not a function call. The parentheses are initialization
+syntax, the same ones as in `int x(5);`. The name in front of them is looked up
+among the class members, the expression inside is evaluated in the scope of the
+constructor. For an `int` or a `double` no constructor is involved at all: the
+value is simply copied into place. For a class-type member, the compiler picks
+a constructor of that type by overload resolution on the arguments given.
+
+Writing the assignment in the body instead,
+
+```cpp
+Binom(int n_, double p_) { n = n_; p = p_; }
+```
+
+means `n` and `p` are first default-initialized in phase one and then
+overwritten in phase two -- two operations where one would do. For `int` and
+`double` the difference is negligible and the compiler will optimize it away,
+so here the argument is mainly one of habit. The reasons become real once the
+members are not trivial: a `std::vector` member would be built empty and then
+copy-assigned, and some members *cannot* be assigned at all. A `const` member,
+a reference member, a member whose class has no default constructor, and the
+arguments passed to a base class all have to appear in the initializer list, or
+the code does not compile.
+
+There is one more reason to prefer it here. If we assign in the body, there is
+a window in which `n` and `p` hold indeterminate values: for built-in types,
+default initialization of a member leaves the value undefined, and reading it
+before the assignment is undefined behaviour. With the initializer list that
+window does not exist.
+
+## Exercise 1: Factorial
+
+A recursive implementation. The base case `k <= 1` covers both $0! = 1$ and
+$1! = 1$, and is what stops the recursion.
+
+```cpp
+inline int Binom::factorial(int k) const {
+
+  if (k <= 1)
+    return 1;
+
+  return k * factorial(k - 1);
+
+}
+```
+
+Test:
+
+```cpp
+Binom b(10, 0.5);
+for (int i = 1; i <= 10; ++i)
+    std::cout << b.factorial(i) << std::endl;
+```
+
+which prints `1 2 6 24 120 720 5040 40320 362880 3628800`, matching R:
+
+```{r}
+factorial(1:10)
+```
+
+### An iterative alternative
+
+Nothing in the exercise requires recursion. A loop does the same job:
+
+```cpp
+inline int Binom::factorial(int k) const {
+
+  int result = 1;
+  for (int i = 2; i <= k; ++i)
+    result *= i;
+
+  return result;
+
+}
+```
+
+The loop body never runs for `k <= 1`, so $0! = 1$ and $1! = 1$ come out
+correctly without a separate base case.
+
+Which one to prefer? The recursive version reads like the mathematical
+definition $k! = k \times (k-1)!$, which is why it is the standard teaching
+example, and it is the shorter of the two. The iterative version uses a single
+stack frame, where the recursive one pushes a new frame for every call --
+`factorial(10)` nests ten deep, and a large enough argument would overflow the
+stack. Note that the recursion here is *not* tail recursive: the multiplication
+`k * factorial(k - 1)` happens only after the inner call returns, so each frame
+still has work pending and the compiler cannot mechanically rewrite it into a
+loop. At `-O2` it will often inline and unroll the calls anyway, but that is an
+optimisation we are relying on rather than a guarantee.
+
+The general rule: recursion pays off when the problem is genuinely tree-shaped
+-- traversing a tree, quicksort, divide and conquer -- where writing it
+iteratively means managing an explicit stack by hand. Factorial is a straight
+chain of one call each, so the loop loses nothing.
+
+::: {.callout-warning}
+## Integer overflow
+
+The signature in the lab returns an `int`, which is 32 bits on most platforms
+and therefore maxes out around $2.1 \times 10^9$. Since $13! = 6{,}227{,}020{,}800$,
+`factorial(13)` silently overflows. For $n = 10$ we are safe, but a
+production-quality version would return `double` (or `long double`) and, better
+still, compute the log-factorial with `std::lgamma` — see the
+[bonus section](#bonus-a-numerically-safe-dbinom-with-lgamma) at the end.
+:::
+
+## Exercise 2: Choose
+
+$$
+{a \choose b} = \frac{a!}{b!\,(a-b)!}
+$$
+
+The key detail is the cast: `factorial()` returns `int`, so dividing two of them
+directly would perform *integer* division and truncate the result. Casting the
+numerator (and denominator) to `double` first avoids that.
+
+```cpp
+inline double Binom::choose(int a, int b) const {
+
+  if (b < 0 || b > a)
+    return 0.0;
+
+  return static_cast<double>(factorial(a)) /
+    (static_cast<double>(factorial(b)) * static_cast<double>(factorial(a - b)));
+
+}
+```
+
+The guard `b < 0 || b > a` reproduces R's behavior of returning 0 outside the
+support, and also keeps us from calling `factorial()` with a negative argument
+(which would recurse forever with a `k == 0` base case).
+
+Test:
+
+```cpp
+Binom b(10, 0.5);
+for (int i = 1; i <= 10; ++i)
+    std::cout << b.choose(10, i) << std::endl;
+```
+
+gives `10 45 120 210 252 210 120 45 10 1`, matching R:
+
+```{r}
+choose(10, 1:10)
+```
+
+## Exercise 3: `dbinom`
+
+Direct translation of
+
+$$
+\Pr\left(Y = k; n, p\right) = {n \choose k} p^k (1 - p)^{n - k}
+$$
+
+Here `n` and `p` are the *members* of the object, so we can refer to them
+directly (writing `this->n` and `this->p` is equivalent and sometimes clearer).
+
+```cpp
+inline double Binom::dbinom(int k) const {
+
+  if (k < 0 || k > n)
+    return 0.0;
+
+  return choose(n, k) * std::pow(p, k) * std::pow(1.0 - p, n - k);
+
+}
+```
+
+Test:
+
+```cpp
+Binom b(10, 0.5);
+for (int i = 0; i <= 10; ++i)
+    std::cout << b.dbinom(i) << std::endl;
+```
+
+matching R:
+
+```{r}
+dbinom(0:10, 10, 0.5)
+```
+
+(`std::cout` prints 6 significant digits by default; use
+`std::cout << std::setprecision(15)` from `<iomanip>` if you want to compare
+more digits.)
+
+## Exercise 4: Print
+
+`std::printf` from `<cstdio>` takes the same format strings as R's `sprintf`,
+so the format string can be copied over verbatim — we only need to append
+`\n`, since `printf` does not add a newline.
+
+```cpp
+inline void Binom::print(int k) const {
+
+  std::printf(
+    "P(Y=%-2d; n=%d, p=%.2f) = %.4f\n",
+    k, n, p, dbinom(k)
+  );
+
+}
+```
+
+`%-2d` left-aligns the integer in a field of width 2, which is what keeps the
+`;` in the same column for `k = 0, ..., 9` and `k = 10`.
+
+Running
+
+```cpp
+Binom b(10, 0.5);
+for (int k = 0; k <= 10; ++k)
+    b.print(k);
+```
+
+produces
+
+```
+P(Y=0 ; n=10, p=0.50) = 0.0010
+P(Y=1 ; n=10, p=0.50) = 0.0098
+P(Y=2 ; n=10, p=0.50) = 0.0439
+P(Y=3 ; n=10, p=0.50) = 0.1172
+P(Y=4 ; n=10, p=0.50) = 0.2051
+P(Y=5 ; n=10, p=0.50) = 0.2461
+P(Y=6 ; n=10, p=0.50) = 0.2051
+P(Y=7 ; n=10, p=0.50) = 0.1172
+P(Y=8 ; n=10, p=0.50) = 0.0439
+P(Y=9 ; n=10, p=0.50) = 0.0098
+P(Y=10; n=10, p=0.50) = 0.0010
+```
+
+which is identical to the R reference:
+
+```{r}
+sprintf(
+  "P(Y=%-2d; n=%d, p=%.2f) = %.4f",
+  0:10, 10, 0.5, dbinom(0:10, 10, 0.5)
+  ) |>
+  cat(sep = "\n")
+```
+
+## Aside: do we need `inline`?
+
+`inline` is **not** needed in this program. Everything lives in a single
+translation unit, so `int Binom::factorial(int k) const { ... }` would compile
+and link exactly the same. The keyword earns its keep only when the
+definitions sit in a header that is `#include`d by more than one `.cpp`:
+without `inline` each inclusion emits the same symbol and the linker reports a
+duplicate definition. (Member functions defined *inside* the class body — like
+the constructor above — are implicitly `inline`, which is why they never need
+it.) The lab asks for the `inline [return type] [class]::[function]` pattern
+because that is the form you will use once you split the class into a `.hpp`,
+as in `person.hpp` and `summary.hpp`, so we keep it here for consistency.
+
+## Aside: what is `const` actually doing here?
+
+All four member functions are declared `const`:
+
+```cpp
+int factorial(int k) const;
+double choose(int a, int b) const;
+double dbinom(int k) const;
+void print(int k) const;
+```
+
+Strictly speaking, this program compiles and runs identically without them. So
+why bother? Because `const` on a member function is a *promise*, checked by the
+compiler, that calling it does not change the object. It buys you two things.
+
+### 1. It stops you from modifying the object by accident
+
+Inside a `const` member function, every data member is treated as read-only.
+A typo like `n = k` — easy to write when you meant to compare, or when you were
+reaching for a local variable — is caught immediately instead of silently
+corrupting the object:
+
+```cpp
+inline int Binom::factorial(int k) const { n = k; return n; }
+```
+
+```
+error: cannot assign to non-static data member within const member function 'factorial'
+inline int Binom::factorial(int k) const { n = k; return n; }
+                                           ~ ^
+note: member function 'Binom::factorial' is declared const here
+```
+
+This is the payoff that matters while you are writing the class. `factorial`,
+`choose`, `dbinom` and `print` are all *queries*: they read `n` and `p` and
+compute an answer. Marking them `const` makes that design intent explicit and
+gets it enforced. A setter such as `set_p(double)` would deliberately be left
+non-`const`.
+
+### 2. It lets callers use your object through a `const` handle
+
+This is the reason `const` spreads through real codebases. Suppose someone
+writes a helper that takes a `Binom` by constant reference — the standard way to
+pass an object you do not intend to copy or modify:
+
+```cpp
+double expected_value(const Binom &b) {
+  double out = 0.0;
+  for (int k = 0; k <= 10; ++k)
+    out += k * b.dbinom(k);   // only reads b
+  return out;
+}
+```
+
+If `dbinom` were *not* marked `const`, this would not compile — even though the
+function plainly only reads:
+
+```
+error: 'this' argument to member function 'dbinom' has type 'const Binom',
+       but function is not marked const
+double total(const Binom &b) { return b.dbinom(0); }
+                                      ^
+```
+
+The compiler cannot inspect the body to see that `dbinom` behaves itself; it
+only trusts the signature. The same applies to a `const Binom b(10, 0.5);`
+object, to a `Binom` member of some larger `const` object, and to storing
+`Binom`s in a container you then iterate over with `const auto &`. Omitting
+`const` does not just lose a safety check — it actively locks legitimate callers
+out.
+
+::: {.callout-tip}
+## Rule of thumb
+
+Mark a member function `const` unless it needs to modify the object. It costs
+nothing at runtime (the compiler does not generate different code for the
+arithmetic), and retrofitting it later is painful precisely because it is
+contagious: one missing `const` deep in a call chain forces every caller above
+it to drop `const` too.
+:::
+
+### A common error: `const` on the declaration but not the definition
+
+The `const` is part of the function's signature, so it has to appear in **both**
+places. Forget it on the out-of-line definition and the compiler does not see an
+implementation of the function you declared — it sees an unrelated one:
+
+```cpp
+class Binom {
+  // ...
+  int factorial(int k) const;              // declared const
+};
+
+inline int Binom::factorial(int k) { ... } // definition forgot const
+```
+
+```
+error: out-of-line definition of 'factorial' does not match any declaration in 'Binom'
+note: member declaration does not match because it is const qualified
+  int factorial(int k) const;
+      ^                ~~~~~
+```
+
+The message points at the mismatch clearly enough once you have seen it once,
+but "does not match any declaration" is confusing the first time — the fix is
+always to compare the two signatures character by character, `const` included.
+
+## Bonus: a numerically safe `dbinom` with `lgamma`
+
+The implementation above is a faithful translation of the formula, but it is
+fragile. It is worth understanding *why*, because the fix is a pattern you will
+reuse constantly in statistical computing.
+
+### Why the direct formula breaks
+
+There are two separate failure modes, and they pull in opposite directions:
+
+1. **The binomial coefficient overflows.** `factorial` returns an `int`, so it
+   is already wrong at $13! = 6{,}227{,}020{,}800$:
+
+   ```
+   fact(13) as int = 1932053504   (true value 6227020800)
+   ```
+
+   Switching to `double` buys us room up to about $170!$, but no further.
+
+2. **The powers underflow.** $p^k(1-p)^{n-k}$ shrinks geometrically. For
+   $n = 1000$, $p = 0.5$ the factor is $2^{-1000} \approx 10^{-301}$, right at
+   the edge of what a `double` can represent.
+
+The insidious part is that these two problems nearly cancel: the true answer is
+a perfectly ordinary number, we just cannot get there by computing a gigantic
+quantity and multiplying it by a minuscule one. With `n = 20` the direct version
+already returns a *negative probability*, and by `n = 1000` it gives up entirely:
+
+```
+n=20,   k=10:  direct = -1.522418863e-10   lgamma = 0.176197052
+n=1000, k=500: direct = nan                lgamma = 0.02522501818
+```
+
+```{r}
+# R's answers, for reference
+dbinom(10, 20, 0.5)
+dbinom(500, 1000, 0.5)
+```
+
+### The fix: work on the log scale
+
+Take logs of the whole expression, so that products become sums and the huge and
+tiny pieces cancel *additively* — in a range `double` handles comfortably — and
+only exponentiate at the very end:
+
+$$
+\log\Pr(Y = k) = \log n! - \log k! - \log (n-k)! + k\log p + (n-k)\log(1-p)
+$$
+
+To get $\log k!$ without ever forming $k!$ we use the gamma function, which
+interpolates the factorial:
+
+$$
+\Gamma(x) = \int_0^\infty t^{x-1}e^{-t}\,dt,
+\qquad \Gamma(k + 1) = k! \ \text{ for integer } k \ge 0
+$$
+
+`std::lgamma(x)` from `<cmath>` returns $\log\Gamma(x)$ directly — it never
+computes $\Gamma(x)$ itself, so nothing overflows. The shift by one is the part
+people trip over: **`std::lgamma(k + 1.0)` is $\log k!$**, not
+`std::lgamma(k)`.
+
+```cpp
+inline double Binom::dbinom(int k) const {
+
+  if (k < 0 || k > n)
+    return 0.0;
+
+  // log(n!) - log(k!) - log((n-k)!)  ==  log(choose(n, k))
+  double log_choose = std::lgamma(n + 1.0) -
+    std::lgamma(k + 1.0) -
+    std::lgamma(n - k + 1.0);
+
+  // k*log(p) + (n-k)*log(1-p)
+  double log_powers = k * std::log(p) + (n - k) * std::log1p(-p);
+
+  return std::exp(log_choose + log_powers);
+
+}
+```
+
+Three details worth naming:
+
+- **`std::log1p(-p)` instead of `std::log(1.0 - p)`.** `log1p(x)` computes
+  $\log(1 + x)$ accurately for small $|x|$. When $p$ is tiny, `1.0 - p` rounds
+  to a nearby `double` and throws away the low-order bits of $p$ before the log
+  ever sees them; `log1p(-p)` keeps them. Same reasoning as R's own `log1p`.
+- **The `+ 1.0`, not `+ 1`.** Writing `std::lgamma(n + 1)` still works because
+  the `int` promotes to `double`, but spelling out `1.0` makes the
+  floating-point intent explicit and guards against surprises if `n` ever
+  changes type.
+- **Multiplying `k * std::log(p)` beats `std::pow(p, k)`.** It is both faster
+  and keeps us on the log scale, where there is nothing to underflow.
+
+For $n = 10$ this returns exactly the same values as the direct version:
+
+```
+0.0009765625  0.0097656250  0.0439453125  0.1171875000  0.2050781250
+0.2460937500  0.2050781250  0.1171875000  0.0439453125  0.0097656250
+0.0009765625
+```
+
+but it keeps working for $n$ in the millions.
+
+### Going one step further
+
+If you only ever need the log-density — which is the common case, since
+likelihoods are summed on the log scale — stop before the `std::exp` and return
+`log_choose + log_powers`. That is what R's `dbinom(..., log = TRUE)` gives you,
+and it avoids throwing away precision (and possibly underflowing to 0) on the
+very last step:
+
+```{r}
+dbinom(500, 1000, 0.5, log = TRUE)
+```
+
+Exponentiating a sum of logs is accurate to within a rounding error or two,
+which is the best any implementation can do. R's actual `dbinom` goes further
+still and uses a saddle-point expansion (Loader's algorithm) for large $n$, so
+the last digit may differ from the `lgamma` version — both are correct to
+roughly full `double` precision.
