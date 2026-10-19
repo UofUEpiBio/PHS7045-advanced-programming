@@ -110,10 +110,10 @@ The current course schedule is subject to change. Students will be notified of a
 | Oct. 13 and 15 | Fall Break - no class |
 | Oct. 20 and 22 | Bonus AI topics; Ollama |
 | Oct. 27 and 29 | Midterm project hackathon; R functions and slides due and lightning presentations Oct. 29 |
-| Nov. 3 and 5 | University of Utah CHPC introduction and coding agents |
-| Nov. 10 and 12 | Slurm and additional Slurm practice |
-| Nov. 17 and 19 | R packages I |
-| Nov. 24 and 26 | Topic TBD; Thanksgiving recess on Nov. 26 |
+| Nov. 3 | University of Utah CHPC introduction; no class Nov. 5 |
+| Nov. 10 and 12 | University of Utah CHPC coding agents; Slurm |
+| Nov. 17 and 19 | Additional Slurm practice; R packages I |
+| Nov. 24 and 26 | R packages I lab; Thanksgiving recess on Nov. 26 |
 | Dec. 1 and 3 | Automatic reports with GitHub Actions; Dec. 3 topic TBD |
 | Dec. 8 and 10 | Final project preparation hackathon |
 | Dec. 15 and 17 | Final project activities |
