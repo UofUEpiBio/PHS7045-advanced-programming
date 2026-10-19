@@ -30,3 +30,9 @@ _slides/
 # Rendered lab solutions: kept local, not part of the book project.
 **/lab-solutions.html
 **/lab-solutions.rmarkdown
+
+# Lab 08 solutions: kept local until we decide to publish them
+08-AI-bonus-track/_lab-solutions.qmd
+08-AI-bonus-track/_lab-solutions.html
+08-AI-bonus-track/_lab-solutions_files/
+08-AI-bonus-track/factorial-solution*
