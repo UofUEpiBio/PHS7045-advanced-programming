@@ -82,7 +82,7 @@ knitr::kable(tab)
 
 Would you submit this? Yes, no, or not sure? Keep your answer in mind; we come back to this table in about half an hour.
 
-# Words are its native language. Numbers are not.
+# Words are the native language of LLMs.
 
 ## Text versus numbers
 
@@ -110,7 +110,7 @@ The exact answers:
 | Mean | 120.52000000000000000000 |
 | Sample SD | 17.41436188896969029564 |
 
-The mean is a sum divided by 25, so it ends after two decimals. The sample variance is exactly 303.26, so the SD is $\sqrt{303.26}$, an irrational number whose digits never end or repeat. Nobody can recall those digits from memory, and neither can a model: it has to compute them, and without code it cannot. So it does what it always does and predicts digits that look right. Often the first few are correct, because a model can estimate a square root roughly, and everything after that is invented. The reply sounds exactly as confident at decimal 20 as at decimal 1.
+The mean is a sum divided by 25, so it ends after two decimals. The sample variance is exactly 303.26, so the SD is $\sqrt{303.26}$, an irrational number whose digits never end or repeat. Without code, the LLM cannot compute it and it does what it always does and predicts digits. Often the first few are correct, because a model can estimate a square root roughly, and everything after that is invented. Note that it be just as confident at decimal 20 as at decimal 1.
 
 Now look at what R says:
 
@@ -122,7 +122,7 @@ x <- c(130, 118, 100, 119, 96, 90, 120, 148, 114, 130, 99, 124, 131,
 sprintf("%.20f", sd(x))
 ```
 
-R agrees with the exact value only through the 15th decimal. That is not a bug in R. A double holds about 15 to 16 significant digits, and `sprintf()` happily prints digits past that limit which carry no information. To get more, you need arbitrary-precision arithmetic, such as the `Rmpfr` package in R or the `decimal` module in Python.
+R agrees with the exact value only through the 15th decimal. A double holds about 15 to 16 significant digits but `sprintf()` prints digits past that limit. R stores the nearest double for any number that doesn’t have a finite binary representation, which includes all irrationals and most non-dyadic rationals. To get more precision, you need arbitrary-precision arithmetic, such as the `Rmpfr` package in R or the `decimal` module in Python.
 
 Your code-on chat most likely got all 20 decimals right. Look at its code: it probably used Python's `decimal` module with a high precision rather than ordinary floats. That is what made it right, not the fact that code ran. The same request run through `numpy.std()` would have printed 20 confident decimals with the last few wrong.
 
@@ -174,6 +174,7 @@ writeLines(c(
   "#include <iostream>",
   "",
   "int factorial(int k) {",
+  "  // int: 32 bits (4 bytes), max 2^31 - 1 = 2,147,483,647",
   "  int ans = 1;",
   "  for (int i = 2; i <= k; ++i) ans *= i;",
   "  return ans;",
@@ -251,16 +252,16 @@ The code was fine. The prompt was missing one sentence. And nobody checked. Whic
 
 ## Plan, Protect, Prompt, Run, Verify, Own
 
-How do you keep Bug B out of your work? A habit loop for any time you use an LLM to help with analysis or code. The right-hand column maps each step onto things we have already done in this course.
+How do you keep Bug B out of your work? A habit loop for any time you use an LLM to help with analysis or code.
 
-| Step | What you do | In this course |
-|---|---|---|
-| **1. Plan** | Know the question, outcome, exposure, covariates, and why this model, *before* you ask. | Planning mode (Lab 00, Task 3): a strong model writes the plan, a cheaper model executes it. Your midterm plan. |
-| **2. Protect** | Classify the data. Check your data use agreement (DUA) and IRB protocol. An approved tool is not an approved use. Unsure? Don't upload. | Everything in your context window leaves your machine. Your `AGENTS.md` can say what the agent may read. A local model keeps everything on your machine. |
-| **3. Prompt** | Context + objective + expected format. Share *structure*, never records. | The GitHub issues George assigned to Copilot: detailed instructions, in a repository with documentation and tests. |
-| **4. Run** | Run the code yourself, in a `.qmd` you can rerun. Read every message and warning. | Everything you submit is a rendered Quarto document. |
-| **5. Verify** | Runs cleanly? Right $n$ and types? Plausible values? Right answer on a tiny test? Right model? | Profiling week: measure, don't guess. C++ week: compare against R. |
-| **6. Own** | Explain every line. Disclose AI use. Have a person review methods and interpretation. | Syllabus: you are responsible for every line you submit, and you must have an AI critique your correctness, efficiency, and style. |
+| Step | What you do |
+|---|---|
+| **1. Plan** | Know the question, outcome, exposure, covariates, and why this model, *before* you ask. Planning mode helps: let the agent write a plan, review it, then let it execute. |
+| **2. Protect** | Classify the data. Check your data use agreement (DUA) and IRB protocol. An approved tool is not an approved use. Everything in your context window leaves your machine; a local model keeps it there. Unsure? Don't upload. |
+| **3. Prompt** | Context + objective + expected format. Share *structure*, never records. An `AGENTS.md`, documentation, and tests give the agent context it would otherwise guess. |
+| **4. Run** | Run the code yourself. Read every message and warning. |
+| **5. Verify** | Runs cleanly? Right $n$ and types? Plausible values? Right answer on a tiny test? Right model? Measure, don't guess; compare against a known answer. |
+| **6. Own** | Explain every line. Disclose AI use. Have a person review methods and interpretation. |
 
 ## Step 3: Prompt. Say what you want, not how to do it
 

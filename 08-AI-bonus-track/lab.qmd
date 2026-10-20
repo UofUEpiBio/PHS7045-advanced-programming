@@ -243,7 +243,7 @@ int factorial(int k) {
 }
 ```
 
-**Discuss:** Which of the four is most likely to end up in a published paper or a released package? Why?
+**Discuss:** Which of the four is the most difficult to spot?
 
 ## Task 3: Prompt, run, verify (13 minutes)
 
