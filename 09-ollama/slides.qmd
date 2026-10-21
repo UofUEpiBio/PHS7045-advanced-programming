@@ -1,0 +1,224 @@
+---
+title: "Bring the Model to the Data"
+subtitle: "PHS 7045: Advanced Programming -- Bonus Track 2: Local LLMs with Ollama"
+author:
+  - "George G. Vega Yon, Ph.D."
+date: October 22, 2026
+---
+
+::: {.callout-note}
+## Attribution
+
+This session is adapted from the chapter *Example with ollama* of the book [*AI for the Scientist in a Hurry*](https://book-ai.ggvy.cl/08-ollama.html){target="_blank"} by George G. Vega Yon. The Sunbelt 2026 workshop agenda used in the examples ([`sunbelt2026_workshops.csv`](sunbelt2026_workshops.csv)) is public information taken from the [INSNA Sunbelt 2026](https://www.insna.org/){target="_blank"} website.
+:::
+
+::: {.callout-warning}
+## Code in these slides is not evaluated
+
+The website is rendered on GitHub Actions, where there is no Ollama server. Chunks that call Ollama are shown with `eval: false`; you will run them yourself during the exercises.
+:::
+
+## Where we are
+
+On Tuesday we ended the *Protect* step with a promise: if the data cannot leave your machine, you can **bring the model to the data** instead. Today we keep that promise with [Ollama](https://ollama.com){target="_blank"}. We will:
+
+1. Install Ollama and ask a local model a question.
+2. Learn what embeddings are and how to compare texts with them.
+3. Use embeddings to compare and search workshops (Exercise 1), and to classify them with the help of your coding agent (Exercise 2).
+
+Keep your work in one Quarto document, `lab09.qmd`, in a folder `lab09/` of your class repository, together with [`sunbelt2026_workshops.csv`](sunbelt2026_workshops.csv).
+
+# Ollama in a nutshell
+
+## What it is and why use it
+
+Ollama runs open-weight language models (Llama, Gemma, Qwen, Mistral, ...) **on your own computer**. It downloads and manages the models for you, and runs a small server in the background that the terminal, R, and other programs talk to.
+
+Why run a model locally?
+
+- **Privacy**: the prompt and the data never leave your machine.
+- **Cost**: no per-token billing, so thousands of calls are fine.
+- **Reproducibility**: you keep the exact model file; it will not change under you.
+
+The catch: local models are **small**. They hallucinate more and follow instructions less reliably than the models you use in chat, so everything we said on Tuesday about verifying applies even more. And local is not automatically approved: it does not replace your DUA or IRB protocol. (Also, model names ending in `-cloud` run on Ollama's servers, not yours.)
+
+## Installing Ollama and getting models
+
+1. Download and install Ollama from <https://ollama.com/download>{target="_blank"}, and open it. On Linux, start it with `ollama serve`.
+2. Pull the models we will use today:
+
+```{.bash}
+ollama pull llama3.2:1b          # Llama 3.2, 1 billion parameters (~1.3 GB)
+ollama pull embeddinggemma:300m  # An embedding model (~0.6 GB)
+```
+
+3. Install the R packages [`ollamar`](https://cran.r-project.org/package=ollamar){target="_blank"} [^rollama] and `data.table`:
+
+```{r}
+#| eval: false
+install.packages(c("ollamar", "data.table"))
+```
+
+A few more commands you will use:
+
+| Command | What it does |
+|---|---|
+| `ollama list` | Installed models and their size on disk |
+| `ollama run llama3.2:1b` | Chat with a model in the terminal (`/bye` to exit) |
+| `ollama ps` | Models currently loaded, and how much memory they use |
+| `ollama rm <model>` | Delete a model |
+
+The model name tells you its size: `1b` is one billion parameters. As a rule of thumb, a laptop with 8 GB of RAM runs 1--3B models comfortably and 16 GB handles ~8B.
+
+[^rollama]: The [`rollama`](https://cran.r-project.org/package=rollama){target="_blank"} package provides a more R-like interface. We use `ollamar` because it follows the official API closely and is actively maintained.
+
+# Asking a question
+
+## From the terminal and from R
+
+The quickest way to try a model is the terminal:
+
+```{.bash}
+ollama run llama3.2:1b "What is INSNA Sunbelt?"
+```
+
+From R, check that Ollama is running and call `generate()`:
+
+```{r}
+#| label: ollamar-generate
+#| eval: false
+library(ollamar)
+
+test_connection() # Is Ollama running?
+list_models()     # Same as `ollama list`
+
+generate(
+  model  = "llama3.2:1b",
+  prompt = "What is INSNA Sunbelt?",
+  output = "text"
+)
+```
+
+Run it a few times. A 1B model will tell you, with great confidence, several different things about the Sunbelt conference, and some of them will be wrong. (It is the annual meeting of the International Network for Social Network Analysis.) Small models are bad at facts; they are much better at working with text you give them.
+
+The answer changes between runs because the model samples it. To get the same answer every time, add `temperature = 0, seed = 1231` to the call, and record the model, prompt, and options in your document as you would package versions.
+
+# Embeddings
+
+## Text as vectors
+
+An **embedding model** does not generate text. It maps a piece of text to a vector of numbers (here, 768 of them) so that texts with similar meaning end up close together. Search engines, recommendation systems, and retrieval-augmented generation (RAG) are built on them.
+
+The usual measure of similarity is the **cosine similarity**, which is 1 for vectors pointing the same way and 0 for unrelated ones. For unit-length vectors it is just a dot product, so `crossprod()` computes all pairs at once. A toy example with three "texts" in three dimensions:
+
+```{r}
+#| label: cosine-toy
+emb <- cbind(
+  networks = c(0.9, 0.1, 0.0),
+  graphs   = c(0.8, 0.3, 0.1),
+  cooking  = c(0.0, 0.2, 0.9)
+)
+emb <- sweep(emb, 2, sqrt(colSums(emb^2)), "/") # Unit length columns
+round(crossprod(emb), 2)
+```
+
+## Real embeddings
+
+`embed()` returns one column per input text, already normalized to unit length:
+
+```{r}
+#| label: embed-sentences
+#| eval: false
+sentences <- c(
+  "We fit a logistic regression to estimate the odds of disease.",
+  "The model estimated the odds ratio of illness with a GLM.",
+  "My grandmother's recipe for tamales uses corn husks."
+)
+emb <- embed("embeddinggemma:300m", sentences)
+dim(emb)                  # 768 x 3
+round(crossprod(emb), 2)  # 3 x 3 cosine similarities
+```
+
+The first two sentences share almost no words, but they mean nearly the same thing, so their similarity is much higher than either one's similarity with the third. That is what makes embeddings useful: they compare *meaning*, not spelling.
+
+The same works for longer texts. Here are the workshops of the Sunbelt 2026 conference:
+
+```{r}
+#| label: agenda
+#| warning: false
+library(data.table)
+agenda <- fread("sunbelt2026_workshops.csv")
+dim(agenda)
+agenda[1:3, .(title, presenters)]
+```
+
+```{r}
+#| label: embed-agenda
+#| eval: false
+emb_w <- embed("embeddinggemma:300m", agenda$description)
+dim(emb_w) # 768 x 20: one column per workshop
+```
+
+# Exercises
+
+## Exercise 1: Comparing and searching workshops
+
+Use `emb_w` from the previous slide.
+
+a. **Pairwise.** Compute the 20 x 20 similarity matrix with `crossprod(emb_w)`. Pick a workshop you would like to attend and list the three most similar and the three least similar workshops. Then find the most similar *pair* in the whole agenda (hint: set the diagonal to `NA` first, and use `which(..., arr.ind = TRUE)`). Do the results make sense when you read the titles?
+
+b. **Search.** Write a query describing what you would like to learn, for example `"I want to learn how to fit exponential random graph models in R"`. Embed it, compute its similarity with every workshop, and print the top three titles. This is semantic search: the query does not need to share words with the description.
+
+   ```{r}
+   #| eval: false
+   emb_q <- embed("embeddinggemma:300m", "I want to learn ...")
+   sim_q <- crossprod(emb_w, emb_q)[, 1]
+   agenda[order(sim_q, decreasing = TRUE)[1:3], .(title)]
+   ```
+
+   Try two or three queries. Find one where the search fails, and explain why you think it did.
+
+## Exercise 2: Zero-shot classification with your coding agent
+
+**Zero-shot classification** assigns texts to categories without any labeled examples. Nothing is trained: we embed the *names* of the categories with the same model, and assign each workshop to the label it is most similar to.
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  W["20 workshop<br>descriptions"] --> E["embed()"]
+  L["5 label texts"] --> E
+  E --> S["Similarity matrix<br>20 x 5"]
+  S --> A["Most similar label<br>per workshop"]
+```
+
+This time, **use your coding agent (Codex, Claude, or Antigravity) to write the code.** Your job is to describe what you want, run it, and check it.
+
+a. **Choose the labels.** Write four or five categories for the workshops, for example "statistical modeling of networks", "network visualization", "qualitative and mixed methods", "Python programming", and "R programming".
+
+b. **Ask your agent.** Write a prompt that explains the data (a `data.table` called `agenda` with a `description` column, read from `sunbelt2026_workshops.csv`), the model (`embeddinggemma:300m` through `ollamar::embed()`, which returns unit-length columns), the labels, and what you want back: the predicted label for each workshop and the similarity to it. Paste your prompt into `lab09.qmd`.
+
+c. **Run and check.** Run the code yourself. Before looking at the predictions, label five workshops by hand by reading their descriptions; then compare with the model. How many does it get right?
+
+d. **Improve it.** Label wording matters, because the label works like a prompt: "R" alone works much worse than "a hands-on workshop teaching R programming". Ask your agent to help you try one or more of:
+
+   - rewording the labels to be more descriptive;
+   - an "other" category for workshops whose best similarity is below a threshold;
+   - a confidence measure: the gap between the best and the second-best label.
+
+   Does agreement with your five hand labels improve?
+
+e. **Extension: few-shot.** Instead of embedding the label *names*, represent each category by the average embedding of two or three workshops you labeled by hand (a nearest-centroid classifier). Do real examples work better than names?
+
+# Wrap-up
+
+## Local or cloud?
+
+| Use a local model when | Use a cloud model when |
+|---|---|
+| The data cannot leave the machine | The data are public or approved for that service |
+| The task is narrow and repetitive: classify, search, embed | The task needs reasoning, long context, or good code |
+| You need the exact same model in two years | You need the best available quality today |
+
+Today you used both: a cloud coding agent to *write* the code, and a local model to *run* it on the data. With protected data, that is the workflow from Tuesday: the agent sees your description of the data, never the data, and the model that does see the data stays on your machine.
+
+Finish `lab09.qmd` at home if you did not get through everything, and push it with its rendered HTML and your prompts by Sunday, as usual. Next week: the midterm hackathon.

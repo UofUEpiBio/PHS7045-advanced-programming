@@ -114,6 +114,11 @@ book:
         - file: 08-AI-bonus-track/lab.qmd
           target: _blank
           rel: noopener
+    - part: "Bonus Track: Local LLMs with Ollama"
+      chapters:
+        - file: 09-ollama/slides.qmd
+          target: _blank
+          rel: noopener
     - part: "Midterm Project"
       chapters:
         - file: exams/01-midterm.qmd
