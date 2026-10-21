@@ -119,9 +119,6 @@ book:
         - file: 09-ollama/slides.qmd
           target: _blank
           rel: noopener
-        - file: 09-ollama/lab.qmd
-          target: _blank
-          rel: noopener
     - part: "Midterm Project"
       chapters:
         - file: exams/01-midterm.qmd
