@@ -1,0 +1,406 @@
+---
+title: "Bring the Model to the Data"
+subtitle: "PHS 7045: Advanced Programming -- Bonus Track 2: Local LLMs with Ollama"
+author:
+  - "George G. Vega Yon, Ph.D."
+date: October 22, 2026
+---
+
+::: {.callout-note}
+## Attribution
+
+This session is adapted from the chapter *Example with ollama* of the book [*AI for the Scientist in a Hurry*](https://book-ai.ggvy.cl/08-ollama.html){target="_blank"} by George G. Vega Yon. The Sunbelt 2026 workshop agenda used in the examples ([`sunbelt2026_workshops.csv`](sunbelt2026_workshops.csv)) is public information taken from the [INSNA Sunbelt 2026](https://www.insna.org/){target="_blank"} website.
+:::
+
+::: {.callout-warning}
+## Code in these slides is not evaluated
+
+The website is rendered on GitHub Actions, where there is no Ollama server. Chunks that call Ollama are shown with `eval: false`; you will run them yourself during the lab. Chunks that do not need Ollama are evaluated as usual.
+:::
+
+## Where we are
+
+On Tuesday we built a habit loop for coding with an LLM: **Plan, Protect, Prompt, Run, Verify, Own**. We ended the *Protect* step with a promise: if the data cannot leave your machine, you can **bring the model to the data** instead. Today we keep that promise with [Ollama](https://ollama.com){target="_blank"}.
+
+By the end of the session you should be able to:
+
+- Explain when a local model is the right tool, and when it is not.
+- Install Ollama, download a model, and chat with it from the terminal.
+- Call a local model from R with the [`ollamar`](https://cran.r-project.org/package=ollamar){target="_blank"} package, reproducibly.
+- Use an LLM as a *function*: structured (JSON) output that you can put in a `data.table`, and verify.
+- Use embeddings to measure how similar two pieces of text are.
+
+As on Tuesday, lecture and lab are interleaved. Work in **pairs** and keep everything in one Quarto document, `lab09.qmd`; the full instructions are in [Lab 09](lab.qmd).
+
+| Time | What we do |
+|---|---|
+| 0--10 | Why run a model locally? |
+| 10--20 | What is Ollama? Models, sizes, and memory |
+| 20--30 | **Activity 1:** install, pull, and chat in the terminal |
+| 30--40 | Ollama is a server: the REST API and `ollamar` |
+| 40--52 | **Activity 2:** generate text from R; temperature and seeds |
+| 52--60 | The LLM as a function: structured output |
+| 60--72 | **Activity 3:** code the Sunbelt workshops, then verify |
+| 72--78 | Embeddings: text as vectors |
+| 78--88 | **Activity 4:** a network of similar workshops |
+| 88--90 | Wrap-up: local or cloud? |
+
+::: {.callout-important}
+## Before class (or right now)
+
+Ollama and the models are a few gigabytes. Start the downloads early (see the setup section of the lab):
+
+1. Install Ollama from <https://ollama.com/download>{target="_blank"}.
+2. In a terminal: `ollama pull llama3.2:1b` (about 1.3 GB) and `ollama pull embeddinggemma:300m` (about 0.6 GB).
+3. In R: `install.packages("ollamar")`.
+:::
+
+# Why run a model locally?
+
+## Four reasons, and one big caveat
+
+Everything you type into a cloud chat, or that a cloud coding agent reads from your folder, is sent to someone else's server. For most of what we do in this class that is fine. Sometimes it is not.
+
+| Reason | What it means for you |
+|---|---|
+| **Privacy** | The prompt and the data never leave your computer. PHI, DUA-covered data, and unpublished manuscripts stay where they are. |
+| **Cost** | No per-token billing. Classifying 50,000 free-text survey responses costs electricity, not dollars. |
+| **Reproducibility** | You pick the *exact* model file and keep it. A cloud model can be updated or retired under you; a downloaded model does not change. |
+| **Offline** | Works on a plane, in a secure enclave, or on a cluster node without internet. |
+
+**The caveat:** local models are *small*. A laptop can run models with 1 to ~30 billion parameters; the frontier models you use in chat are much larger. Small models hallucinate more, follow instructions less reliably, and are worse at code. Everything we said on Tuesday about verifying applies *more*, not less.
+
+::: {.callout-important}
+## Local is not automatically approved
+
+Running a model locally removes one risk (sending data to a third party). It does not replace your DUA or IRB protocol, and it does not make the output correct. Also check that the model really *is* local: Ollama also offers cloud models (their names end in `-cloud`), which run on Ollama's servers.
+:::
+
+# What is Ollama?
+
+## A model manager and a local server
+
+Ollama does two jobs:
+
+1. **Model manager.** Like a package manager, but for model weights: `ollama pull`, `ollama list`, `ollama rm`. Models come from the [Ollama library](https://ollama.com/library){target="_blank"} (Llama, Gemma, Qwen, Mistral, DeepSeek, ...).
+2. **Server.** It runs in the background and listens on `http://localhost:11434`. The terminal app, R, Python, and even some coding agents all talk to that same server.
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  A["Terminal<br>ollama run"] --> S
+  B["R<br>ollamar"] --> S
+  C["Python, curl,<br>other apps"] --> S
+  S["Ollama server<br>localhost:11434"] --> M[("Model files<br>~/.ollama/models")]
+```
+
+Model names follow the pattern `family:tag`, where the tag usually tells you the size: `llama3.2:1b` is Llama 3.2 with 1 billion parameters; `embeddinggemma:300m` is a 300-million-parameter embedding model from the Gemma family.
+
+## How big a model can my laptop run?
+
+A model is (mostly) a big array of numbers, its parameters. Memory needed is roughly
+
+$$
+\text{GB} \approx \text{parameters (billions)} \times \frac{\text{bits per parameter}}{8}
+$$
+
+Ollama models are usually **quantized**: each parameter is stored with 4 or 8 bits instead of 16 or 32. That shrinks the model a lot at a small cost in quality.
+
+```{r}
+#| label: model-memory
+#| warning: false
+library(data.table)
+sizes <- CJ(params_b = c(1, 3, 8, 30, 70), bits = c(4, 8, 16))
+sizes[, gb := params_b * bits / 8]
+
+# Rows: billions of parameters; columns: bits per parameter; cells: GB
+dcast(sizes, params_b ~ bits, value.var = "gb")
+```
+
+Add some room for the context window and for your other programs. Rule of thumb: a laptop with 8 GB of RAM handles 1--3B models comfortably, 16 GB handles ~8B, and you need a serious GPU or a lot of unified memory for 30B and up. On a Mac, the GPU uses the same memory as the CPU, which is why Apple laptops do surprisingly well.
+
+Also check the **license**. "Open weights" does not always mean open source; Llama and Gemma have their own terms of use.
+
+::: {.callout-tip icon="false"}
+## Activity 1 (10 minutes): install, pull, and chat
+
+Lab 09, Task 1. Install Ollama, pull `llama3.2:1b` and `embeddinggemma:300m`, and chat with the model in the terminal with `ollama run llama3.2:1b`. Ask it something you know the answer to (your department, an R function, a recent event) and note where it is wrong. Then run `ollama ps` in a second terminal while the model is answering, and write down how much memory it uses.
+:::
+
+# Ollama is a server
+
+## Talking to it with plain HTTP
+
+Because Ollama is a server, any program that can send an HTTP request can use it. This is all the terminal app does:
+
+```{bash}
+#| label: curl-generate
+#| eval: false
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.2:1b",
+  "prompt": "In one sentence, what is a random effect?",
+  "stream": false
+}'
+```
+
+The answer comes back as JSON with the text in the `response` field, plus metadata such as how many tokens were processed and how long it took. Other useful endpoints: `/api/chat` (conversations with roles), `/api/embed` (embeddings), and `/api/tags` (installed models).
+
+This is the same pattern as the cloud APIs from OpenAI, Anthropic, or Google: send JSON, get JSON. Only the address changes. Code you write against a local model today can be pointed at a bigger model later.
+
+## The `ollamar` package
+
+[`ollamar`](https://cran.r-project.org/package=ollamar){target="_blank"} wraps that API in R functions that mirror the endpoints [^rollama].
+
+```{r}
+#| label: ollamar-basics
+#| eval: false
+library(ollamar)
+
+test_connection() # Is the server running?
+list_models()     # Same as `ollama list`
+```
+
+`generate()` sends one prompt and returns an `httr2` response; `resp_process()` extracts what you need, or you can ask for text directly with `output = "text"`:
+
+```{r}
+#| label: ollamar-generate
+#| eval: false
+ans <- generate(
+  model  = "llama3.2:1b",
+  prompt = "What is INSNA Sunbelt?"
+)
+ans                       # <httr2_response> ... Status: 200 OK
+resp_process(ans, "text") # The generated text
+```
+
+Run it a few times. A 1B model will tell you, with great confidence, several different things about the Sunbelt conference. Some of them will be wrong. (It is the main conference of the International Network for Social Network Analysis.)
+
+[^rollama]: The [`rollama`](https://cran.r-project.org/package=rollama){target="_blank"} package provides a more R-like interface. We use `ollamar` because it follows the official API closely and is actively maintained.
+
+## Making it reproducible: system prompts, temperature, and seeds
+
+An LLM samples the next token from a probability distribution, so two runs of the same prompt usually differ. For research, you want to control that. Any extra argument to `generate()` is passed to the model as an option:
+
+```{r}
+#| label: ollamar-options
+#| eval: false
+ask <- function(prompt, ...) {
+  generate(
+    model  = "llama3.2:1b",
+    prompt = prompt,
+    system = "You are a concise biostatistician. Answer in one sentence.",
+    output = "text",
+    ...
+  )
+}
+
+# Default sampling: run twice, get two answers
+ask("What is a p-value?")
+ask("What is a p-value?")
+
+# Greedy decoding and a fixed seed: same answer every time
+ask("What is a p-value?", temperature = 0, seed = 1231)
+ask("What is a p-value?", temperature = 0, seed = 1231)
+```
+
+| Option | What it does |
+|---|---|
+| `system` | Instructions that frame every answer (the "persona" and the rules). |
+| `temperature` | 0 = always pick the most likely token; higher = more random. |
+| `seed` | Fixes the random number generator, as `set.seed()` does in R. |
+| `num_ctx` | Size of the context window, in tokens. Long documents need more. |
+
+Same model + same prompt + same options + same seed gives the same answer on the same machine. Record all four in your Quarto document, just as you record package versions. (Different hardware can still produce tiny differences.)
+
+::: {.callout-tip icon="false"}
+## Activity 2 (12 minutes): generate text from R
+
+Lab 09, Task 2. From `lab09.qmd`, check the connection, ask the model three questions, and wrap `generate()` in a function with a system prompt. Show that default sampling gives different answers and that `temperature = 0` with a seed gives the same answer twice. Then time a call with `system.time()` and compare with your cloud agent.
+:::
+
+# The LLM as a function
+
+## Structured output
+
+So far the model has returned prose. For research we usually want **data**: a label, a number, a yes/no that goes into a column. Ollama can constrain the model's output to a JSON schema you provide, so the answer always parses.
+
+Say we want to code each workshop in the Sunbelt 2026 agenda by the software it teaches and its level:
+
+```{r}
+#| label: agenda
+agenda <- fread("sunbelt2026_workshops.csv")
+dim(agenda)
+agenda[1:3, .(title, presenters)]
+```
+
+The schema is an R list that mirrors JSON Schema; `enum` restricts the allowed values:
+
+```{r}
+#| label: schema
+#| eval: false
+schema <- list(
+  type       = "object",
+  properties = list(
+    software = list(type = "string", enum = c("R", "Python", "both", "none")),
+    level    = list(
+      type = "string",
+      enum = c("introductory", "intermediate", "advanced")
+    )
+  ),
+  required   = list("software", "level")
+)
+
+code_workshop <- function(description) {
+  ans <- generate(
+    model       = "llama3.2:1b",
+    prompt      = paste(
+      "Classify this workshop description. Which software does it teach,",
+      "and what level is it?\n\n",
+      description
+    ),
+    format      = schema,
+    output      = "text",
+    temperature = 0,
+    seed        = 1231
+  )
+  jsonlite::fromJSON(ans)
+}
+
+codes <- lapply(agenda$description, code_workshop)
+agenda[, software := vapply(codes, `[[`, "", "software")]
+agenda[, level := vapply(codes, `[[`, "", "level")]
+agenda[, .N, by = software]
+```
+
+Now the model is a function: text in, a row of data out. It is the same idea as qualitative coding of open-ended survey responses, which is one of the most useful things a local model can do with data you cannot upload.
+
+## A valid JSON is not a correct answer
+
+The schema guarantees the *format*. It guarantees nothing about the *content*. A 1B model will happily return `{"software": "Python", "level": "advanced"}` for an introductory R workshop, and the JSON will parse perfectly.
+
+This is Tuesday's **Verify** step, applied to an LLM used as a measurement instrument:
+
+1. **Hand-code a sample first.** Read 5 descriptions yourself and write down the answers *before* you look at the model's.
+2. **Measure agreement.** Percent agreement (or Cohen's kappa) between you and the model.
+3. **Look at the disagreements.** Is the model wrong, is your codebook ambiguous, or both?
+4. **Report it.** If you use LLM-coded data in a paper, say which model, which prompt, which options, and how well it agreed with human coders.
+
+::: {.callout-tip icon="false"}
+## Activity 3 (12 minutes): code the workshops, then verify
+
+Lab 09, Task 3. Hand-code five workshops first. Then run the structured-output code on all 20, compute the agreement with your hand codes, and inspect the disagreements. Finally, change one thing (the prompt, the schema, or the model) and check whether agreement improves.
+:::
+
+# Embeddings
+
+## Text as vectors
+
+An **embedding model** does not generate text. It maps a piece of text to a vector of numbers (here, 768 of them) so that texts with similar meaning end up close together. Embeddings are what search engines, recommendation systems, and retrieval-augmented generation (RAG) are built on, and they are a good fit for a small local model.
+
+With unit-length vectors, similarity is a dot product. The **cosine similarity** between $a$ and $b$ is
+
+$$
+\cos(a, b) = \frac{a \cdot b}{\lVert a \rVert \, \lVert b \rVert},
+$$
+
+which is 1 for vectors pointing the same way and 0 for unrelated (orthogonal) ones. A toy example with three "texts" in 3 dimensions:
+
+```{r}
+#| label: cosine-toy
+emb <- cbind(
+  networks    = c(0.9, 0.1, 0.0),
+  graphs      = c(0.8, 0.3, 0.1),
+  cooking     = c(0.0, 0.2, 0.9)
+)
+emb <- sweep(emb, 2, sqrt(colSums(emb^2)), "/") # Unit length columns
+round(crossprod(emb), 2)
+```
+
+`crossprod(emb)` computes $E^\top E$, all pairwise dot products in one matrix operation.
+
+## Embedding the Sunbelt agenda
+
+`embed()` returns one column per input, already normalized to unit length (`normalize = TRUE` by default):
+
+```{r}
+#| label: embed-agenda
+#| eval: false
+emb <- embed("embeddinggemma:300m", agenda$description)
+dim(emb) # 768 x 20
+
+sim <- crossprod(emb) # 20 x 20 cosine similarities
+
+# The five workshops most similar to the first one (excluding itself)
+top <- order(sim[1, ], decreasing = TRUE)[2:6]
+agenda[c(1, top), .(title)]
+```
+
+For unit vectors, Euclidean distance and cosine similarity give the same ranking ($\lVert a - b \rVert^2 = 2 - 2\cos(a, b)$), so you could also use `dist(t(emb))`, as the book chapter does.
+
+## From similarities to a network
+
+Connect each workshop to its three most similar ones and we get a network whose clusters are groups of related topics, found without reading a single abstract:
+
+```{r}
+#| label: embed-network
+#| eval: false
+library(igraph)
+library(netplot)
+
+n <- ncol(sim)
+diag(sim) <- -Inf # Exclude self-loops
+edges <- do.call(rbind, lapply(seq_len(n), function(i) {
+  cbind(i, order(sim[i, ], decreasing = TRUE)[1:3])
+}))
+
+net <- simplify(graph_from_edgelist(edges, directed = FALSE))
+V(net)$name <- agenda$title
+
+nplot(
+  net,
+  vertex.label   = NA,
+  vertex.size    = 0.05,
+  edge.width     = 0.5,
+  edge.color     = ~ ego(alpha = 0.5),
+  edge.curvature = 0.15
+)
+```
+
+As with structured output, look before you trust: do the clusters make sense to someone who knows the field? Embeddings capture *topic*, and sometimes they capture surface features (shared words, the same presenter's writing style) instead of meaning.
+
+::: {.callout-tip icon="false"}
+## Activity 4 (10 minutes): a network of similar workshops
+
+Lab 09, Task 4. Embed the 20 descriptions, find the most and least similar workshops to one you would like to attend, and draw the network. Color the vertices by the `software` codes from Activity 3 and check whether the clusters line up with them.
+:::
+
+# Wrap-up
+
+## Local or cloud?
+
+| Use a local model when | Use a cloud model when |
+|---|---|
+| The data cannot leave the machine | The data are public or approved for that service |
+| The task is narrow and repetitive: classify, extract, embed | The task needs reasoning, long context, or good code |
+| You need the exact same model in two years | You need the best available quality today |
+| You have thousands of calls to make | You have a handful of calls to make |
+
+Often the answer is both: use a cloud agent to *write and test* the code against fake data (Tuesday's no-upload workflow), then run that code with a *local* model on the real data.
+
+## Dos and don'ts
+
+**Do**
+
+- Record the model name and tag, the prompt, the system prompt, the options, and the seed.
+- Use structured output whenever the answer goes into a data set.
+- Validate against human coding on a sample before you trust the model on the rest.
+- Check the model's license and, for protected data, your DUA and IRB protocol.
+
+**Don't**
+
+- Assume a local model is accurate because it is private.
+- Assume a parsed JSON means a correct answer.
+- Use a `-cloud` model, or point `ollamar` at a remote host, with data that must stay local.
+- Ask a 1B model for facts. Ask it to transform text you give it.
+
+Finish `lab09.qmd` at home if you did not get through everything; it is due Sunday as usual. Next week: the midterm hackathon.

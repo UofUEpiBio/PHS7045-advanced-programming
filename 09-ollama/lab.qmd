@@ -1,0 +1,157 @@
+---
+title: "Lab 09 - Local LLMs with Ollama"
+author:
+  - "George G. Vega Yon, Ph.D."
+date: October 22, 2026
+format:
+  html:
+    embed-resources: false
+---
+
+::: {.callout-note}
+## Attribution
+
+This lab is adapted from the chapter *Example with ollama* of the book [*AI for the Scientist in a Hurry*](https://book-ai.ggvy.cl/08-ollama.html){target="_blank"}. The Sunbelt 2026 workshop agenda is public information from the [INSNA Sunbelt 2026](https://www.insna.org/){target="_blank"} website.
+:::
+
+## Learning goals
+
+- Install Ollama, download models, and check how much memory they use.
+- Call a local LLM from R with `ollamar`, and make its answers reproducible.
+- Use structured (JSON) output to turn free text into a data set.
+- Validate LLM-coded data against your own coding.
+- Compute text similarity with embeddings and draw the resulting network.
+
+## Lab description
+
+Work in **pairs**. You will use Ollama on your own laptop; if one of your laptops cannot run it (for example, less than 8 GB of RAM or no admin rights to install software), work on your partner's. As in all our labs, keep a record of **every prompt you send and a short note on what came back**; this is part of the deliverable.
+
+Submit a single Quarto document (`lab09.qmd`) and its rendered HTML through GitHub by Sunday, as usual. Whatever you do not finish in class, finish at home.
+
+::: {.callout-important}
+## Rendering with a local model
+
+Your document calls a server on your own machine, so Ollama must be running when you render it. Rendering also re-runs every model call, which can be slow. Add `cache: true` to chunks that call the model, or set `execute: cache: true` in the YAML header.
+:::
+
+### Setup (start before the session)
+
+1. Install Ollama from <https://ollama.com/download>{target="_blank"} and open it. On macOS and Windows it runs in the background with an icon in the menu bar or system tray; on Linux, run `ollama serve` in a terminal.
+2. Download the two models we will use (about 2 GB in total):
+
+   ```{.bash}
+   ollama pull llama3.2:1b
+   ollama pull embeddinggemma:300m
+   ```
+
+3. Install the R packages:
+
+   ```{r}
+   #| eval: false
+   install.packages(c("ollamar", "data.table", "igraph", "netplot"))
+   ```
+
+4. Create a folder `lab09/` in your class repository, download [`sunbelt2026_workshops.csv`](sunbelt2026_workshops.csv) into it, and create `lab09.qmd` next to it.
+
+### The data
+
+`sunbelt2026_workshops.csv` lists the 20 workshops offered at the 2026 Sunbelt conference, the annual meeting of the International Network for Social Network Analysis (INSNA). It is public information, so it is safe to use with any tool.
+
+| Variable | Description |
+|---|---|
+| `section`, `day`, `date`, `date_iso` | When the workshop takes place |
+| `session_type`, `time_of_day` | Full day, half day, morning, or afternoon |
+| `title` | Workshop title |
+| `presenters` | Names of the presenters |
+| `description` | The workshop abstract (free text) |
+
+## Task 1: Install, pull, and chat (10 minutes)
+
+a. In a terminal, run `ollama list`. Write down the size of each model on disk.
+
+b. Start a chat with `ollama run llama3.2:1b`. Ask it three questions:
+
+   - one about something you know well (your department, your home town, your research area);
+   - one about R, for example "What does `data.table::fread()` do?";
+   - one about something recent, for example "Who won the last FIFA World Cup?".
+
+   For each answer, note whether it is correct, partially correct, or invented. Type `/bye` to leave the chat.
+
+c. While the model is answering a long question (for example "Write a 500-word essay about p-values"), run `ollama ps` in a second terminal. How much memory does the model use, and is it running on the CPU or the GPU? Compare with the back-of-the-envelope formula in the slides.
+
+d. In one or two sentences: for which of the questions in (b) would you trust this model?
+
+## Task 2: Generate text from R (12 minutes)
+
+a. In `lab09.qmd`, load `ollamar`, check the connection with `test_connection()`, and list your models with `list_models()`.
+
+b. Send one prompt with `generate()` and extract the text with `resp_process(ans, "text")`. Then send the same prompt with `output = "text"`.
+
+c. Write a function `ask(prompt, ...)` that calls `generate()` with a system prompt of your choice and passes `...` on to `generate()` (see the slides). Follow the course style for multi-line calls.
+
+d. Call `ask("What is a p-value?")` twice and show that the answers differ. Then call it twice with `temperature = 0, seed = 1231` and show that they are identical with `identical()`.
+
+e. Time one call with `system.time()`. Ask your cloud agent (Codex, Claude, or Antigravity) the same question and compare, roughly, how long each takes and the quality of the answer.
+
+## Task 3: Code the workshops, then verify (12 minutes)
+
+a. **Before using the model**, read the descriptions of the first five workshops and code each one yourself:
+
+   - `software`: `"R"`, `"Python"`, `"both"`, or `"none"` (none or not stated);
+   - `level`: `"introductory"`, `"intermediate"`, or `"advanced"`.
+
+   Store your codes in a `data.table` with columns `title`, `software_human`, and `level_human`. Print only the titles and descriptions you need to read; do not paste them into a cloud chat (they are public, but we are practicing the habit).
+
+b. Copy the schema and the `code_workshop()` function from the slides and run it on all 20 descriptions. Add the results to `agenda` as `software` and `level`, and tabulate each with `agenda[, .N, by = software]`.
+
+c. Merge your five hand codes with the model codes and compute the percent agreement for each variable:
+
+   ```{r}
+   #| eval: false
+   check <- merge(human, agenda[, .(title, software, level)], by = "title")
+   check[, mean(software == software_human)]
+   check[, mean(level == level_human)]
+   ```
+
+d. Look at every disagreement and read the description again. Who is right: you or the model? Is the category definition ambiguous?
+
+e. Change **one** thing and rerun (b) and (c):
+
+   - add a sentence to the prompt with your coding rules (for example, "If the description does not mention a programming language, answer `none`");
+   - or use a bigger model, if your laptop can handle it (`ollama pull llama3.2:3b`);
+   - or add a field to the schema, such as a one-sentence `reason`.
+
+   Did agreement change? Report the result even if it got worse.
+
+## Task 4: A network of similar workshops (10 minutes)
+
+a. Embed the 20 descriptions with `embed("embeddinggemma:300m", agenda$description)`. What are the dimensions of the result, and what does each column represent? Verify that the columns have unit length with `colSums(emb^2)`.
+
+b. Compute the cosine similarity matrix with `crossprod(emb)`. Pick a workshop you would like to attend and list the three most similar and the three least similar workshops. Do they make sense?
+
+c. Build the network in which each workshop is connected to its three most similar workshops (see the slides) and draw it with `netplot::nplot()`.
+
+d. Color the vertices by the `software` codes from Task 3. With `netplot`, pass a color per vertex through `vertex.color`; for example:
+
+   ```{r}
+   #| eval: false
+   pal <- c(R = "steelblue", Python = "tomato", both = "purple", none = "gray")
+   nplot(net, vertex.color = pal[agenda$software], vertex.label = NA)
+   ```
+
+   Do workshops that teach the same software cluster together? Write two or three sentences about what the embeddings seem to capture.
+
+## Task 5: Reflect and own it (5 minutes, can be done at home)
+
+a. Write a short "Methods" paragraph, as you would in a paper, describing how the workshops were coded in Task 3: model and tag, prompt, schema, options, seed, and agreement with human coding.
+
+b. In three to five sentences, describe a dataset from your own research (or one you could work with) where a local model would be useful. What task would it do (classify, extract, summarize, embed)? Why not a cloud model? How would you verify its output? Do **not** include any data from it.
+
+c. Write a three-sentence AI-use disclosure for this lab. Commit and push `lab09.qmd` and its rendered HTML, with your prompts in the document.
+
+## Going further (optional)
+
+- **Chat with history.** `ollamar::chat()` takes a list of messages with roles (`system`, `user`, `assistant`); see `?create_messages`. Use it to have a two-turn conversation from R.
+- **Images.** Multimodal models such as `gemma3` accept images through the `images` argument of `generate()`. Ask one to describe one of the plots you made in a previous lab.
+- **Your coding agent with a local model.** Some coding agents can use Ollama as their backend. Try it, and compare the quality of the code with what you get from your usual agent.
+- **On the cluster.** Ollama runs on Linux without a graphical interface (`ollama serve`). In the CHPC weeks, think about how you would run it on a GPU node so the model sits next to the data.
