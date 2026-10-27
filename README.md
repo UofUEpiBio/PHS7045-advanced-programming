@@ -182,44 +182,44 @@ R functions and slides due before class</td>
 <tr>
 <td style="text-align: right;">11</td>
 <td style="text-align: left;">11/5/26</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">No lecture or lab</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td style="text-align: left;">11/10/26</td>
 <td style="text-align: left;">Lecture and Lab</td>
 <td style="text-align: left;">UofU's CHPC coding agents</td>
 <td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-slurm-practice/lab.html" target="_blank" rel="noopener">lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/10-slurm-practice/lab.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
 <td style="text-align: right;">12</td>
-<td style="text-align: left;">11/10/26</td>
+<td style="text-align: left;">11/12/26</td>
 <td style="text-align: left;">Lecture</td>
 <td style="text-align: left;">Slurm</td>
 <td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-slurm-week1/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/11-slurm-week1/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
-<td style="text-align: right;">12</td>
-<td style="text-align: left;">11/12/26</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: left;">11/17/26</td>
 <td style="text-align: left;">Lab</td>
 <td style="text-align: left;">More practice with slurm</td>
 <td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/12-slurm-week2/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
 <td style="text-align: right;">13</td>
-<td style="text-align: left;">11/17/26</td>
+<td style="text-align: left;">11/19/26</td>
 <td style="text-align: left;">Lecture</td>
 <td style="text-align: left;">R packages I</td>
 <td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/13-rpkgs-i/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
-<td style="text-align: right;">13</td>
-<td style="text-align: left;">11/19/26</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: left;">11/24/26</td>
 <td style="text-align: left;">Lab</td>
 <td style="text-align: left;">R packages I</td>
 <td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html" target="_blank" rel="noopener">lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/13-rpkgs-i/lab.qmd" target="_blank" rel="noopener">source</a>)</td>
-</tr>
-<tr>
-<td style="text-align: right;">14</td>
-<td style="text-align: left;">11/24/26</td>
-<td style="text-align: left;">Lecture</td>
-<td style="text-align: left;">TBD</td>
-<td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: right;">14</td>
