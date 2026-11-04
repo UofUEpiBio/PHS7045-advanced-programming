@@ -1,0 +1,15 @@
+---
+title: "UofU's CHPC Introduction"
+---
+
+The Center for High Performance Computing (CHPC) gave today's lecture.
+Ashley Dederich shared the following resources.
+
+## Get help
+
+For help with CHPC, email [helpdesk@chpc.utah.edu](mailto:helpdesk@chpc.utah.edu).
+
+## Presentation resources
+
+- [CHPC presentations](https://chpc.utah.edu/presentations/index.php){target="_blank" rel="noopener"}
+- [Introduction to Slurm and Slurm Batch Scripts](https://chpc.utah.edu/presentations/introslurmandslurmbatchscripts.php){target="_blank" rel="noopener"}

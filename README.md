@@ -176,7 +176,7 @@ R functions and slides due before class</td>
 <td style="text-align: left;">11/3/26</td>
 <td style="text-align: left;">Lecture and Lab</td>
 <td style="text-align: left;">UofU's CHPC intro</td>
-<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-chpc-week/chpc_overview.pdf" target="_blank" rel="noopener">CHPC overview</a><br />
+<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/10-chpc-week/resources.html" target="_blank" rel="noopener">CHPC presentation and resources</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/10-chpc-week/resources.qmd" target="_blank" rel="noopener">source</a>)<br />
 <a href="10-chpc-week/IntroLinux-RClass.pdf">Linux slides</a>, <a href="10-chpc-week/using_r_at_chpc.pdf">using R slides</a>, <a href="10-chpc-week/RClass-Slurm.pdf">Slurm slides</a></td>
 </tr>
 <tr>
