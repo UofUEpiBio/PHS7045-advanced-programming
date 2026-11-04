@@ -127,8 +127,11 @@ book:
         - file: 09-midterm/homework.qmd
           target: _blank
           rel: noopener
-    - part: "UofU's CHPC Coding Agents"
+    - part: "UofU's CHPC Introduction"
       chapters:
+        - file: 10-chpc-week/resources.qmd
+          target: _blank
+          rel: noopener
         - file: 10-slurm-practice/lab.qmd
           target: _blank
           rel: noopener
