@@ -173,7 +173,7 @@ See [Lab 11, Hands-on 1](lab.qmd#hands-on-1). You'll run `01-sapply.R` and `02-m
 
 ## Looking back at Hands-on 1
 
-If $T_k$ is the wall time on $k$ cores, the speedup is $S_k = T_1 / T_k$ and the efficiency is $E_k = S_k / k$. On 4 cores you probably got a speedup somewhere around 3, not 4. Starting the workers takes time, and some parts of the script (starting R, creating the seeds, saving the results) run on a single core however many you have. Amdahl's law [@amdahlValiditySingleProcessor1967] puts a number on this: if a fraction $f$ of the work can run in parallel, then $S_k \le 1 / \left((1-f) + f/k\right)$.
+If $T_k$ is the wall time on $k$ cores, the speedup is $S_k = T_1 / T_k$ and the efficiency is $E_k = S_k / k$. On 4 cores you probably got a speedup a bit below 4 (I got about 3.7 on my laptop). Starting the workers and collecting their results takes time, the cores don't all finish at the same moment, and your laptop is doing other things too. For the whole job, there's also work that runs on a single core however many you have: starting R and saving the results. The times the scripts print leave those out, but `sacct` on CHPC includes them, so you'll see them in the scaling report. Amdahl's law [@amdahlValiditySingleProcessor1967] puts a number on this: if a fraction $f$ of the work can run in parallel, then $S_k \le 1 / \left((1-f) + f/k\right)$.
 
 The other thing to notice is how `02-mclapply.R` decides how many cores to use. When you write `--cpus-per-task=4`, Slurm sets aside 4 cores for you, but R has no idea. So the script asks:
 
