@@ -3,6 +3,7 @@ project:
   output-dir: _book
   resources:
     - 10-chpc-week/chpc_overview.pdf
+    - 11-simpi/scripts/**
     - exams/02-final.html
 
 book:
@@ -138,8 +139,14 @@ book:
         - file: 10-slurm-practice/04-slurm.qmd
           target: _blank
           rel: noopener
-    - part: "Slurm"
+    - part: "Simulating π on CHPC"
       chapters:
+        - file: 11-simpi/slides.qmd
+          target: _blank
+          rel: noopener
+        - file: 11-simpi/lab.qmd
+          target: _blank
+          rel: noopener
         - file: 11-slurm-week1/slides.qmd
           target: _blank
           rel: noopener

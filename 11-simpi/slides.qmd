@@ -1,0 +1,341 @@
+---
+title: "Simulating π: From Laptop to CHPC"
+subtitle: "PHS 7045: Advanced Programming -- Slurm, job arrays, and coding agents"
+author:
+  - "Thi Mui Pham"
+date: November 12, 2026
+---
+
+::: {.callout-note}
+## Attribution
+
+The structure of this session and the π example follow George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* (<https://github.com/USCbiostats/slurmr-workshop>{target="_blank"}) and the book *Applied HPC with R* (<https://book-hpc.ggvy.cl>{target="_blank"}). We adapted it to CHPC and use plain Slurm instead of the slurmR package. The coding-agent part builds on CHPC's session *Coding Agents at CHPC* by Brandon Claridge (November 10).
+:::
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+## Where we are
+
+In week 7 we parallelized simulations on one computer, and we learned that a simulation should give the **same answer** no matter how many cores run it. Last week, CHPC showed us the cluster, Slurm, and the coding agents they host. Today we put it all together: one simulation, run in more and more places.
+
+| Where | How | Case |
+|---|---|---|
+| Your laptop | `sapply()` | 1 |
+| Your laptop | `parallel::mclapply()` | 2 |
+| One CHPC node | `mclapply()` + `--cpus-per-task` | 2 |
+| Many CHPC nodes | a Slurm **job array** (written with Codex) | 3 |
+
+Work in **pairs**. Keep your answers, prompts, and timings in one Quarto document, `lab11.qmd`; the full instructions for each activity are in [Lab 11](lab.qmd).
+
+| Time | What we do |
+|---|---|
+| 0--15 | Why π? Designing a simulation for scale |
+| 15--35 | **Hands-on 1:** cases 1 and 2, on your laptop and on one CHPC node |
+| 35--45 | Many nodes with job arrays; coding agents on the cluster |
+| 45--80 | **Hands-on 2:** Codex writes the job array, you verify it |
+| 80--90 | Wrap-up and homework |
+
+::: {.callout-important}
+## Before class
+
+Do the 10-minute checklist at the top of [Lab 11](lab.qmd): copy the scripts to CHPC and sign in to Codex on an Open OnDemand desktop. Signing in is the step most likely to go wrong, and we do not want to spend class time on it.
+:::
+
+# Why π?
+
+## Monte Carlo in one picture
+
+Throw $N$ random points uniformly into the square $[-1, 1] \times [-1, 1]$. The square has area 4 and the unit circle has area $\pi$, so the share of points that land inside the circle estimates $\pi / 4$:
+
+$$
+\hat p = \frac{1}{N}\sum_{j=1}^N \mathbf{1}\left(x_j^2 + y_j^2 \le 1\right),
+\qquad
+\hat \pi = 4 \hat p .
+$$
+
+```{r}
+#| label: dots
+#| echo: false
+#| fig-width: 5
+#| fig-height: 5
+#| out-width: 50%
+#| fig-align: center
+#| fig-cap: "2,000 random points. Blue points fall inside the unit circle."
+set.seed(2312)
+dots <- data.frame(x = runif(2000, -1, 1), y = runif(2000, -1, 1))
+dots$inside <- with(dots, x^2 + y^2 <= 1)
+ggplot(dots, aes(x, y, colour = inside)) +
+  geom_point(alpha = .6, size = 1) +
+  scale_colour_manual(values = c(`TRUE` = "steelblue", `FALSE` = "tomato"),
+                      guide = "none") +
+  coord_equal() +
+  labs(title = sprintf("pi-hat = 4 x %.3f = %.3f",
+                       mean(dots$inside), 4 * mean(dots$inside))) +
+  theme_minimal()
+```
+
+Why π? It is the simplest *embarrassingly parallel* simulation, and we **know the right answer**, so we can tell when something is broken.
+
+## How many points do we need?
+
+Each point is a coin flip with success probability $p = \pi/4$. So the standard error of $\hat\pi$ is
+
+$$
+\text{SE}(\hat \pi) = 4\sqrt{\frac{p(1-p)}{N}} \approx \frac{1.64}{\sqrt N}.
+$$
+
+```{r}
+#| label: convergence
+#| echo: false
+#| fig-width: 7
+#| fig-height: 3.5
+#| fig-cap: "Running estimate of π from one stream of one million points, with a ±2 SE band around the true value."
+set.seed(123)
+N <- 1e6
+inside <- (runif(N, -1, 1)^2 + runif(N, -1, 1)^2) <= 1
+keep <- unique(round(10^seq(2, 6, length.out = 400)))
+conv <- data.frame(N = keep, pihat = 4 * cumsum(inside)[keep] / keep)
+conv$se <- 4 * sqrt((pi / 4) * (1 - pi / 4) / conv$N)
+ggplot(conv, aes(N, pihat)) +
+  geom_ribbon(aes(ymin = pi - 2 * se, ymax = pi + 2 * se),
+              fill = "steelblue", alpha = .2) +
+  geom_hline(yintercept = pi, linetype = "dashed") +
+  geom_line() +
+  scale_x_log10(labels = scales::label_comma()) +
+  labs(x = "Number of points (log scale)", y = expression(hat(pi))) +
+  theme_minimal()
+```
+
+| Points $N$ | SE | Correct digits (about) |
+|---:|---:|---|
+| $10^6$ | 0.0016 | 3.14 |
+| $10^8$ | 0.00016 | 3.141 |
+| $10^{10}$ | 0.000016 | 3.1415 |
+
+**Each extra digit costs 100 times more points.** That is the kind of growth that sends us to a cluster.
+
+## Designing a simulation for scale
+
+We follow the workshop's design: `nsims` **replicates**, each with `n` points; the estimate is the mean of the replicates. We add one rule from week 7: **replicate `i` always uses its own seed**, no matter which core or node runs it.
+
+```{r}
+#| label: simpi-code
+#| file: scripts/simpi.R
+#| eval: true
+```
+
+Two details matter:
+
+- `make_seeds()` makes one independent random-number stream per replicate (L'Ecuyer streams, the same tool `parallel` uses internally).
+- `simpi()` only depends on `i`, `n`, and `seeds`. It does not care who calls it or in what order.
+
+## The known answer
+
+Because of this design, **every correct version of the simulation prints exactly the same number**. With the default size (10,000 replicates of 10,000 points):
+
+```{r}
+#| label: known-answer
+#| echo: true
+seeds <- make_seeds(10000)
+
+serial   <- sapply(1:10000, simpi, n = 10000, seeds = seeds)
+parallel <- unlist(parallel::mclapply(1:10000, simpi, n = 10000,
+                                      seeds = seeds, mc.cores = 2))
+
+sprintf("%.12f", c(serial = mean(serial), parallel = mean(parallel)))
+```
+
+Write this number down. It is your test for everything you run today, including the code that Codex writes for you: if a version prints anything else, it is wrong.
+
+::: {.callout-tip icon="false"}
+## Hands-on 1 (20 minutes): cases 1 and 2 by hand
+
+Follow [Lab 11, Hands-on 1](lab.qmd#hands-on-1). Run `01-sapply.R` and `02-mclapply.R` on your laptop, then submit `00-hello-world.slurm` and `02-mclapply.slurm` to CHPC. No coding agents in this part.
+:::
+
+## What did we learn from Hands-on 1?
+
+**Speedup and efficiency.** With $T_k$ the wall time on $k$ cores,
+
+$$
+S_k = \frac{T_1}{T_k}, \qquad E_k = \frac{S_k}{k}.
+$$
+
+Perfect scaling means $S_k = k$ and $E_k = 1$. In practice $E_k < 1$: starting workers, copying data, and the serial parts of the script (loading R, making seeds, saving results) do not get faster with more cores. If a share $f$ of the work runs in parallel, *Amdahl's law* says that $S_k \le 1 / \left((1-f) + f/k\right)$.
+
+**Cores on a cluster.** Slurm reserves the cores you ask for with `--cpus-per-task`. R does not know about that reservation, so `02-mclapply.R` reads it:
+
+```r
+ncores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK"))
+```
+
+`parallel::detectCores()` would count *every* core on the node, including the ones other users reserved. On a shared node you would then run, say, 64 processes on 4 cores.
+
+# Many nodes with job arrays
+
+## One script, many copies
+
+A **job array** asks Slurm to run the same script many times. Each copy (a *task*) can land on a different node and gets its own environment variables:
+
+```bash
+#SBATCH --array=1-4          # 4 tasks
+#SBATCH --cpus-per-task=4    # each task gets 4 cores
+#SBATCH --output=%x-%A_%a.out
+```
+
+| Variable | Meaning | Example |
+|---|---|---|
+| `SLURM_ARRAY_JOB_ID` (`%A`) | ID shared by all tasks | 1234567 |
+| `SLURM_ARRAY_TASK_ID` (`%a`) | This task's number | 1, 2, 3, or 4 |
+| `SLURM_ARRAY_TASK_COUNT` | Number of tasks | 4 |
+| `SLURM_CPUS_PER_TASK` | Cores of this task | 4 |
+
+4 tasks $\times$ 4 cores = 16 cores, without asking for 16 cores on one node.
+
+## Splitting the work
+
+Task `a` out of `T` takes replicates `a, a + T, a + 2T, ...`:
+
+```{r}
+#| label: split
+#| echo: true
+nsims <- 10; ntasks <- 4
+lapply(1:ntasks, function(a) seq(a, nsims, by = ntasks))
+```
+
+Each task runs its replicates with `mclapply()` on its own cores, using the **same** `seeds`, and saves them to its **own** file: `results/pi-task001.rds`, `results/pi-task002.rds`, ...
+
+## Collecting the results
+
+A second job reads all files, puts the replicates back in order, and takes the mean. Slurm can start it automatically once the array is done:
+
+```bash
+jid=$(sbatch --parsable 03-array.slurm)            # prints only the job ID
+sbatch --dependency=afterok:$jid 04-aggregate.slurm # waits for ALL tasks to succeed
+```
+
+```{mermaid}
+%%| echo: false
+flowchart LR
+  S["sbatch 03-array.slurm"] --> T1["task 1<br>4 cores"]
+  S --> T2["task 2<br>4 cores"]
+  S --> T3["task 3<br>4 cores"]
+  S --> T4["task 4<br>4 cores"]
+  T1 --> R["results/pi-task00*.rds"]
+  T2 --> R
+  T3 --> R
+  T4 --> R
+  R --> A["04-aggregate.slurm<br>(afterok)"]
+  A --> P["pi-hat"]
+```
+
+**Where do the tasks run?** Slurm decides. On a shared partition, several tasks may end up on the same node. Log the host name of every task (`Sys.info()[["nodename"]]`) so you can tell.
+
+## Coding agents on the cluster
+
+A recap of CHPC's session, and the rules for today:
+
+- `module load codex` starts Codex in the terminal, with a **CHPC system prompt** that knows about the cluster, modules, and Slurm.
+- CHPC adds **skills**. Today we use `job-triage` (why did my job fail?) and `slurm-utilization-audit` (did my job use what it asked for?).
+- **Guardrails:** Codex has your Linux permissions, some destructive commands such as `rm` are denied, and network access is blocked.
+- Our **`AGENTS.md`** adds the rules for this lab on top of CHPC's system prompt: no `sbatch` by the agent, no heavy computing on the login node, cores from `SLURM_CPUS_PER_TASK`.
+
+The rule of the day: **the agent proposes, you submit.** You write the acceptance tests *before* prompting, you check the code against the known answer, and you log every prompt, as in Lab 08.
+
+If your Codex tokens run out, `module load codex_CHPC_local_model` gives you the same interface with a model hosted by CHPC.
+
+::: {.callout-tip icon="false"}
+## Hands-on 2 (35 minutes): Codex writes the job array
+
+Follow [Lab 11, Hands-on 2](lab.qmd#hands-on-2). Write the spec, prompt Codex, test on a tiny problem, then submit the array and the aggregation job yourself.
+:::
+
+## Wrap-up
+
+- Compare π̂ across pairs: does everybody have the same 12 digits? If not, whose version is wrong, and why?
+- What did you have to correct in Codex's code? Would you have noticed without the known answer?
+- Homework (about 50 minutes, details in [Lab 11](lab.qmd#homework)): spot the bug, scaling report, push to GitHub by Sunday.
+
+# Reference (read at home)
+
+## Skipping the `.slurm` file
+
+For a quick one-off job, `sbatch --wrap` writes the batch script for you (the workshop's "Case 5", without any R package):
+
+```bash
+sbatch --account=notchpeak-shared-short --partition=notchpeak-shared-short \
+  --time=00:10:00 --mem=2G --job-name=01-sapply \
+  --wrap="module load R; Rscript --vanilla 01-sapply.R"
+```
+
+For anything you will run more than once, keep a `.slurm` file: it documents what you asked for.
+
+## Interactive sessions
+
+To debug on a compute node instead of the login node, ask for an interactive session with `salloc`:
+
+```bash
+salloc --account=notchpeak-shared-short --partition=notchpeak-shared-short \
+  --ntasks=1 --cpus-per-task=4 --mem=4G --time=00:30:00
+module load R
+R
+```
+
+Exit with `exit` so that you release the cores. Use interactive sessions to explore and debug, not for long runs.
+
+## The Slurm options they forgot to tell you about
+
+Slurm only **allocates** resources; whether your program uses them is up to you.
+
+| Option | What it means |
+|---|---|
+| `--ntasks` | Number of processes (tasks). Tasks may be on different nodes. Default 1. |
+| `--cpus-per-task` | Cores for each task, always on the same node. Use this for `mclapply()` and OpenMP. |
+| `--nodes` | Number of nodes. Rarely needed for R; leave it out unless you know why you need it. |
+| `--mem` / `--mem-per-cpu` | Memory per node / per core. Jobs that go over are killed (`OUT_OF_MEMORY`). |
+| `--time` | Hard wall-time limit. Jobs that go over are killed (`TIMEOUT`). |
+| `--account` + `--partition` | Who pays and which machines. They must match. |
+| `--array` | Run the script many times as tasks of one job. |
+| `--output` | Log file. `%x` = job name, `%j` = job ID, `%A`/`%a` = array job/task ID. |
+
+At CHPC, run `mychpc batch` to list the account/partition pairs you can use. For this class:
+
+- `notchpeak-shared-short` (account and partition): short jobs on shared nodes, starts fast; use it for today.
+- `phs7045` with `notchpeak-shared-freecycle`: more resources, but your job can be **preempted** (stopped) when the owners need the nodes.
+
+## Good practices and no-nos
+
+Do:
+
+- Set `--time`, `--mem`, and `--cpus-per-task` explicitly, and ask for what you use. Check afterwards with `sacct -j <jobid> --format=JobID,Elapsed,AllocCPUS,TotalCPU,MaxRSS,State`.
+- Test on a tiny problem first, then scale up.
+- Write heavy temporary output to scratch (`/scratch/general/vast/$USER`), not to your home directory.
+
+Don't:
+
+- Run computations on the login nodes (compiling and quick tests are fine).
+- Use `detectCores()` on a cluster.
+- Let tasks write to the same file.
+- Create thousands of tiny jobs: if each task runs for a few seconds, the waiting and startup costs dominate.
+
+## Handy aliases
+
+Add these to `~/.bash_profile` on CHPC:
+
+```bash
+alias sq="squeue --me"
+sa() {
+  sacct -j "$1" --format=JobID,JobName,Partition,State,Elapsed,AllocCPUS,TotalCPU,MaxRSS,NodeList -X
+}
+```
+
+## Further reading
+
+- George G. Vega Yon, [*HPC with Slurm, R and the slurmR package*](https://github.com/USCbiostats/slurmr-workshop){target="_blank"} and [*Applied HPC with R*](https://book-hpc.ggvy.cl){target="_blank"}.
+- CHPC, [Slurm documentation](https://www.chpc.utah.edu/documentation/software/slurm.php){target="_blank"} and [presentations](https://chpc.utah.edu/presentations/index.php){target="_blank"}.
+- Slurm, [job arrays](https://slurm.schedmd.com/job_array.html){target="_blank"}.
