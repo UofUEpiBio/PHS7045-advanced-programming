@@ -10,7 +10,7 @@ bibliography: references.bib
 ::: callout-note
 ## Attribution
 
-This class is based on George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* ([https://github.com/USCbiostats/slurmr-workshop](https://github.com/USCbiostats/slurmr-workshop){target="_blank"}) and his book *Applied HPC with R* ([https://book-hpc.ggvy.cl](https://book-hpc.ggvy.cl){target="_blank"}), although we focus on plain Slurm instead of slumR. The part on coding agents builds on Brandon Claridge's CHPC session *Coding Agents at CHPC* from November 10.
+This class is based on George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* ([https://github.com/USCbiostats/slurmr-workshop](https://github.com/USCbiostats/slurmr-workshop){target="_blank"}) and his book *Applied HPC with R* ([https://book-hpc.ggvy.cl](https://book-hpc.ggvy.cl){target="_blank"}), although we focus on plain Slurm instead of slurmR. The part on coding agents builds on Brandon Claridge's CHPC session *Coding Agents at CHPC* from November 10.
 :::
 
 ```{r}
