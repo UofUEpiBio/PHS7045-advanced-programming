@@ -2,7 +2,7 @@
 # Shared functions for simulating pi. Every script in this folder sources this
 # file, so all versions (serial, multicore, job array) use the same code.
 
-# One random-number stream per replicate.
+# One starting point for the random numbers of each replicate.
 #
 # Replicate i always starts from seeds[[i]], no matter which core or node runs
 # it. That is why every correct version of the simulation prints exactly the
@@ -22,7 +22,7 @@ make_seeds <- function(nsims, base_seed = 7045) {
 # count the share that lands inside the unit circle. That share estimates
 # pi / 4, so 4 times the share estimates pi.
 simpi <- function(i, n, seeds) {
-  # Start replicate i's own stream (equivalent to set.seed() for this stream)
+  # Jump to replicate i's own starting point (like set.seed(), for this replicate)
   assign(".Random.seed", seeds[[i]], envir = globalenv())
   p <- matrix(runif(n * 2, -1, 1), ncol = 2)
   mean(sqrt(rowSums(p^2)) <= 1) * 4
