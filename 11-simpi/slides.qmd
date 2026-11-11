@@ -22,7 +22,7 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 ## Today's class
 
-We'll estimate π with a small Monte Carlo simulation and run the same code on CHPC: on one node with 1, 4, and 8 cores, and then across several nodes with a Slurm job array. You'll run the first part yourself. For the job array, you can leverage Codex to write the scripts and you check them before submitting. Since we know the answer, it's easy to tell whether each version is correct, and we'll also measure how much faster it gets as we add cores.
+We'll estimate π with a small Monte Carlo simulation and run the same code on CHPC: on one node with 1, 4, and 8 cores, and then across several nodes with a Slurm job array. You'll run the first part yourself. For the job array, Codex writes the scripts and you check them before submitting. Since we know the answer, it's easy to tell whether each version is correct, and we'll also measure how much faster it gets as we add cores.
 
 | When         | What                                                   | Time   |
 |---------------|------------------------------------------|---------------|
@@ -77,7 +77,7 @@ All the files for today are in one zip file: [**lab11.zip**](lab11.zip). It unzi
 
     If the sign-in page doesn't open or doesn't finish, sign in once through [Open OnDemand](https://ondemand.chpc.utah.edu){target="_blank"} instead: start an interactive desktop, open a terminal there, and run the same two commands. Codex remembers the login, so after that `codex` works in VS Code too.
 
-4.  If signing in doesn't work at all, try `module load codex_CHPC_local_model`, which uses a model hosted at CHPC and doesn't need a login. Let us know at the start of class.
+4.  **If signing in doesn't work at all**, try `module load codex_CHPC_local_model`, which uses a model hosted at CHPC and doesn't need a login. Let us know at the start of class.
 
 # Estimating π
 
@@ -494,7 +494,7 @@ bash -n 03-array.slurm && bash -n 04-aggregate.slurm && echo "syntax OK"
 exit                                 # end the session
 ```
 
-Codex's scripts may take the size differently; if so, adjust the commands. If something fails, you're already on a compute node: fix it (or ask Codex) and run the loop again before you `exit`. When the small test works, end the session, move its output out of the way (`mv results results-tiny`), and submit the real thing yourself from the normal terminal:
+Codex's scripts may take the size differently; if so, adjust the commands. If something fails, you're already on a compute node: fix it (or ask Codex) and run the loop again before you `exit`. When the small test works, end the session, delete its output (`rm -r results`) so it doesn't get mixed up with the real run, and submit the real thing yourself from the normal terminal:
 
 ``` bash
 jid=$(sbatch --parsable 03-array.slurm)
@@ -677,14 +677,14 @@ For a quick summary of one finished job, run `seff <jobid>`. It prints the wall 
 
 ## Aliases
 
-These save some typing. Put them in `~/.bash_profile` on CHPC:
+These save some typing. On CHPC, aliases go in `~/.aliases` (create it if it doesn't exist), which is read every time you log in. Don't edit `~/.bashrc`; CHPC manages that file.
 
 ``` bash
 alias sq="squeue --me"
-sa() {
-  sacct -j "$1" --format=JobID,JobName,Partition,State,Elapsed,AllocCPUS,TotalCPU,MaxRSS,NodeList -X
-}
+alias sa="sacct -X --format=JobID,JobName,Partition,State,Elapsed,AllocCPUS,TotalCPU,MaxRSS,NodeList -j"
 ```
+
+Log in again (or run `source ~/.aliases`), and then `sq` lists your jobs and `sa <jobid>` summarizes a finished one.
 
 ## Further reading
 
