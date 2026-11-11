@@ -19,9 +19,9 @@ library(ggplot2)
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
-## Where we are
+## Today's class
 
-In week 7 you parallelized a simulation on your own computer and made sure it gave the same result with 1 or 4 cores. Last week CHPC introduced the cluster, and on Tuesday they showed us the coding agents they host. Today we take one small simulation, estimating π, and run it first on your laptop, then on one CHPC node, and finally across several nodes with a Slurm job array. The job array is the part you'll write with Codex.
+We'll estimate π with a small Monte Carlo simulation and run the same code in three places: on your laptop, on one CHPC node, and across several nodes with a Slurm job array. You'll write the first two versions yourself. For the job array, Codex writes the scripts and you check them before submitting. Since we know the answer, it's easy to tell whether each version is correct, and we'll also measure how much faster it gets as we add cores.
 
 Please work in pairs. Your answers, prompts, and timings go into `lab11.qmd`; the step-by-step instructions are in [Lab 11](lab.qmd).
 
