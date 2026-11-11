@@ -36,3 +36,9 @@ _slides/
 08-AI-bonus-track/_lab-solutions.html
 08-AI-bonus-track/_lab-solutions_files/
 08-AI-bonus-track/factorial-solution*
+
+# Lab 11 solutions: kept local until we decide to publish them
+11-simpi/_lab-solutions.qmd
+11-simpi/_lab-solutions.html
+11-simpi/_lab-solutions_files/
+11-simpi/solutions/
