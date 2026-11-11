@@ -13,7 +13,7 @@ The shared functions live in `simpi.R`. Every correct version of the simulation 
 ## Rules
 
 1. **Never run `sbatch`, `scancel`, or `salloc` yourself.** Write the command, explain it, and let the student run it.
-2. **No heavy computing on the login node.** You may run R here only for quick tests with `nsims <= 100`. Anything larger goes through Slurm.
+2. **No heavy computing on the login node.** You may run R here only for quick checks with `nsims <= 100`. When you suggest test commands, assume the student runs them inside an interactive session they started with `salloc`. Anything larger goes through `sbatch`.
 3. Use `--account=notchpeak-shared-short --partition=notchpeak-shared-short` unless the student says otherwise. Always set `--time`, `--mem`, and `--cpus-per-task`.
 4. Inside R, take the number of cores from `SLURM_CPUS_PER_TASK`. Never use `parallel::detectCores()`.
 5. Every array task writes its own output file (include the task ID in the file name).
