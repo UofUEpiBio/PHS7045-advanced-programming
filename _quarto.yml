@@ -144,9 +144,6 @@ book:
         - file: 11-simpi/slides.qmd
           target: _blank
           rel: noopener
-        - file: 11-simpi/lab.qmd
-          target: _blank
-          rel: noopener
         - file: 11-slurm-week1/slides.qmd
           target: _blank
           rel: noopener
