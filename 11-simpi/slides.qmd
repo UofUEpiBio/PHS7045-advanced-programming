@@ -4,6 +4,7 @@ subtitle: "PHS 7045: Advanced Programming -- Slurm, job arrays, and coding agent
 author:
   - "Thi Mui Pham"
 date: November 12, 2026
+bibliography: references.bib
 ---
 
 ::: callout-note
@@ -72,7 +73,7 @@ ggplot(dots, aes(x, y, colour = inside)) +
   theme_minimal()
 ```
 
-## How many points?
+## How precise is the estimate?
 
 Each point lands inside the circle with probability $p = \pi/4$, so the standard error of $\hat\pi$ is
 
@@ -115,7 +116,7 @@ In the plot below I used the true value of π to draw the band. In a real proble
 #| echo: false
 #| fig-width: 7
 #| fig-height: 3.5
-#| fig-cap: "Running estimate of π from one million points, with a ±2 SE band around the true value."
+#| fig-cap: "Point estimate of π (running estimate from one million points), with a ±2 SE band around the true value. "
 set.seed(123)
 N <- 1e6
 inside <- (runif(N, -1, 1)^2 + runif(N, -1, 1)^2) <= 1
@@ -136,7 +137,7 @@ With a million points the SE is about 0.0016, so we can trust roughly 3.14. To g
 
 ## Setting up the simulation
 
-We run `nsims` replicates with `n` points each and average them. As in week 7, each replicate gets its own seed. Replicate 17 then always draws the same numbers, whether it runs first or last, on your laptop or on a node at CHPC.
+We run `nsims` replicates with `n` points each and average them. Each replicate gets its own seed. Replicate 17 then always draws the same numbers, whether it runs first or last, on your laptop or on a node at CHPC.
 
 ```{r}
 #| label: simpi-code
@@ -144,11 +145,11 @@ We run `nsims` replicates with `n` points each and average them. As in week 7, e
 #| eval: true
 ```
 
-`make_seeds()` creates the seeds as L'Ecuyer streams, which is what the `parallel` package uses internally, so the streams don't overlap. `simpi()` only uses `i`, `n`, and `seeds`, which is why it doesn't matter who calls it or in what order.
+`make_seeds()` gives each replicate its own starting point in R's random-number generator. The starting points are far apart, so no two replicates ever use the same random numbers. Before drawing any points, `simpi()` jumps to replicate `i`'s own starting point. That's why the final π̂ doesn't depend on how the work is split up.
 
 ## The known answer
 
-The result is that every correct version of the simulation prints the same number, down to the last digit. Here it is with the default size, 10,000 replicates of 10,000 points:
+The result is that every correct version of the simulation prints the same number (down to the last digit). Here it is with the default size, 10,000 replicates of 10,000 points:
 
 ```{r}
 #| label: known-answer
@@ -172,7 +173,7 @@ See [Lab 11, Hands-on 1](lab.qmd#hands-on-1). You'll run `01-sapply.R` and `02-m
 
 ## Looking back at Hands-on 1
 
-If $T_k$ is the wall time on $k$ cores, the speedup is $S_k = T_1 / T_k$ and the efficiency is $E_k = S_k / k$. On 4 cores you probably got a speedup somewhere around 3, not 4. Starting the workers takes time, and some parts of the script (starting R, creating the seeds, saving the results) run on a single core however many you have. Amdahl's law puts a number on this: if a fraction $f$ of the work can run in parallel, then $S_k \le 1 / \left((1-f) + f/k\right)$.
+If $T_k$ is the wall time on $k$ cores, the speedup is $S_k = T_1 / T_k$ and the efficiency is $E_k = S_k / k$. On 4 cores you probably got a speedup somewhere around 3, not 4. Starting the workers takes time, and some parts of the script (starting R, creating the seeds, saving the results) run on a single core however many you have. Amdahl's law [@amdahlValiditySingleProcessor1967] puts a number on this: if a fraction $f$ of the work can run in parallel, then $S_k \le 1 / \left((1-f) + f/k\right)$.
 
 The other thing to notice is how `02-mclapply.R` decides how many cores to use. When you write `--cpus-per-task=4`, Slurm sets aside 4 cores for you, but R has no idea. So the script asks:
 
@@ -244,7 +245,7 @@ Slurm decides where the tasks run. On a shared partition, several of them may en
 
 ## Coding agents on CHPC
 
-A quick reminder from Tuesday. When you run `module load codex`, Codex starts with a system prompt written by CHPC, so it already knows about the cluster, the modules, and Slurm. CHPC has also given it some skills. The two that matter today are `job-triage`, for figuring out why a job failed, and `slurm-utilization-audit`, for checking whether a job used what it asked for. Codex runs with your permissions, but CHPC blocks some commands, such as `rm`, and it has no network access.
+A quick reminder from Tuesday. `module load codex` makes Codex available in your terminal session, and `codex` starts it in the current folder. It starts with a system prompt written by CHPC, so it already knows about the cluster, the modules, and Slurm. CHPC has also given it some skills. The two that matter today are `job-triage`, for figuring out why a job failed, and `slurm-utilization-audit`, for checking whether a job used what it asked for. Codex runs with your permissions, but CHPC blocks some commands, such as `rm`, and it has no network access.
 
 On top of that, the `AGENTS.md` file in your lab folder adds a few rules for this lab. The most important one is that Codex doesn't submit jobs; it writes them and you submit them. Before you ask it for anything, write down how you'll check the result. You can always compare against the known answer. And, as in Lab 08, keep a log of your prompts.
 
@@ -331,3 +332,5 @@ sa() {
 - George G. Vega Yon, [*HPC with Slurm, R and the slurmR package*](https://github.com/USCbiostats/slurmr-workshop){target="_blank"} and [*Applied HPC with R*](https://book-hpc.ggvy.cl){target="_blank"}.
 - CHPC, [Slurm documentation](https://www.chpc.utah.edu/documentation/software/slurm.php){target="_blank"} and [presentations](https://chpc.utah.edu/presentations/index.php){target="_blank"}.
 - Slurm, [job arrays](https://slurm.schedmd.com/job_array.html){target="_blank"}.
+
+# References

@@ -8,10 +8,10 @@ format:
     embed-resources: false
 ---
 
-::: {.callout-note}
+::: callout-note
 ## Attribution
 
-The π example and the order of the cases come from George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* (<https://github.com/USCbiostats/slurmr-workshop>{target="_blank"}). I adapted it to CHPC and replaced the slurmR functions with plain Slurm. The Codex setup follows CHPC's session *Coding Agents at CHPC* from November 10.
+This class is based on George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* ([https://github.com/USCbiostats/slurmr-workshop](https://github.com/USCbiostats/slurmr-workshop){target="_blank"}) and his book *Applied HPC with R* ([https://book-hpc.ggvy.cl](https://book-hpc.ggvy.cl){target="_blank"}), although we focus on plain Slurm instead of slumR. The part on coding agents builds on Brandon Claridge's CHPC session *Coding Agents at CHPC* from November 10.
 :::
 
 ## Learning goals
@@ -30,26 +30,26 @@ Work in pairs. You each need your own CHPC account, but feel free to share a scr
 
 Put everything in a new folder `lab11/` in your class repository: `lab11.qmd`, the rendered HTML, your scripts, and `timings.csv`. It's due Sunday, as usual.
 
-| When | What | Time |
-|---|---|---|
-| Before class | [Checklist](#before-class) | 10 min |
-| In class | [Hands-on 1](#hands-on-1): cases 1 and 2 by hand | 20 min |
-| In class | [Hands-on 2](#hands-on-2): Codex writes the job array | 35 min |
-| At home | [Homework](#homework): buggy script, scaling report | 50 min |
+| When         | What                                                  | Time   |
+|------------------------|------------------------|------------------------|
+| Before class | [Checklist](#before-class)                            | 10 min |
+| In class     | [Hands-on 1](#hands-on-1): cases 1 and 2 by hand      | 20 min |
+| In class     | [Hands-on 2](#hands-on-2): Codex writes the job array | 35 min |
+| At home      | [Homework](#homework): buggy script, scaling report   | 50 min |
 
 You'll need these numbers throughout. A correct version of the simulation prints exactly these values:
 
-| `nsims`, `n` | Used for | π̂ |
-|---|---|---|
-| 100, 10,000 | small tests | 3.140208000000 |
+| `nsims`, `n`             | Used for                        | π̂              |
+|------------------------|------------------------|------------------------|
+| 100, 10,000              | small tests                     | 3.140208000000 |
 | 10,000, 10,000 (default) | quick runs and the buggy script | 3.141755000000 |
-| 10,000, 100,000 | timing runs | 3.141601060000 |
+| 10,000, 100,000          | timing runs                     | 3.141601060000 |
 
 ## Before class (10 minutes) {#before-class}
 
-1. Log in to [Open OnDemand](https://ondemand.chpc.utah.edu){target="_blank"} and start an interactive desktop session. (Codex needs a browser on the same machine to sign you in, which is why we use the desktop and not a plain ssh session.) Open a terminal in the desktop and copy the scripts:
+1.  Log in to [Open OnDemand](https://ondemand.chpc.utah.edu){target="_blank"} and start an interactive desktop session. (Codex needs a browser on the same machine to sign you in, which is why we use the desktop and not a plain ssh session.) Open a terminal in the desktop and copy the scripts:
 
-    ```bash
+    ``` bash
     git clone --depth 1 https://github.com/UofUEpiBio/PHS7045-advanced-programming.git ~/phs7045-course
     mkdir -p ~/lab11
     cp -r ~/phs7045-course/11-simpi/scripts/. ~/lab11/
@@ -58,19 +58,19 @@ You'll need these numbers throughout. A correct version of the simulation prints
 
     You should see `simpi.R`, a few `.R` and `.slurm` files, `AGENTS.md`, and a folder called `buggy/`.
 
-2. Start Codex and sign in:
+2.  Start Codex and sign in:
 
-    ```bash
+    ``` bash
     module load codex
     cd ~/lab11
     codex
     ```
 
-    A browser window opens; sign in with your university account. To check that Codex picked up the lab rules, ask it *"Which rules apply in this folder?"* It should describe what's in `AGENTS.md`. Then exit.
+    `module load codex` makes Codex available in this terminal session (like `module load R` does for R), and `codex` starts it in the current folder. A browser window opens; sign in with your university account. To check that Codex picked up the lab rules, ask it *"Which rules apply in this folder?"* It should describe what's in `AGENTS.md`. Then exit.
 
-3. If signing in doesn't work, try `module load codex_CHPC_local_model`, which uses a model hosted at CHPC and doesn't need a login. Let us know at the start of class.
+3.  If signing in doesn't work, try `module load codex_CHPC_local_model`, which uses a model hosted at CHPC and doesn't need a login. Let us know at the start of class.
 
-4. On your laptop, make the `lab11/` folder in your class repository, put the same scripts in it (copy them from the course repository, or use `scp -r <uid>@notchpeak.chpc.utah.edu:~/lab11/ .`), and create `lab11.qmd`.
+4.  On your laptop, make the `lab11/` folder in your class repository, put the same scripts in it (copy them from the course repository, or use `scp -r <uid>@notchpeak.chpc.utah.edu:~/lab11/ .`), and create `lab11.qmd`.
 
 ## Hands-on 1: cases 1 and 2 by hand (20 minutes) {#hands-on-1}
 
@@ -80,7 +80,7 @@ Please do this part without Codex. These are the steps you'll repeat every time 
 
 From the `lab11/` folder on your laptop:
 
-```bash
+``` bash
 Rscript 01-sapply.R                       # default size
 Rscript 01-sapply.R 10000 100000          # timing size, about 30 s
 Rscript 02-mclapply.R 10000 100000 4      # same, on 4 cores
@@ -90,7 +90,7 @@ On Windows, `02-mclapply.R` uses a socket cluster instead of `mclapply()`; you d
 
 Create a file `timings.csv` like the one below and fill in the first two rows with the elapsed time and π̂ from the output:
 
-```default
+``` default
 where,tasks,cores_per_task,total_cores,elapsed_sec,pi_hat
 laptop,1,1,1,,
 laptop,1,4,4,,
@@ -100,15 +100,15 @@ chpc,4,4,16,,
 
 Questions for `lab11.qmd`:
 
-a. Does the default run print the known answer? Do both timing runs print the same π̂?
+a.  Does the default run print the known answer? Do both timing runs print the same π̂?
 
-b. What speedup $S_4 = T_1 / T_4$ did you get, and why isn't it 4?
+b.  What speedup $S_4 = T_1 / T_4$ did you get, and why isn't it 4?
 
 ### 1b. On CHPC (12 minutes)
 
 In the OnDemand terminal, inside `~/lab11`:
 
-```bash
+``` bash
 cat 00-hello-world.slurm          # read it first
 sbatch 00-hello-world.slurm
 squeue --me                       # PD = waiting, R = running
@@ -117,23 +117,23 @@ cat hello-world-*.out             # once it has finished
 
 Next, read `02-mclapply.slurm` and `02-mclapply.R` and submit the job. You don't need to wait for it; it runs on its own while you continue.
 
-```bash
+``` bash
 sbatch 02-mclapply.slurm          # note the job ID
 ```
 
 Once it has finished, look at the log (`02-mclapply-<jobid>.out`) and save the accounting information. You'll need it for the homework:
 
-```bash
+``` bash
 sacct -j <jobid> --format=JobID,JobName,Start,End,Elapsed,AllocCPUS,TotalCPU,NodeList,State --parsable2 > sacct-02-mclapply.txt
 ```
 
 Questions for `lab11.qmd`:
 
-c. Which node ran your hello-world job? Was it a login node?
+c.  Which node ran your hello-world job? Was it a login node?
 
-d. How does `02-mclapply.R` know how many cores it can use? What could go wrong if it used `parallel::detectCores()` instead?
+d.  How does `02-mclapply.R` know how many cores it can use? What could go wrong if it used `parallel::detectCores()` instead?
 
-e. Did you get the same π̂ on CHPC as on your laptop?
+e.  Did you get the same π̂ on CHPC as on your laptop?
 
 ## Hands-on 2: Codex writes the job array (35 minutes) {#hands-on-2}
 
@@ -143,7 +143,7 @@ Now the simulation runs as a job array with 4 tasks and 4 cores per task, plus o
 
 Before you open Codex, copy this into `lab11.qmd` and fill in the blanks:
 
-```default
+``` default
 Goal: run the pi simulation (nsims = 10000, n = 100000) as a Slurm job array
 with 4 tasks and 4 cores per task, reusing simpi.R, and combine the results
 in a second job.
@@ -163,7 +163,7 @@ Acceptance tests (and how I will check each one):
 
 Start Codex in `~/lab11` (`module load codex`, then `codex`) and paste the prompt below, with your four tests in place of the bracketed line:
 
-```{.default}
+``` default
 P1
 Read @simpi.R, @02-mclapply.R, @02-mclapply.slurm and AGENTS.md.
 I want to run the same pi simulation (nsims = 10000, n = 100000) as a Slurm
@@ -177,7 +177,7 @@ commands I should run to test it on a tiny problem and to submit it.
 
 Read the plan carefully. Does it use `make_seeds()` and `simpi()` as they are? Does each task save to a separate file? If not, ask Codex to change the plan. Once you're happy with it:
 
-```{.default}
+``` default
 P2
 The plan looks good. Write 03-array.R, 03-array.slurm, 04-aggregate.R and
 04-aggregate.slurm. Use the same account and partition as 02-mclapply.slurm.
@@ -187,7 +187,7 @@ The plan looks good. Write 03-array.R, 03-array.slurm, 04-aggregate.R and
 
 Before submitting anything, run a small version on the login node. Our `AGENTS.md` allows this for small sizes. Since there's no Slurm here, you set the array variables yourself:
 
-```bash
+``` bash
 for a in 1 2 3 4; do
   SLURM_ARRAY_TASK_ID=$a SLURM_ARRAY_TASK_COUNT=4 SLURM_CPUS_PER_TASK=1 \
     Rscript 03-array.R 100 10000
@@ -198,7 +198,7 @@ bash -n 03-array.slurm && bash -n 04-aggregate.slurm && echo "syntax OK"
 
 Codex's scripts may take the size differently; if so, adjust the commands. When the small test works, move its output out of the way (`mv results results-tiny`) and submit the real thing yourself:
 
-```bash
+``` bash
 jid=$(sbatch --parsable 03-array.slurm)
 echo "array job ID: $jid"        # write it down; you need it for sacct
 sbatch --dependency=afterok:$jid 04-aggregate.slurm
@@ -209,52 +209,52 @@ squeue --me
 
 When both jobs have finished, go through your four tests and note which ones passed. Then save the accounting information for the array:
 
-```bash
+``` bash
 sacct -j <array job ID> --format=JobID,JobName,Start,End,Elapsed,AllocCPUS,TotalCPU,NodeList,State --parsable2 > sacct-03-array.txt
 ```
 
 Questions for `lab11.qmd`:
 
-f. Which tests passed the first time? What did you have to fix, and would you have noticed the problem without the known answer?
+f.  Which tests passed the first time? What did you have to fix, and would you have noticed the problem without the known answer?
 
-g. How many different nodes did your 4 tasks run on? Why could they all end up on the same one?
+g.  How many different nodes did your 4 tasks run on? Why could they all end up on the same one?
 
-## Homework (about 50 minutes) {#homework}
+## Homework {#homework}
 
-### H1. A buggy script (15 minutes)
+### H1. A buggy script 
 
 The `buggy/` folder contains a classmate's version of case 2, `05-buggy.R` and `05-buggy.slurm`. There are three problems in it.
 
-a. Read both files, without running anything, and write down every problem you can find. Give yourself about 5 minutes.
+a.  Read both files, without running anything, and write down every problem you can find. Give yourself about 5 minutes.
 
-b. Submit it: `cd ~/lab11/buggy && sbatch 05-buggy.slurm`. What happens?
+b.  Submit it: `cd ~/lab11/buggy && sbatch 05-buggy.slurm`. What happens?
 
-c. Ask Codex. CHPC's `job-triage` skill should be used here.
+c.  Ask Codex. CHPC's `job-triage` skill should be used here.
 
-    ```{.default}
+    ``` default
     P3
     My job script @buggy/05-buggy.slurm does not run, and I suspect that
     @buggy/05-buggy.R has problems too. Diagnose both files. Do not change
     anything yet: list each problem, how you found it, and how to fix it.
     ```
 
-d. Fix only the problem in the Slurm script and submit again. Compare π̂ with the known answer for this size (3.141755000000). Then submit it once more. Do you get the same number twice?
+d.  Fix only the problem in the Slurm script and submit again. Compare π̂ with the known answer for this size (3.141755000000). Then submit it once more. Do you get the same number twice?
 
-e. Fill in this table in `lab11.qmd`:
+e.  Fill in this table in `lab11.qmd`:
 
     | Problem | Did I find it? | Did Codex find it? | How did it show up? (error / wrong answer / not at all) |
-    |---|---|---|---|
-    | | | | |
-    | | | | |
-    | | | | |
+    |------------------|------------------|------------------|------------------|
+    |  |  |  |  |
+    |  |  |  |  |
+    |  |  |  |  |
 
     Which of these would you have missed if you hadn't known the right answer?
 
-### H2. Scaling report (30 minutes)
+### H2. Scaling report
 
 Fill in the two CHPC rows of `timings.csv` using `sacct-02-mclapply.txt` and `sacct-03-array.txt`. For the array, count the time from when the first task started to when the last one finished. You can ask Codex to help:
 
-```{.default}
+``` default
 P4
 Read @sacct-02-mclapply.txt and @sacct-03-array.txt. For each job, report
 the wall time (for the array: from the first task's start to the last task's
@@ -267,17 +267,17 @@ line for perfect scaling.
 
 Then:
 
-a. Choose one row and work out its wall time and efficiency yourself from the `sacct` file. Do you agree with Codex?
+a.  Choose one row and work out its wall time and efficiency yourself from the `sacct` file. Do you agree with Codex?
 
-b. Add the table and the plot to `lab11.qmd` by running `scaling.R` in a chunk.
+b.  Add the table and the plot to `lab11.qmd` by running `scaling.R` in a chunk.
 
-c. Answer briefly:
+c.  Answer briefly:
 
-    1. Why is the speedup on 16 cores lower than 16? Point to at least two reasons you can see in your own numbers.
-    2. Imagine each replicate took a hundredth of a second and you split the work into 1,000 array tasks. What would take most of the time?
-    3. Think about the simulation for your final project. How would you set it up in the same way, with replicates, one seed per replicate, and one output file per task?
+    1.  Why is the speedup on 16 cores lower than 16? Point to at least two reasons you can see in your own numbers.
+    2.  Imagine each replicate took a hundredth of a second and you split the work into 1,000 array tasks. What would take most of the time?
+    3.  Think about the simulation for your final project. How would you set it up in the same way, with replicates, one seed per replicate, and one output file per task?
 
-### H3. Hand it in (5 minutes)
+### H3. Hand it in 
 
 Copy your files from CHPC to your laptop (`scp -r <uid>@notchpeak.chpc.utah.edu:~/lab11/ .`) and push the `lab11/` folder of your class repository. It should contain:
 
