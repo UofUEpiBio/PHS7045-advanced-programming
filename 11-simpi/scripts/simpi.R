@@ -7,9 +7,9 @@
 # Replicate i always starts from seeds[[i]], no matter which core or node runs
 # it. That is why every correct version of the simulation prints exactly the
 # same estimate of pi.
-make_seeds <- function(nsims, master = 7045) {
+make_seeds <- function(nsims, base_seed = 7045) {
   RNGkind("L'Ecuyer-CMRG")
-  set.seed(master)
+  set.seed(base_seed)
   seeds <- vector("list", nsims)
   seeds[[1]] <- .Random.seed
   for (i in seq_len(nsims)[-1]) {
