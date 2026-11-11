@@ -9,7 +9,7 @@ date: November 12, 2026
 ::: callout-note
 ## Attribution
 
-The π example and the order of the cases come from George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* ([https://github.com/USCbiostats/slurmr-workshop](https://github.com/USCbiostats/slurmr-workshop){target="_blank"}) and his book *Applied HPC with R* ([https://book-hpc.ggvy.cl](https://book-hpc.ggvy.cl){target="_blank"}). I adapted it to CHPC and replaced the slurmR functions with plain Slurm. The part on coding agents builds on Brandon Claridge's CHPC session *Coding Agents at CHPC* from November 10.
+This class is based on George G. Vega Yon's workshop *HPC with Slurm, R and the slurmR package* ([https://github.com/USCbiostats/slurmr-workshop](https://github.com/USCbiostats/slurmr-workshop){target="_blank"}) and his book *Applied HPC with R* ([https://book-hpc.ggvy.cl](https://book-hpc.ggvy.cl){target="_blank"}), although we focus on plain Slurm instead of slumR. The part on coding agents builds on Brandon Claridge's CHPC session *Coding Agents at CHPC* from November 10.
 :::
 
 ```{r}
@@ -72,8 +72,6 @@ ggplot(dots, aes(x, y, colour = inside)) +
   theme_minimal()
 ```
 
-We use π because the simulation is about as simple as a parallel job gets, and because we already know the answer. If something breaks, we'll see it.
-
 ## How many points?
 
 Each point lands inside the circle with probability $p = \pi/4$, so the standard error of $\hat\pi$ is
@@ -81,6 +79,36 @@ Each point lands inside the circle with probability $p = \pi/4$, so the standard
 $$
 \text{SE}(\hat \pi) = 4\sqrt{\frac{p(1-p)}{N}} \approx \frac{1.64}{\sqrt N}.
 $$
+
+::: {.callout-note collapse="true"}
+## Where does this formula come from?
+
+Each point is a yes/no trial: it lands in the circle or it doesn't. Let $Z_j = \mathbf{1}(x_j^2 + y_j^2 \le 1)$. The probability that $Z_j = 1$ is the area of the circle divided by the area of the square,
+
+$$
+p = \frac{\pi \cdot 1^2}{2 \times 2} = \frac{\pi}{4} \approx 0.785,
+$$
+
+so $Z_j$ is Bernoulli with mean $p$ and variance $p(1-p)$.
+
+The proportion inside the circle, $\hat p$, is the average of $N$ independent $Z_j$'s, so its variance is
+
+$$
+\operatorname{Var}(\hat p) = \frac{1}{N^2}\sum_{j=1}^N \operatorname{Var}(Z_j) = \frac{p(1-p)}{N}.
+$$
+
+Since $\hat\pi = 4\hat p$, the variance gets multiplied by $4^2 = 16$:
+
+$$
+\operatorname{Var}(\hat\pi) = \frac{16\, p(1-p)}{N}, \qquad \text{SE}(\hat\pi) = 4\sqrt{\frac{p(1-p)}{N}}.
+$$
+
+With $p = \pi/4$ we get $p(1-p) \approx 0.1686$ and $4\sqrt{0.1686} \approx 1.64$, which gives $1.64/\sqrt N$.
+
+In our simulation, every replicate has the same number of points $n$. The mean of the `nsims` replicate estimates is therefore the same as the estimate from all $N = \texttt{nsims} \times n$ points together, and the formula holds with that $N$. You can check this on your own run: `sd(ans) / sqrt(nsims)` should come out close to $1.64 / \sqrt N$.
+
+In the plot below I used the true value of π to draw the band. In a real problem you don't know $p$, so you would plug in $\hat p$ instead, or use the spread of the replicates.
+:::
 
 ```{r}
 #| label: convergence
