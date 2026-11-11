@@ -226,19 +226,48 @@ jid=$(sbatch --parsable 03-array.slurm)            # --parsable prints only the 
 sbatch --dependency=afterok:$jid 04-aggregate.slurm # starts once every task succeeded
 ```
 
-```{mermaid}
-%%| echo: false
-flowchart LR
-  S["sbatch 03-array.slurm"] --> T1["task 1<br>4 cores"]
-  S --> T2["task 2<br>4 cores"]
-  S --> T3["task 3<br>4 cores"]
-  S --> T4["task 4<br>4 cores"]
-  T1 --> R["results/pi-task00*.rds"]
-  T2 --> R
-  T3 --> R
-  T4 --> R
-  R --> A["04-aggregate.slurm<br>(afterok)"]
-  A --> P["pi-hat"]
+```{r}
+#| label: array-diagram
+#| echo: false
+#| fig-width: 8.5
+#| fig-height: 3.6
+#| fig-alt: "sbatch 03-array.slurm starts four tasks with 4 cores each; task a runs replicates a, a + 4, a + 8, and so on. Each task saves its own file, pi-task001.rds to pi-task004.rds. Once all tasks succeeded, 04-aggregate.slurm reads the four files and prints pi-hat."
+library(ggplot2)
+
+# Boxes: centre (x, y), half-width w, label, and kind (for the colour)
+boxes <- data.frame(
+  x     = c(1, rep(3.1, 4), rep(5.2, 4), 7.45, 9.45),
+  y     = c(2.5, 4:1, 4:1, 2.5, 2.5),
+  w     = c(0.65, rep(0.8, 4), rep(0.65, 4), 0.9, 0.65),
+  label = c("sbatch\n03-array.slurm",
+            sprintf("task %d (4 cores)\nreplicates %d, %d, %d, ...", 1:4, 1:4, 1:4 + 4, 1:4 + 8),
+            sprintf("pi-task%03d.rds", 1:4),
+            "04-aggregate.slurm\n(afterok)",
+            "pi-hat"),
+  kind  = c("job", rep("task", 4), rep("file", 4), "job", "result")
+)
+h <- 0.36  # half-height of every box
+
+# Arrows go from the right edge of one box to the left edge of the next
+edge <- function(from, to) data.frame(
+  x = boxes$x[from] + boxes$w[from], y = boxes$y[from],
+  xend = boxes$x[to] - boxes$w[to], yend = boxes$y[to])
+arrows <- rbind(edge(1, 2:5), edge(2:5, 6:9), edge(6:9, 10), edge(10, 11))
+
+ggplot() +
+  geom_segment(data = arrows, aes(x, y, xend = xend, yend = yend),
+               arrow = arrow(length = unit(2.5, "mm"), type = "closed"),
+               linewidth = 0.6, colour = "grey30") +
+  geom_rect(data = boxes, aes(xmin = x - w, xmax = x + w, ymin = y - h, ymax = y + h,
+                              fill = kind), colour = "grey30", linewidth = 0.4) +
+  geom_text(data = boxes, aes(x, y, label = label), size = 3.4, lineheight = 0.9) +
+  annotate("text", x = c(3.1, 5.2), y = 4.75,
+           label = c("one task per array index", "one file per task"),
+           size = 3.4, fontface = "italic", colour = "grey30") +
+  scale_fill_manual(values = c(job = "#DCE9F5", task = "#FBE3C8",
+                               file = "#F2F2F2", result = "#D9EFD9"), guide = "none") +
+  coord_cartesian(xlim = c(0.25, 10.2), ylim = c(0.5, 4.9), expand = FALSE) +
+  theme_void()
 ```
 
 Slurm decides where the tasks run. On a shared partition, several of them may end up on the same node, so have each task record its host name (`Sys.info()[["nodename"]]`) and you'll know.
