@@ -15,3 +15,12 @@ all:
 	for i in $$(find . -regex './[0-9].*\.qmd'); do \
 		quarto render $$i; \
 	done ;
+
+# Zip of the Lab 11 files students download (rebuild after changing 11-simpi/scripts/)
+11-simpi/lab11.zip: $(wildcard 11-simpi/scripts/* 11-simpi/scripts/buggy/*)
+	rm -rf 11-simpi/lab11 $@
+	mkdir 11-simpi/lab11
+	cp -R 11-simpi/scripts/. 11-simpi/lab11/
+	find 11-simpi/lab11 -name '.DS_Store' -delete
+	cd 11-simpi && zip -rqX lab11.zip lab11
+	rm -rf 11-simpi/lab11

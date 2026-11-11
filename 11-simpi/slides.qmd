@@ -24,17 +24,15 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 We'll estimate π with a small Monte Carlo simulation and run the same code in three places: on your laptop, on one CHPC node, and across several nodes with a Slurm job array. You'll write the first two versions yourself. For the job array, you can leverage Codex to write the scripts and you check them before submitting. Since we know the answer, it's easy to tell whether each version is correct, and we'll also measure how much faster it gets as we add cores.
 
-Everything is on this page: the lecture parts, the hands-on activities, and the homework. After each hands-on activity there is a discussion box. It's folded so you don't see it right away; please try the activity first.
-
-| When         | What                                                      | Time   |
-|--------------|-----------------------------------------------------------|--------|
-| Before class | [Checklist](#before-class)                                | 10 min |
-| In class     | Estimating π and setting up the simulation                | 15 min |
-| In class     | [Hands-on 1](#hands-on-1): laptop and one CHPC node       | 20 min |
-| In class     | Job arrays, and coding agents on CHPC                     | 10 min |
-| In class     | [Hands-on 2](#hands-on-2): Codex writes the job array     | 35 min |
-| In class     | Wrap-up                                                   | 10 min |
-| At home      | [Homework](#homework): buggy script, scaling report       | 50 min |
+| When         | What                                                  | Time   |
+|-------------|----------------------------------------------|-------------|
+| Before class | [Checklist](#before-class)                            | 10 min |
+| In class     | Estimating π and setting up the simulation            | 15 min |
+| In class     | [Hands-on 1](#hands-on-1): laptop and one CHPC node   | 20 min |
+| In class     | Job arrays, and coding agents on CHPC                 | 10 min |
+| In class     | [Hands-on 2](#hands-on-2): Codex writes the job array | 35 min |
+| In class     | Wrap-up                                               | 10 min |
+| At home      | [Homework](#homework): buggy script, scaling report   | 50 min |
 
 By the end of the class you should be able to:
 
@@ -46,26 +44,28 @@ By the end of the class you should be able to:
 
 ## What you hand in
 
-Work in pairs. You each need your own CHPC account, but feel free to share a screen. As in the other labs, keep a log of the prompts you send to Codex, with a line or two on what came back. The log is part of what you hand in.
+As in the other labs, keep a log of the prompts you send to Codex, with a line or two on what came back. The log is part of what you hand in.
 
 Put everything in a new folder `lab11/` in your class repository: `lab11.qmd` with your answers, the rendered HTML, your scripts, and `timings.csv`. It's due Sunday, as usual.
 
 ## Before class (10 minutes) {#before-class}
 
-Please do this before Thursday. It copies the scripts to CHPC and gets you signed in to Codex. Signing in is where things usually go wrong, and I'd rather sort that out before class than during it.
+Please do this before Thursday. It puts the lab files on your laptop and on CHPC and gets you signed in to Codex. Signing in is where things usually go wrong, and I'd rather sort that out before class than during it.
 
-1.  Log in to [Open OnDemand](https://ondemand.chpc.utah.edu){target="_blank"} and start an interactive desktop session. (Codex needs a browser on the same machine to sign you in, which is why we use the desktop and not a plain ssh session.) Open a terminal in the desktop and copy the scripts:
+All the files for today are in one zip file: [**lab11.zip**](lab11.zip). It unzips into a folder `lab11/` with `simpi.R`, a few `.R` and `.slurm` files, `AGENTS.md`, and a folder called `buggy/`.
+
+1.  On your laptop, download [lab11.zip](lab11.zip) into your class repository and unzip it there. This gives you the `lab11/` folder you'll hand in. Create `lab11.qmd` in it.
+
+2.  Log in to [Open OnDemand](https://ondemand.chpc.utah.edu){target="_blank"} and start an interactive desktop session. (Codex needs a browser on the same machine to sign you in, which is why we use the desktop and not a plain ssh session.) Open a terminal in the desktop and get the same files there:
 
     ``` bash
-    git clone --depth 1 https://github.com/UofUEpiBio/PHS7045-advanced-programming.git ~/phs7045-course
-    mkdir -p ~/lab11
-    cp -r ~/phs7045-course/11-simpi/scripts/. ~/lab11/
+    cd ~
+    curl -LO https://uofuepibio.github.io/PHS7045-advanced-programming/11-simpi/lab11.zip
+    unzip lab11.zip
     cd ~/lab11 && ls
     ```
 
-    You should see `simpi.R`, a few `.R` and `.slurm` files, `AGENTS.md`, and a folder called `buggy/`.
-
-2.  Start Codex and sign in:
+3.  Start Codex and sign in:
 
     ``` bash
     module load codex
@@ -75,9 +75,7 @@ Please do this before Thursday. It copies the scripts to CHPC and gets you signe
 
     `module load codex` makes Codex available in this terminal session (like `module load R` does for R), and `codex` starts it in the current folder. A browser window opens; sign in with your university account. To check that Codex picked up the lab rules, ask it *"Which rules apply in this folder?"* It should describe what's in `AGENTS.md`. Then exit.
 
-3.  If signing in doesn't work, try `module load codex_CHPC_local_model`, which uses a model hosted at CHPC and doesn't need a login. Let us know at the start of class.
-
-4.  On your laptop, make the `lab11/` folder in your class repository, put the same scripts in it (copy them from the course repository, or use `scp -r <uid>@notchpeak.chpc.utah.edu:~/lab11/ .`), and create `lab11.qmd`.
+4.  If signing in doesn't work, try `module load codex_CHPC_local_model`, which uses a model hosted at CHPC and doesn't need a login. Let us know at the start of class.
 
 # Estimating π
 
@@ -205,7 +203,7 @@ sprintf("%.12f", c(serial = mean(serial), parallel = mean(parallel)))
 We'll use this number all day as a check, including on the code Codex writes. If a version of the simulation prints something different, it has a bug. You'll need these three sizes:
 
 | `nsims`, `n`             | Used for                        | π̂              |
-|--------------------------|---------------------------------|----------------|
+|------------------------|-------------------------------|------------------|
 | 100, 10,000              | small tests                     | 3.140208000000 |
 | 10,000, 10,000 (default) | quick runs and the buggy script | 3.141755000000 |
 | 10,000, 100,000          | timing runs                     | 3.141601060000 |

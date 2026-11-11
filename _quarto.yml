@@ -4,6 +4,7 @@ project:
   resources:
     - 10-chpc-week/chpc_overview.pdf
     - 11-simpi/scripts/**
+    - 11-simpi/lab11.zip
     - exams/02-final.html
 
 book:
