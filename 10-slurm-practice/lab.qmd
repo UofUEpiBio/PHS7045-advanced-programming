@@ -7,20 +7,20 @@ format:
 
 # Learning goals
 
-* Review of parallel computing
-* Draw pretty networks with Slurm.
+- Review of parallel computing
+- Draw pretty networks with Slurm.
 
 # Review of parallel computing
 
 Regardless of R--and in the context of an HPC cluster--we have various ways of parallelizing jobs:
 
-a. At the core level, using SIMD instructions.
+a.  At the core level, using SIMD instructions.
 
-b. At the CPU level using multiple cores within a program (e.g., loop-level).
+b.  At the CPU level using multiple cores within a program (e.g., loop-level).
 
-c. Same, but replicating the job within a node.
+c.  Same, but replicating the job within a node.
 
-d. At the node level, replicating the job across nodes.
+d.  At the node level, replicating the job across nodes.
 
 ## Task 1: Alternatives to job arrays
 
@@ -30,10 +30,9 @@ Besides job arrays in Slurm, look for an alternative way of replicating jobs acr
 
 Your expert opinion has been requested. For each way to parallelize a job, provide: (i) a one-paragraph description, (ii) proposed criteria of when to use it, and (iii) an example of an analysis that could be done with it.
 
-
 # Draw pretty networks with Slurm
 
-Draw a pretty picture of the yeast network using the development version of [`netplot`](https://github.com/USCCANA/netplot){target="_blank"}: 
+Draw a pretty picture of the yeast network using the development version of [`netplot`](https://github.com/USCCANA/netplot){target="_blank"}:
 
 ```{r}
 #| echo: true
@@ -62,11 +61,11 @@ print(np)
 
 Read the manual of `nplot` and try:
 
-1. Coloring the vertices by the class `Class` attribute. You can access them using `V(yeast)$Class`.
+1.  Coloring the vertices by the class `Class` attribute. You can access them using `V(yeast)$Class`.
 
-2. Playing with the layout, see igraph's `?layout_`.
+2.  Playing with the layout, see igraph's `?layout_`.
 
-3. Tryout `grid::patterns` for the vertices, see what you can do.
+3.  Tryout `grid::patterns` for the vertices, see what you can do.
 
 Create a design
 
@@ -81,4 +80,3 @@ Try drawing one network with it. Use CHPC's [`ondemand`](https://ondemand.chpc.u
 ## Task 3: Submit to CHPC
 
 Write an R and Slurm script to submit the job to CHPC. The job should result in saving the `netplot` object to an RDS file and a png figure of 1024 x 780 px resolution.
-

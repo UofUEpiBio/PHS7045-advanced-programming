@@ -196,9 +196,9 @@ R functions and slides due before class</td>
 <tr>
 <td style="text-align: right;">12</td>
 <td style="text-align: left;">11/12/26</td>
-<td style="text-align: left;">Lecture</td>
-<td style="text-align: left;">Slurm</td>
-<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-slurm-week1/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/11-slurm-week1/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
+<td style="text-align: left;">Lecture and Lab</td>
+<td style="text-align: left;">Simulating π on CHPC</td>
+<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/11-simpi/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/11-simpi/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
 <td style="text-align: right;">13</td>
