@@ -14,27 +14,26 @@ This lab follows the structure of [Lab 11](../11-simpi/slides.qmd) by Thi Mui Ph
 
 ## Today's lab
 
-Last week, you wrote Slurm scripts by hand (and Codex wrote a job array for you). Today, R is the controller: the `slurmR` package writes the job files, submits them, waits for Slurm, and collects the results. We'll use it to run a classic simulation study: **how often does a 95% confidence interval actually cover the true mean?** You'll first run slurmR by hand, then ask Codex to make a slow (but correct) slurmR job faster without changing its answer.
+Last week, you wrote Slurm scripts by hand. Today, R is the controller: the `slurmR` package writes the job files, submits them, waits for Slurm, and collects the results. We'll use it to run a classic simulation study: **how often does a 95% confidence interval actually cover the true mean?** You'll first run slurmR by hand, then ask Codex to make better use of the cluster.
 
-| When         | What                                                                | Time   |
-|--------------|---------------------------------------------------------------------|--------|
-| Before class | [Checklist](#before-class)                                          | 10 min |
-| In class     | The coverage simulation                                             | 5 min  |
-| In class     | [Hands-on 1](#hands-on-1): slurmR by hand                           | 20 min |
-| In class     | [Hands-on 2](#hands-on-2): Codex optimizes the slurmR job           | 30 min |
-| In class     | Wrap-up                                                             | 5 min  |
-| At home      | [Homework](#homework): rerun failed tasks, hand it in               |        |
+| When         | What                                                          | Time   |
+|--------------|---------------------------------------------------------------|--------|
+| Before class | [Checklist](#before-class)                                    | 10 min |
+| In class     | The coverage simulation                                       | 5 min  |
+| In class     | [Hands-on 1](#hands-on-1): slurmR by hand                     | 25 min |
+| In class     | [Hands-on 2](#hands-on-2): Codex improves the job             | 30 min |
+| In class     | [Bonus](#bonus): push to GitHub from CHPC                     |        |
+| At home      | [Homework](#homework): rerun failed tasks, hand it in         |        |
 
 By the end of the lab you should be able to:
 
 - run a simulation on CHPC with `Slurm_lapply()`, and monitor and collect it from R;
-- find the files slurmR writes and use the logs to check what happened;
-- read `sacct` output to tell whether a job asked for the right resources;
+- find the files slurmR writes and use them to check what happened;
 - use Codex to improve a job, and check that the improvement didn't change the answer.
 
 ## What you hand in
 
-As in Lab 11, keep a log of the prompts you send to Codex, with a line or two on what came back. You work in `~/lab12` on CHPC and, at the end, copy it into your class repository ([H2](#homework)): `lab12.qmd` with your answers, the rendered HTML, your scripts, and the `sacct` files. It's due Sunday, November 22.
+You work in `~/lab12` on CHPC and, at the end, copy it into your class repository ([H2](#homework)): `lab12.qmd` with your answers, the rendered HTML, your scripts, and the logs. It's due Sunday, November 22.
 
 ## Before class (10 minutes) {#before-class}
 
@@ -48,17 +47,18 @@ As in Lab 11, keep a log of the prompts you send to Codex, with a line or two on
     unzip lab12.zip
     ```
 
-    The folder `~/lab12` contains `coverage.R` (the shared functions), `01-serial.R`, and `02-slurmr-baseline.R`. Open it with File → Open Folder and create `lab12.qmd` there.
+    The folder `~/lab12` contains two files: `coverage.R` (the simulation, with slurmR as the controller) and `coverage.slurm` (the job that runs it). Open it with File → Open Folder and create `lab12.qmd` there.
 
-3.  **Install slurmR.** Compute nodes have no internet access, so install it from the login node:
+3.  **Install the development version of slurmR** from [GitHub](https://github.com/USCbiostats/slurmR){target="_blank"}. Compute nodes have no internet access, so do this from the login node:
 
     ``` bash
     module load R
-    Rscript -e 'install.packages("slurmR", repos = "https://cloud.r-project.org")'
+    Rscript -e 'install.packages("remotes", repos = "https://cloud.r-project.org")'
+    Rscript -e 'remotes::install_github("USCbiostats/slurmR")'
     Rscript -e 'library(slurmR)'
     ```
 
-    The second command should print a message about `tmp_path` and no errors.
+    The last command should print a message about `tmp_path` and no errors.
 
 4.  **Check Codex.** `module load codex`, then `codex` inside `~/lab12`, and ask it something simple, like *"What does coverage.R do?"* Then exit.
 
@@ -73,281 +73,147 @@ We draw samples of size $n \in \{10, 20, 50, 100\}$ from a lognormal(0, 1) distr
 - the **t-interval**, $\bar x \pm t_{0.975,\, n-1}\, s / \sqrt n$;
 - the **bootstrap percentile interval**: resample the data $B = 999$ times, compute the mean of each resample, and take the 2.5% and 97.5% quantiles.
 
-For each replicate we record whether each interval covered $\mu$ and how wide it was. The coverage of an interval is the share of replicates in which it covered $\mu$.
-
-## Why this is a good job for a cluster
-
-Every replicate is independent: it draws its own sample and builds its own intervals. With 10,000 replicates per sample size, the grid has 40,000 replicates, each with 999 bootstrap resamples. The problem is embarrassingly parallel, and the work per replicate is small, so how we split it into jobs matters (that's Hands-on 2).
+Every replicate is independent, so the problem is embarrassingly parallel: a good job for a cluster.
 
 ## The code
 
-All the scripts source `coverage.R`, which defines:
+- `coverage.R` builds the grid (one row per replicate), defines `sim_one(i, grid)` for replicate `i`, and runs it on every row with `Slurm_lapply()`. It takes the number of replicates per sample size from the command line (`Rscript coverage.R 1000`), or uses 100 if there's none.
+- `coverage.slurm` is a small job (1 core, 2 GB) that runs `coverage.R`. The controller does no heavy computing: it writes files, runs `sbatch`, waits, and collects. The replicates run as a job array on other nodes.
 
-| Function | What it does |
-|----------|--------------|
-| `make_grid(nsims)` | One row per replicate: `nsims` replicates for each of the four sample sizes, with an `id` from 1 to `4 * nsims`. |
-| `make_seeds(nreps)` | `set.seed(7045)`, then `sample.int(1e7, nreps)`: one distinct seed per replicate. |
-| `sim_one(i, grid, rep_seeds, B)` | Replicate `i`: calls `set.seed(rep_seeds[i])`, draws the sample, builds both intervals. |
-| `summarize_coverage(ans, grid)` | Combines the replicates into one row per sample size, and stops if any replicate is missing or duplicated. |
-| `report(tab)` | Prints the table and a **fingerprint**: the sum of all mean widths, to 10 decimals. |
-
-Because replicate `i` always calls `set.seed(rep_seeds[i])` before drawing anything, its result doesn't depend on which core, job, or node runs it. **Every correct version of the simulation prints the same table and the same fingerprint**, however the work is split. As with π last week, that gives us a check for every version, including the ones Codex writes:
-
-| `nsims` (per sample size) | Replicates | Used for       | Fingerprint     |
-|---------------------------|------------|----------------|-----------------|
-| 50                        | 200        | small tests    | 11.3718212092   |
-| 1,000                     | 4,000      | quick runs     | 11.2586761607   |
-| 10,000                    | 40,000     | timing runs    | 11.4111026103   |
-
-At the timing size, the table should read:
+Because replicate `i` always calls `set.seed(7045 + i)` before drawing anything, its result doesn't depend on which job or core runs it. **Every correct version of the simulation prints the same table**, however the work is split. That gives us a check for every version, including the ones Codex writes:
 
 ``` default
-   n t_cover boot_cover t_width boot_width
-  10  0.8391     0.8011  2.4605     1.9449
-  20  0.8670     0.8556  1.7094     1.5205
-  50  0.9007     0.8955  1.1207     1.0663
- 100  0.9145     0.9134  0.8055     0.7832
+nsims = 100                 nsims = 1,000               nsims = 10,000
+   n t_cover boot_cover        n t_cover boot_cover        n t_cover boot_cover
+  10    0.89       0.82       10   0.843      0.811       10  0.8413     0.8041
+  20    0.88       0.85       20   0.891      0.877       20  0.8723     0.8582
+  50    0.89       0.88       50   0.899      0.902       50  0.8981     0.8958
+ 100    0.93       0.92      100   0.925      0.923      100  0.9142     0.9140
 ```
 
-Neither interval reaches 95% when the data are this skewed and $n$ is small, and the bootstrap percentile interval is not better than the t-interval here. Keep that in mind the next time someone tells you that "the bootstrap fixes it."
+Neither interval reaches 95% when the data are this skewed and $n$ is small, and the bootstrap percentile interval is not better than the t-interval here.
 
-::: {.callout-warning}
-## One trap we hit while writing this lab
-
-The seeds argument of `sim_one()` is called `rep_seeds`, not `seeds`. `Slurm_lapply()` has its own argument called `seeds` (one seed per job, the `seeds.rds` file from Tuesday), so `Slurm_lapply(X, sim_one, seeds = seeds)` hands your seeds to slurmR instead of to `sim_one()`, and every task fails. Arguments passed through `...` must not share a name with an argument of `Slurm_lapply()` itself (`njobs`, `mc.cores`, `seeds`, `export`, `plan`, ...).
-:::
-
-# Hands-on 1: slurmR by hand (20 minutes) {#hands-on-1}
+# Hands-on 1: slurmR by hand (25 minutes) {#hands-on-1}
 
 Please do this part without Codex. Everything runs in `~/lab12`.
 
-## 1a. Start the baseline now (3 minutes)
+## 1a. Get a compute node (5 minutes)
 
-`02-slurmr-baseline.R` is a first version of the simulation with slurmR as the controller. It's correct, but slow. It takes a few minutes, so start it now and let it run while you do 1b and 1c. From the **login node**:
+Don't run R on the login node. Use one of these two options:
 
-``` bash
-cd ~/lab12
-module load R
-nohup Rscript 02-slurmr-baseline.R 10000 > baseline.log 2>&1 &
-squeue --me
-```
+- **`salloc`** in the VS Code terminal:
 
-The controller itself does no heavy computing: it writes files, runs `sbatch`, and waits. That's why it's fine to run it on the login node. `nohup ... &` keeps it running in the background, even if VS Code disconnects, and sends its output to `baseline.log`. In `squeue --me` you should see a job array called `baseline-n010`.
+  ``` bash
+  salloc --account=notchpeak-shared-short --partition=notchpeak-shared-short \
+    --ntasks=1 --cpus-per-task=1 --mem=2G --time=00:30:00
+  hostname        # a compute node, not the login node
+  cd ~/lab12
+  module load R
+  R
+  ```
 
-## 1b. Look under the hood (7 minutes)
+- **RStudio on Open OnDemand**: log in to [ondemand.chpc.utah.edu](https://ondemand.chpc.utah.edu){target="_blank"}, start an RStudio Server session on `notchpeak-shared-short` (1 core, 30 minutes), and set the working directory to `~/lab12`. If `library(slurmR)` fails there, install it from that session as in the [checklist](#before-class).
 
-Open R on the login node (`R` in a second terminal, after `module load R`) and create a small job **without submitting it**:
+Slurm commands work from compute nodes too, so slurmR can submit jobs from here.
+
+## 1b. Look under the hood (8 minutes)
+
+Run `coverage.R` **line by line** (Ctrl+Enter in RStudio, or copy the lines into R) until the end of the `Slurm_lapply()` call, and stop there. With no command-line argument, `nsims` is 100. Because of `plan = "none"`, slurmR writes the job files but submits nothing. Then:
 
 ``` r
-library(slurmR)
-source("coverage.R")
-
-grid  <- make_grid(50)
-seeds <- make_seeds(nrow(grid))
-
-job <- Slurm_lapply(
-  grid$id,
-  sim_one,
-  grid       = grid,
-  rep_seeds  = seeds,
-  njobs      = 4,
-  mc.cores   = 2,
-  job_name   = "small",
-  plan       = "none",
-  sbatch_opt = list(
-    account   = "notchpeak-shared-short",
-    partition = "notchpeak-shared-short",
-    time      = "00:05:00",
-    mem       = "1G"
-  )
-)
-
-list.files("small")
-cat(readLines("small/01-bash.sh"), sep = "\n")
+list.files("coverage-sim")
+cat(readLines("coverage-sim/01-bash.sh"), sep = "\n")
 ```
 
-Then open `small/00-rscript.r` in VS Code.
+Open `coverage-sim/00-rscript.r` too.
 
 ## 1c. Submit, monitor, collect (7 minutes)
 
-Still in R:
+Run the next lines of `coverage.R` one at a time. Before `Slurm_collect()`, check on the job:
 
 ``` r
-sbatch(job)        # submits small/01-bash.sh
-status(job)        # run it a few times
+job <- sbatch(job)
+status(job)          # run it a few times
 squeue(job)
+Slurm_log(job, 1)    # the log of task 1, once it has run
 ```
 
-When `status(job)` reports that all tasks are done:
+Then run the rest of the script. Your table should match the one for `nsims` = 100 above. Then clean up and leave the compute node:
 
 ``` r
-Slurm_log(job, 1)  # the log of task 1
-ans <- Slurm_collect(job)
-report(summarize_coverage(ans, grid), label = "small, by hand")
 Slurm_clean(job)
+q()
 ```
 
-## 1d. Is the baseline done? (3 minutes)
+(`exit` in the terminal, if you used `salloc`; delete the RStudio session in OnDemand, if you used that.)
 
-The baseline prints its table, its fingerprint, the total time, and the job IDs at the end of `baseline.log`. When it's done, save the accounting information for its four job arrays:
+## 1d. Start the baseline (5 minutes)
+
+Now run the whole thing as a batch job, with `nsims` = 1,000. From the login node:
 
 ``` bash
-tail baseline.log
-sacct -j $(paste -sd, baseline-jobids.txt) \
-  --format=JobID,JobName,Submit,Start,End,Elapsed,AllocCPUS,TotalCPU,ReqMem,MaxRSS,State \
-  --parsable2 > sacct-baseline.txt
+cd ~/lab12
+cp coverage.R coverage-original.R   # keep a copy for Hands-on 2
+sbatch coverage.slurm
+squeue --me
 ```
 
-If it isn't done yet, start Hands-on 2 and come back to this step.
+You should see the controller job `coverage` and, shortly after, the job array `coverage-sim`. When it's done, `coverage-<jobid>.out` ends with the table and the job ID of the array. Save its accounting information:
+
+``` bash
+sacct -j <array jobid> \
+  --format=JobID,JobName,Elapsed,AllocCPUS,TotalCPU,ReqMem,MaxRSS,State \
+  > sacct-baseline.txt
+```
 
 Questions for `lab12.qmd`:
 
-a.  Which files did slurmR create in `small/` before you submitted anything? Which ones appeared only after the job ran?
+a.  Which files did slurmR create in `coverage-sim/` before you submitted anything? Which ones appeared only after the job ran?
 
-b.  In `small/01-bash.sh`, where do `--array=1-4` and `--cpus-per-task=2` come from? Where are `account`, `partition`, `time`, and `mem`?
+b.  In `coverage-sim/01-bash.sh`, where do `--array=1-4` and `--cpus-per-task=1` come from? Where are `account`, `partition`, `time`, and `mem`?
 
-c.  In `small/00-rscript.r`, find the line that makes each task read only its own share of the replicates. How does `rep_seeds` reach `sim_one()`?
+c.  In `coverage-sim/00-rscript.r`, find the line that makes each task read only its own share of the replicates. How does `grid` reach `sim_one()`?
 
-d.  Did the small job print the fingerprint for `nsims` = 50? Did the baseline print the one for `nsims` = 10,000?
+d.  Did your tables match the ones above?
 
-e.  What does `Slurm_log(job, 1)` show at the end of a healthy task? Why is the log the first place to look when a task fails, rather than the job's state in `sacct`?
+e.  In `sacct-baseline.txt`, compare what each task asked for (`ReqMem`, the time limit in `coverage.R`) with what it used (`MaxRSS`, `Elapsed`). What do you see?
 
-::: {.callout-tip collapse="true"}
-## Hands-on 1: discussion
+# Hands-on 2: Codex improves the job (30 minutes) {#hands-on-2}
 
-**a.** Before submission: `00-rscript.r`, `01-bash.sh`, `X_0001.rds` to `X_0004.rds` (one chunk of replicate ids per task), `FUN.rds` (that's `sim_one`), `grid.rds`, `rep_seeds.rds`, `INDICES.rds`, `mc.cores.rds`, `seeds.rds`, and `job.rds`. After it runs: `02-output-<jobid>-<task>.out` (the logs, written by Slurm) and `03-answer-001.rds` to `03-answer-004.rds` (written by the tasks).
+As last week, CHPC's Codex has a `slurm-utilization-audit` skill for checking whether a job used what it asked for. Codex may change `coverage.R` and `coverage.slurm`, submit jobs, and run `sacct` itself. Codex runs with your account, so every job it submits counts against your allocation, and a job that ran is not necessarily a job that's right: whatever it does, the table must match the one above.
 
-**b.** `--array=1-4` comes from `njobs = 4`, and `--cpus-per-task=2` from `mc.cores = 2`. The other four come from `sbatch_opt`: each element becomes an `#SBATCH --name=value` line.
+## 2a. Ask Codex to make better use of the cluster
 
-**c.** `X <- readRDS(sprintf(".../X_%04d.rds", ARRAY_ID))`: each task reads the chunk that matches its `SLURM_ARRAY_TASK_ID`. `rep_seeds` and `grid` were passed through `...`, so slurmR saved them as `.rds` files, reads them in every task, and adds them to the `mclapply()` call. Every task gets all the seeds, but uses only those of its own replicates.
+Start Codex in `~/lab12`, and ask it, in your own words, to:
 
-**d.** Yes: 11.3718212092 and 11.4111026103. The split (4 jobs with 2 cores each, or 4 arrays of 10 jobs with 1 core each) doesn't matter, because every replicate sets its own seed.
+- improve how `coverage.R` uses the cluster, based on the baseline's `sacct` numbers **and on the resources that are actually available** (cores, memory, and limits of the partition);
+- run a larger simulation, with `nsims` = 10,000.
 
-**e.** `[slurmR info] job-status: OK.` If `sim_one()` fails, slurmR catches the error, saves it in `03-answer-<task>.rds`, writes `job-status: failed` to the log, and quits R normally. Since R exits with status 0, Slurm reports the task as `COMPLETED`, even though nothing was computed.
-:::
+## 2b. Inspect the job (5 minutes)
 
-# Hands-on 2: Codex optimizes the slurmR job (30 minutes) {#hands-on-2}
+Once Codex has submitted the job, look at it yourself before Codex reports back:
 
-The baseline gets the right answer, but it's wasteful. Your job is to find out why, with Codex's help and the `sacct` numbers, and to get a version that's faster and asks only for what it needs, **while still using slurmR as the controller and printing the same fingerprint**.
+- `squeue --me`: which jobs are running, how many tasks, and on which nodes?
+- `cat coverage-sim/01-bash.sh`: what is the job asking for now?
+- `diff coverage-original.R coverage.R`: what did Codex change?
+- When it's done, does the table match the one for `nsims` = 10,000?
 
-As last week, CHPC's Codex has a `slurm-utilization-audit` skill for checking whether a job used what it asked for. This time there's no `AGENTS.md` with extra rules: Codex may write the script, submit jobs, and run `sacct` itself. That makes your checks more important, not less. Codex runs with your account, so every job it submits counts against your allocation, and a job that ran is not necessarily a job that's right.
+## 2c. Beyond notchpeak
 
-## 2a. Write down what you expect (5 minutes)
+CHPC has other clusters besides notchpeak (kingspeak, lonepeak, and granite). Ask Codex to check which clusters and partitions you have access to and which ones have free resources right now (`myallocation` and `sinfo -M all` are good starting points), and to submit the simulation to another cluster. Again: does the table match?
 
-Before you open Codex, copy this into `lab12.qmd` and fill in the blanks:
+# Bonus: push to GitHub from CHPC {#bonus}
 
-``` default
-Goal: a faster version of 02-slurmr-baseline.R (nsims = 10000), still using
-slurmR as the controller.
+Instead of copying `~/lab12` to your laptop ([H2](#homework)), you can push it from CHPC directly. Set up the connection between CHPC and GitHub, using either:
 
-Acceptance tests (and how I will check each one):
-1. The fingerprint is ______________ (all 10 decimals).
-   Check: ____________________________________________
-2. The job is submitted by Slurm_lapply() (no hand-written .slurm files).
-   Check: ____________________________________________
-3. The total time (submission to collected results) is lower than the
-   baseline's ______ seconds.
-   Check: ____________________________________________
-4. The memory and time requested are justified by the baseline's sacct.
-   Check: ____________________________________________
-```
+- the GitHub CLI, which is available on CHPC: [`gh auth login`](https://cli.github.com/manual/gh_auth_login){target="_blank"}; or
+- an SSH key: [Connecting to GitHub with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh){target="_blank"}.
 
-## 2b. Diagnose first (10 minutes)
-
-Start Codex in `~/lab12` and paste:
-
-``` default
-P1
-Read @coverage.R, @02-slurmr-baseline.R, @baseline.log, and
-@sacct-baseline.txt. Use the slurm-utilization-audit skill on the baseline.
-Do not write or change any files yet. Explain, with numbers from the sacct
-file and the log:
-1. Where does the baseline's total time go (queue waits, R start-up, actual
-   computing)?
-2. Which resources did it request but not use?
-3. What would you change in the Slurm_lapply() call, and why?
-My acceptance tests are:
-[paste your four tests here]
-```
-
-(If the baseline hasn't finished yet, run 1d as soon as it does, and give Codex the files then.)
-
-Read the diagnosis carefully. Does every claim point to a number in `sacct-baseline.txt` or `baseline.log`? Can you find those numbers yourself? Push back on anything that doesn't.
-
-## 2c. Then the code (10 minutes)
-
-``` default
-P2
-Write 03-slurmr-optimized.R with the changes you proposed, keeping coverage.R
-as it is. Keep the same output as the baseline: table, fingerprint, total
-time, and job IDs in optimized-jobids.txt. Test it first with nsims = 50 and
-check the fingerprint against 11.3718212092. Then run it with nsims = 10000
-(output to optimized.log) and save the accounting information to
-sacct-optimized.txt, with the same sacct command I used for the baseline.
-Clean up the slurmR job folders of the test run when you're done.
-```
-
-While Codex works, watch what it does: which commands it runs, which jobs show up in `squeue --me`, and what it decides when something fails. When it says it's done, don't take its word for it:
-
-``` bash
-tail optimized.log                # the table and the fingerprint
-head sacct-optimized.txt
-cat 03-slurmr-optimized.R         # read the Slurm_lapply() call
-```
-
-## 2d. Check (5 minutes)
-
-Go through your four acceptance tests and mark each as passed or failed.
-
-Questions for `lab12.qmd`:
-
-f.  According to Codex, and according to you, where did the baseline's time go? Do you agree with each other?
-
-g.  What did Codex change? For each change, say whether it made the job faster, made it easier to schedule, or just stopped wasting resources.
-
-h.  Fill in this table:
-
-    | Version   | Arrays | Tasks | Cores per task | Total time (s) | Mem requested | Max memory used |
-    |-----------|--------|-------|----------------|----------------|---------------|-----------------|
-    | Baseline  |        |       |                |                |               |                 |
-    | Optimized |        |       |                |                |               |                 |
-
-i.  What did Codex do on its own: which commands did it run, and how many jobs did it submit (including tests and retries)? Is there anything you would have done differently?
-
-::: {.callout-tip collapse="true"}
-## Hands-on 2: discussion
-
-**The acceptance tests, filled in.** Yours may be worded differently.
-
-``` default
-1. The fingerprint is 11.4111026103.
-   Check: last lines of optimized.log.
-2. The job is submitted by Slurm_lapply().
-   Check: read 03-slurmr-optimized.R; ls shows no new .slurm files.
-3. The total time is lower than the baseline's.
-   Check: "elapsed" in optimized.log vs baseline.log.
-4. Memory and time are justified by sacct.
-   Check: ReqMem and the time limit are a reasonable margin above MaxRSS
-          and Elapsed in sacct-baseline.txt.
-```
-
-**f and g.** The baseline has four problems, and you can see each of them in your own numbers:
-
-- **The four job arrays run one after another.** `plan = "collect"` inside the loop waits for each array to finish before submitting the next. In `sacct-baseline.txt`, the `Submit` time of each array is after the `End` of the previous one, so you pay four queue waits and four rounds of R start-up. A single `Slurm_lapply()` call over the whole grid (`grid$id`) submits everything at once. Because the seeds belong to the replicates, the answer doesn't change.
-- **Too many tiny tasks.** 40 tasks with 1,000 replicates each spend a large share of their time starting R and reading the input files. Compare `Elapsed` with `TotalCPU` for each task. Fewer, bigger tasks (for example 4 tasks with 4 cores each, `njobs = 4, mc.cores = 4`) do the same work with much less overhead.
-- **Far more memory than needed.** `ReqMem` is 8G per task, while `MaxRSS` is in the low hundreds of MB. Big memory requests are harder to fit (see backfill in Tuesday's lecture), so tasks may wait longer, and the memory is blocked for others. Something like `mem = "1G"` (or `mem-per-cpu`) is plenty.
-- **A one-hour time limit for tasks that run for seconds.** That also makes the tasks harder to backfill. A few minutes, with a margin, is enough.
-
-`mc.cores = 1` isn't wrong in itself (many single-core tasks are a valid design), but combined with the tiny tasks it maximizes the overhead.
-
-**h.** Answers vary with the cluster's load. You should see one array instead of four, roughly 4 tasks instead of 40, a memory request close to what was used, and a total time that's a fraction of the baseline's. Most of the saving comes from not waiting four times in the queue, not from faster computing.
-
-**i.** Answers vary. Things worth watching for when an agent runs jobs for you: tests that aren't small (a "test" at the full size costs as much as the real run), retries after a failure that resubmit everything instead of finding the bug, writing a `.slurm` file instead of changing the `Slurm_lapply()` call, editing `coverage.R` (the fingerprint would change), using `detectCores()`, and declaring success without checking the fingerprint. You can count its jobs afterwards with `sacct -X --starttime=today --format=JobID,JobName,Elapsed,State`.
-:::
+Then clone your class repository on CHPC, add your `lab12/` folder, and make a commit **from CHPC** whose message references this week's issue (for example, `Lab 12 (#<issue number>)`), and push it.
 
 # Wrap-up
 
-Did you get the same fingerprint for both versions, and the same as the instructor's? What was the biggest win: fewer arrays, fewer tasks, or smaller requests? Would the answer be different if each replicate took a minute instead of a millisecond?
+Did all your versions print the same table? What did Codex change, and which change mattered most? Would the answer be different if each replicate took a minute instead of a millisecond?
 
 # Homework {#homework}
 
@@ -357,30 +223,41 @@ Please push it to GitHub by Sunday, November 22.
 
 One of the advantages of job arrays from Tuesday's lecture is that a failure only costs you the tasks that failed. Let's try it.
 
-1.  In R on the login node, submit the simulation at the quick size (`nsims = 1000`) with `njobs = 8`, `mc.cores = 1`, and `plan = "submit"`, using the resources you settled on in Hands-on 2. With `plan = "submit"`, `Slurm_lapply()` returns the job object, so save it: `job <- Slurm_lapply(...)`. Note the job ID it prints.
+1.  In `coverage.R` (your improved version), set `njobs = 8` and run it in R on a compute node with `nsims` = 1,000, line by line, up to and including `job <- sbatch(job)`. Note the job ID.
 2.  While it's running, cancel two of the tasks from the terminal, for example `scancel <jobid>_3 <jobid>_6`.
 3.  Run `status(job)` and `Slurm_collect(job)`. What happens?
-4.  Resubmit only those two tasks with `sbatch(job, array = "3,6")`, wait, and collect again. Do you get the fingerprint for `nsims` = 1,000 (11.2586761607)?
+4.  Resubmit only those two tasks with `job <- sbatch(job, array = "3,6")`, wait, and collect again. Do you get the table for `nsims` = 1,000?
 5.  Clean up with `Slurm_clean(job)`.
 
 Answer briefly in `lab12.qmd`: why could slurmR rerun only those two tasks, without recomputing anything else? What would you have had to do with last week's hand-written job array?
 
 ## H2. Hand it in
 
-Copy the folder from CHPC into your class repository, from a terminal on your laptop (not the VS Code terminal connected to CHPC):
+If you did the [bonus](#bonus), push from CHPC. Otherwise, copy the folder from CHPC into your class repository, from a terminal on your laptop (not the VS Code terminal connected to CHPC):
 
 ``` bash
 scp -r <uid>@notchpeak.chpc.utah.edu:~/lab12 .
 ```
 
-Before pushing, delete the slurmR job folders (`baseline-n*/`, `slurmr-job-*/`, and any others); they can be large and are not needed. Then render `lab12.qmd` on your laptop and push the `lab12/` folder. It should contain:
+Before pushing, delete the slurmR job folders (`coverage-sim/` and any others); they can be large and are not needed. Then render `lab12.qmd` and push the `lab12/` folder. It should contain:
 
-- `lab12.qmd` and the rendered HTML, with your prompt log (P1, P2, and any follow-up prompts, each with a short note on what came back);
-- your filled-in acceptance tests, each marked as passed or failed;
-- `03-slurmr-optimized.R`, `baseline.log`, `optimized.log`, `sacct-baseline.txt`, and `sacct-optimized.txt`.
+- `lab12.qmd` and the rendered HTML, with your answers to Hands-on 1 and H1, and a short note on what you asked Codex in Hands-on 2 and what it changed;
+- `coverage-original.R`, your improved `coverage.R` and `coverage.slurm`, the `coverage-*.out` logs, and `sacct-baseline.txt`.
 
 # Reference
 
 - Tuesday's lecture: [*Slurm and slurmR under the hood*](slides.qmd).
 - George G. Vega Yon, [*Applied HPC with R*](https://book-hpc.ggvy.cl){target="_blank"}, in particular the chapters on running R on Slurm and on slurmR.
 - The [slurmR package](https://github.com/USCbiostats/slurmR){target="_blank"}: `?Slurm_lapply`, `?opts_slurmR`, `?Slurm_collect`.
+
+# Appendix: Hands-on 1 discussion {#appendix}
+
+**a.** Before submission: `00-rscript.r`, `01-bash.sh`, `X_0001.rds` to `X_0004.rds` (one chunk of replicate ids per task), `FUN.rds` (that's `sim_one`), `grid.rds`, `INDICES.rds`, `mc.cores.rds`, `seeds.rds`, and `job.rds`. After it runs: `02-output-<jobid>-<task>.out` (the logs, written by Slurm) and `03-answer-001.rds` to `03-answer-004.rds` (written by the tasks).
+
+**b.** `--array=1-4` comes from `njobs = 4`, and `--cpus-per-task=1` from `mc.cores = 1`. The other four come from `sbatch_opt`: each element becomes an `#SBATCH --name=value` line.
+
+**c.** `X <- readRDS(sprintf(".../X_%04d.rds", ARRAY_ID))`: each task reads the chunk that matches its `SLURM_ARRAY_TASK_ID`. `grid` was passed through `...`, so slurmR saved it as `grid.rds`, reads it in every task, and adds it to the `mclapply()` call.
+
+**d.** They should. The split doesn't matter, because every replicate sets its own seed.
+
+**e.** Each task asked for 8 GB and one hour, but used a small fraction of a GB and ran for seconds. Big requests are harder to fit (see backfill in Tuesday's lecture), so tasks may wait longer, and the resources are blocked for others. Note also that if `sim_one()` fails, slurmR catches the error, writes `job-status: failed` to the task's log, and quits R normally, so Slurm reports the task as `COMPLETED`. The log, not `sacct`, is the first place to look when something goes wrong.
