@@ -24,7 +24,7 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who,homework,home
 11/10/26,12,Lecture and Lab,UofU's CHPC coding agents,,lab,10-slurm-practice/lab.html,10-slurm-practice/lab.qmd,,,CHPC
 11/12/26,12,Lecture and Lab,"Simulating π on CHPC",,slides,11-simpi/slides.html,11-simpi/slides.qmd,,,Mui
 11/17/26,13,Lab,More practice with slurm,,slides,12-slurm-week2/slides.html,12-slurm-week2/slides.qmd,,,George
-11/19/26,13,Lecture,R packages I,,slides,13-rpkgs-i/slides.html,13-rpkgs-i/slides.qmd,,Mui out,George
+11/19/26,13,Lecture,R packages I,,slides,13-rpkgs-i/slides.html,13-rpkgs-i/slides.qmd,,Mui out,George,12-slurm-week2/hw4.html,12-slurm-week2/hw4.qmd
 11/24/26,14,Lab,R packages I,,lab,13-rpkgs-i/lab.html,13-rpkgs-i/lab.qmd,,Mui out,George
 11/26/26,14,Lab,Thanksgiving recess,,,,,,,
 12/1/26,15,Lecture,Automatic Reports with GitHub Actions,,slides,15-autoreport/slides.html,15-autoreport/slides.qmd,,,George

@@ -1,0 +1,337 @@
+---
+title: "Homework 4: A coverage simulation with slurmR"
+subtitle: "PHS 7045: Advanced Programming -- slurmR as the controller, and Codex as the optimizer"
+author:
+  - "George G. Vega Yon"
+date: November 19, 2026
+---
+
+::: callout-note
+## Attribution
+
+This homework follows the structure of [Lab 11](../11-simpi/slides.qmd) by Thi Mui Pham, and uses the `slurmR` package as described in Tuesday's lecture, [*Slurm and slurmR under the hood*](slides.qmd). The starter materials were drafted with the help of Claude Code and reviewed by the instructor.
+:::
+
+# Due date
+
+Tuesday, December 1, 2026. Assigned Thursday, November 19, 2026.
+
+# Assignment
+
+Run a coverage simulation on CHPC, first with resource settings you choose and then with settings optimized by Codex. Complete tasks (a)–(c) without AI assistance. Use Codex in task (d), then compare both approaches in task (e).
+
+1. [Fill in the blanks](#fill-in): choose the Slurm resource settings.
+2. [Run from a compute node](#interactive): use `salloc`, submit the simulation from R, and monitor it with slurmR.
+3. [Run a batch job](#batch): submit your completed Slurm script with `sbatch`.
+4. [Ask Codex to optimize](#optimize): review its changes and submit the revised job.
+5. [Compare the runs](#compare): use `sacct` to compare resource requests and use.
+
+Submit your own R and Bash scripts and the versions produced with Codex as described in [Submission](#submission).
+
+## Setup
+
+1. **Connect VS Code to CHPC** as in [Lab 11](../11-simpi/slides.qmd#before-class).
+
+2. **Create your working folder.** In the VS Code terminal:
+
+   ``` bash
+   mkdir -p ~/homework-slurm
+   cd ~/homework-slurm
+   ```
+
+   Open `~/homework-slurm` with File → Open Folder. Copy the [starter scripts](#the-code) below into `coverage.R` and `coverage.slurm`.
+
+3. **Install the development version of slurmR** from [GitHub](https://github.com/USCbiostats/slurmR){target="_blank"}. Do this from the login node, where internet access is available:
+
+   ``` bash
+   module load R
+   Rscript -e 'install.packages("remotes", repos = "https://cloud.r-project.org")'
+   Rscript -e 'remotes::install_github("USCbiostats/slurmR")'
+   Rscript -e 'library(slurmR)'
+   ```
+
+   The last command should print a message about `tmp_path` and no errors.
+
+# The coverage simulation
+
+## The question
+
+A 95% confidence interval should contain the true parameter in 95% of samples. That is a statement about **repeated sampling**, so the natural way to check it is to simulate: draw many samples, build the interval for each, and count how often it covers the truth.
+
+We draw samples of size $n \in \{10, 20, 50, 100\}$ from a lognormal(0, 1) distribution, which is skewed to the right and has true mean $\mu = e^{1/2} \approx 1.649$. For each sample we build two 95% intervals for the mean:
+
+- the **t-interval**, $\bar x \pm t_{0.975,\, n-1}\, s / \sqrt n$;
+- the **bootstrap percentile interval**: resample the data $B = 999$ times, compute the mean of each resample, and take the 2.5% and 97.5% quantiles.
+
+Every replicate is independent, so the problem is embarrassingly parallel: a good job for a cluster.
+
+## The code {#the-code}
+
+- `coverage.R` builds the grid (one row per replicate), defines `sim_one(i, grid)` for replicate `i`, and runs it on every row with `Slurm_lapply()`. It takes the number of replicates per sample size from the command line (`Rscript coverage.R 1000`), or uses 100 if there's none.
+- `coverage.slurm` runs `coverage.R` as a batch job. The controller does no heavy computing: it writes files, runs `sbatch`, waits, and collects. The replicates run as a job array on other nodes.
+
+### `coverage.R`
+
+Copy this block into `coverage.R` and fill in every `____` before running it:
+
+``` r
+# coverage.R ------------------------------------------------------------------
+# How often does a 95% confidence interval for the mean cover the true mean
+# when the data are skewed? We compare the t-interval and the bootstrap
+# percentile interval for samples from a lognormal(0, 1), whose mean is
+# exp(1/2).
+#
+# Usage: Rscript coverage.R [nsims]   (nsims = replicates per sample size)
+#
+# This script is the controller: it does no heavy computing itself. slurmR
+# writes the job files, submits them as a job array, waits, and collects.
+
+library(slurmR)
+
+nsims <- as.integer(commandArgs(trailingOnly = TRUE)[1])
+if (is.na(nsims)) nsims <- 100L
+
+# One row per replicate: nsims replicates for each sample size
+grid <- expand.grid(rep = seq_len(nsims), n = c(10, 20, 50, 100))
+
+# Replicate i. Everything it needs is an argument, because slurmR runs it in a
+# fresh R session on another node. It sets its own seed, so the answer does
+# not depend on which job or core runs it.
+sim_one <- function(i, grid, B = 999, mu = exp(0.5)) {
+  set.seed(7045 + i)
+  n <- grid$n[i]
+  x <- rlnorm(n)
+
+  # t-interval
+  half <- qt(0.975, df = n - 1) * sd(x) / sqrt(n)
+  t_ci <- mean(x) + c(-half, half)
+
+  # Bootstrap percentile interval: B resamples, one per column
+  boot    <- colMeans(matrix(sample(x, n * B, replace = TRUE), nrow = n))
+  boot_ci <- quantile(boot, c(0.025, 0.975), names = FALSE)
+
+  c(
+    n          = n,
+    t_cover    = t_ci[1] <= mu && mu <= t_ci[2],
+    boot_cover = boot_ci[1] <= mu && mu <= boot_ci[2]
+  )
+}
+
+# Create the job (files only, nothing is submitted yet)
+job <- Slurm_lapply(
+  as.list(seq_len(nrow(grid))),
+  sim_one,
+  grid       = grid,
+  njobs      = ____,
+  mc.cores   = ____,
+  job_name   = "coverage-sim",
+  plan       = "none",
+  sbatch_opt = list(
+    account   = "____",
+    partition = "____",
+    qos       = "____",
+    nodes     = ____,
+    time      = "____",
+    mem       = "____"
+  )
+)
+
+# Submit the array. Pause here during the interactive run to monitor it.
+start <- Sys.time()
+job   <- sbatch(job)
+
+# Wait for and collect the results
+wait_slurm(job)
+ans   <- Slurm_collect(job)
+elapsed <- as.numeric(difftime(Sys.time(), start, units = "secs"))
+
+# Coverage by sample size
+res <- as.data.frame(do.call(rbind, ans))
+stopifnot(nrow(res) == nrow(grid))
+tab <- aggregate(cbind(t_cover, boot_cover) ~ n, data = res, FUN = mean)
+print(tab, row.names = FALSE, digits = 4)
+
+message(sprintf(
+  "replicates: %d | elapsed: %.1f s | job id: %s",
+  nrow(res), elapsed, job$jobid
+))
+```
+
+### `coverage.slurm`
+
+Copy this block into `coverage.slurm` and fill in every `____` before submitting it:
+
+``` bash
+#!/bin/bash
+#SBATCH --job-name=____
+#SBATCH --account=____
+#SBATCH --partition=____
+#SBATCH --qos=____
+#SBATCH --time=____
+#SBATCH --nodes=____
+#SBATCH --ntasks=____
+#SBATCH --cpus-per-task=____
+#SBATCH --mem=____
+#SBATCH --output=____
+
+# The controller job. coverage.R does no heavy computing: slurmR submits the
+# replicates as a job array, waits for it, and collects the answers. This job
+# needs resources for the controller and enough time to wait for the array.
+
+module load R
+
+Rscript --vanilla coverage.R 1000
+```
+
+Because replicate `i` always calls `set.seed(7045 + i)` before drawing anything, its result doesn't depend on which job or core runs it. **Every correct version of the simulation prints the same table**, however the work is split. That gives us a check for every version, including the ones Codex writes:
+
+``` default
+nsims = 100                 nsims = 1,000
+   n t_cover boot_cover        n t_cover boot_cover
+  10    0.89       0.82       10   0.843      0.811
+  20    0.88       0.85       20   0.891      0.877
+  50    0.89       0.88       50   0.899      0.902
+ 100    0.93       0.92      100   0.925      0.923
+```
+
+Neither interval reaches 95% when the data are this skewed and $n$ is small, and the bootstrap percentile interval is not better than the t-interval here.
+
+# (a) Fill in the blanks {#fill-in}
+
+Before running the simulation, complete every `____` in `coverage.R`, `coverage.slurm`, and the `salloc` command below. Use Tuesday's [lecture](slides.qmd), CHPC documentation, and commands such as `mychpc batch` and `sinfo` to identify the resources and partitions available to your account.
+
+``` bash
+salloc --account=____ --partition=____ \
+  --qos=____ --nodes=____ --ntasks=____ \
+  --cpus-per-task=____ --mem=____ --time=____
+```
+
+Choose settings for three separate allocations: the interactive session requested by `salloc`, the controller requested by `coverage.slurm`, and the worker array requested by `Slurm_lapply()`. In R, choose `njobs`, `mc.cores`, and all entries in `sbatch_opt`. Make sure the number of cores requested matches how each task will use them. For the controller's output filename, choose a pattern that includes the job ID so runs do not overwrite each other's logs.
+
+Consider why your choices of account, partition, QoS, time, memory, nodes, tasks, and cores are appropriate, and which resources belong to the controller and which belong to the workers. These are your initial choices; task (e) will check them against actual use.
+
+# (b) Run from a compute node {#interactive}
+
+Execute your completed `salloc` command in the VS Code terminal. Once the allocation is ready, verify that you are on a compute node and start R:
+
+``` bash
+hostname
+cd ~/homework-slurm
+module load R
+R
+```
+
+Run your completed `coverage.R` **line by line**, through `job <- sbatch(job)`, then pause. With no command-line argument, `nsims` is 100. Stay in R on the compute node and use these slurmR commands to check the run:
+
+``` r
+status(job)          # repeat to follow progress
+squeue(job)          # inspect the worker array
+Slurm_log(job, 1)    # inspect task 1's log after it has started
+```
+
+Resume the script at `wait_slurm(job)` to wait for completion, collect the results, and print the coverage table. Compare it with the reference table for `nsims` = 100. Keep the table, job ID, and relevant status/log output for your own reference. If the run fails, use the logs to diagnose it before continuing.
+
+After saving that evidence, remove the interactive run's job files so the batch run can reuse the job name, and leave the compute node:
+
+``` r
+Slurm_clean(job)
+q(save = "no")
+```
+
+Then run `exit` in the terminal to end the interactive session.
+
+# (c) Run a batch job {#batch}
+
+From the login node, submit your completed Bash script:
+
+``` bash
+cd ~/homework-slurm
+sbatch coverage.slurm
+squeue --me
+```
+
+The Bash script runs the controller, which submits the worker array. Keep the controller job ID printed by `sbatch` and the array job ID printed at the end of the controller's output log. When the job finishes, verify that the table matches the reference for `nsims` = 1,000.
+
+Save accounting information for **both** jobs. Replace the blanks with their IDs:
+
+``` bash
+controller_id=____
+array_id=____
+sacct -j "$controller_id,$array_id" \
+  --format=JobID%24,JobName%24,State,Elapsed,Timelimit,AllocCPUS,TotalCPU,ReqMem,MaxRSS \
+  > sacct-baseline.txt
+cat sacct-baseline.txt
+```
+
+Keep your completed `coverage.R` and `coverage.slurm` unchanged from this point onward. They are your baseline for the comparison.
+
+# (d) Ask Codex to optimize the Slurm settings {#optimize}
+
+Create a separate folder for the AI version so your baseline scripts, logs, and slurmR job files are preserved:
+
+``` bash
+cd ~/homework-slurm
+mkdir -p ai
+cp coverage.R coverage.slurm ai/
+cp sacct-baseline.txt ai/
+cd ai
+module load codex
+codex
+```
+
+Ask Codex to use the baseline accounting output and available cluster resources to improve the resource settings in these two scripts. Keep the request simple: **optimize Slurm options without overengineering**. It may adjust `njobs`, `mc.cores`, `sbatch_opt`, and the `#SBATCH` settings. Keep the simulation, per-replicate seeds, and workload (`nsims` = 1,000, `B` = 999, and the same sample sizes) unchanged. Ask it to explain each change and let you review the scripts before submission.
+
+Review the differences after exiting Codex:
+
+``` bash
+diff -u ../coverage.R coverage.R
+diff -u ../coverage.slurm coverage.slurm
+```
+
+From `~/homework-slurm/ai`, submit the revised job yourself:
+
+``` bash
+sbatch coverage.slurm
+squeue --me
+```
+
+Keep the controller and array job IDs and output log for the comparison. Verify that the table still matches the reference for `nsims` = 1,000.
+
+# (e) Compare your approach with the AI's {#compare}
+
+After the AI version finishes, collect its accounting information. From `~/homework-slurm/ai`, replace the blanks with the **new** job IDs:
+
+``` bash
+controller_id=____
+array_id=____
+sacct -j "$controller_id,$array_id" \
+  --format=JobID%24,JobName%24,State,Elapsed,Timelimit,AllocCPUS,TotalCPU,ReqMem,MaxRSS \
+  > sacct-ai.txt
+cat ../sacct-baseline.txt
+cat sacct-ai.txt
+```
+
+Keep the job-step rows (such as `.batch`); they contain resource-use information that may be absent from the allocation rows. See the [sacct documentation](https://slurm.schedmd.com/sacct.html) for field definitions. Missing accounting values are not evidence of zero use.
+
+Compare your baseline and the AI version's settings and observed resource use. Consider the following questions:
+
+- Did the interactive, baseline batch, and AI runs produce the expected coverage tables? Compare runs with the same `nsims`.
+- What did Codex change in each script, and why? Were the changes justified by the accounting data?
+- For the worker tasks, how did the requested time and memory (`Timelimit`, `ReqMem`) compare with actual use (`Elapsed`, `MaxRSS`)? How did `AllocCPUS` and `TotalCPU` change? Distinguish allocation rows from job-step rows when interpreting the results.
+- How did the controller's resource use differ from the workers'? Remember that the controller spends time waiting for the array.
+- Did the AI version use resources more efficiently? Support your conclusion with the data, even if it did not improve the run. What limits does a single run place on your comparison?
+
+# Submission {#submission}
+
+By **Tuesday, December 1, 2026**, commit these four files to your GitHub repository:
+
+- `coverage.R` and `coverage.slurm`: your completed R and Bash scripts.
+- `ai/coverage.R` and `ai/coverage.slurm`: the AI-generated versions.
+
+Reference the homework's GitHub issue in your commit message (**issue: TBD**), then push the commit to GitHub. No report or logs are required.
+
+# References
+
+- Tuesday's lecture: [*Slurm and slurmR under the hood*](slides.qmd).
+- George G. Vega Yon, [*Applied HPC with R*](https://book-hpc.ggvy.cl){target="_blank"}, particularly the chapters on running R on Slurm and on slurmR.
+- The [slurmR package](https://github.com/USCbiostats/slurmR){target="_blank"}: `?Slurm_lapply`, `?Slurm_collect`, `?Slurm_log`.

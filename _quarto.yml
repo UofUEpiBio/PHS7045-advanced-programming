@@ -5,7 +5,6 @@ project:
     - 10-chpc-week/chpc_overview.pdf
     - 11-simpi/scripts/**
     - 11-simpi/lab11.zip
-    - 12-slurm-week2/lab12.zip
     - exams/02-final.html
 
 book:
@@ -154,7 +153,7 @@ book:
         - file: 12-slurm-week2/slides.qmd
           target: _blank
           rel: noopener
-        - file: 12-slurm-week2/lab.qmd
+        - file: 12-slurm-week2/hw4.qmd
           target: _blank
           rel: noopener
         - file: 12-slurm-week2/12-slurm-hw.qmd
