@@ -23,17 +23,12 @@ Last week, you wrote Slurm scripts by hand. Today, R is the controller: the `slu
 | In class     | [Hands-on 1](#hands-on-1): slurmR by hand                     | 25 min |
 | In class     | [Hands-on 2](#hands-on-2): Codex improves the job             | 30 min |
 | In class     | [Bonus](#bonus): push to GitHub from CHPC                     |        |
-| At home      | [Homework](#homework): rerun failed tasks, hand it in         |        |
 
 By the end of the lab you should be able to:
 
 - run a simulation on CHPC with `Slurm_lapply()`, and monitor and collect it from R;
 - find the files slurmR writes and use them to check what happened;
 - use Codex to improve a job, and check that the improvement didn't change the answer.
-
-## What you hand in
-
-You work in `~/lab12` on CHPC and, at the end, copy it into your class repository ([H2](#homework)): `lab12.qmd` with your answers, the rendered HTML, your scripts, and the logs. It's due Sunday, November 22.
 
 ## Before class (10 minutes) {#before-class}
 
@@ -105,7 +100,8 @@ Don't run R on the login node. Use one of these two options:
 
   ``` bash
   salloc --account=notchpeak-shared-short --partition=notchpeak-shared-short \
-    --ntasks=1 --cpus-per-task=1 --mem=2G --time=00:30:00
+    --qos=notchpeak-shared-short --nodes=1 --ntasks=1 \
+    --cpus-per-task=1 --mem=2G --time=00:30:00
   hostname        # a compute node, not the login node
   cd ~/lab12
   module load R
@@ -136,6 +132,7 @@ job <- sbatch(job)
 status(job)          # run it a few times
 squeue(job)
 Slurm_log(job, 1)    # the log of task 1, once it has run
+wait_slurm(job)      # wait here before collecting the answers
 ```
 
 Then run the rest of the script. Your table should match the one for `nsims` = 100 above. Then clean up and leave the compute node:
@@ -170,7 +167,7 @@ Questions for `lab12.qmd`:
 
 a.  Which files did slurmR create in `coverage-sim/` before you submitted anything? Which ones appeared only after the job ran?
 
-b.  In `coverage-sim/01-bash.sh`, where do `--array=1-4` and `--cpus-per-task=1` come from? Where are `account`, `partition`, `time`, and `mem`?
+b.  In `coverage-sim/01-bash.sh`, where do `--array=1-4` and `--cpus-per-task=1` come from? Where are `account`, `partition`, `qos`, `nodes`, `time`, and `mem`?
 
 c.  In `coverage-sim/00-rscript.r`, find the line that makes each task read only its own share of the replicates. How does `grid` reach `sim_one()`?
 
@@ -200,11 +197,11 @@ Once Codex has submitted the job, look at it yourself before Codex reports back:
 
 ## 2c. Beyond notchpeak
 
-CHPC has other clusters besides notchpeak (kingspeak, lonepeak, and granite). Ask Codex to check which clusters and partitions you have access to and which ones have free resources right now (`myallocation` and `sinfo -M all` are good starting points), and to submit the simulation to another cluster. Again: does the table match?
+CHPC has other clusters besides notchpeak (kingspeak, lonepeak, and granite). Ask Codex to check which clusters and partitions you have access to and which ones have free resources right now (`mychpc batch` and `sinfo -M all` are good starting points), and to submit the simulation to another cluster. Again: does the table match?
 
 # Bonus: push to GitHub from CHPC {#bonus}
 
-Instead of copying `~/lab12` to your laptop ([H2](#homework)), you can push it from CHPC directly. Set up the connection between CHPC and GitHub, using either:
+If you want to save your work in a GitHub repository, you can push it directly from CHPC. Set up the connection between CHPC and GitHub, using either:
 
 - the GitHub CLI, which is available on CHPC: [`gh auth login`](https://cli.github.com/manual/gh_auth_login){target="_blank"}; or
 - an SSH key: [Connecting to GitHub with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh){target="_blank"}.
@@ -215,46 +212,46 @@ Then clone your class repository on CHPC, add your `lab12/` folder, and make a c
 
 Did all your versions print the same table? What did Codex change, and which change mattered most? Would the answer be different if each replicate took a minute instead of a millisecond?
 
-# Homework {#homework}
-
-Please push it to GitHub by Sunday, November 22.
-
-## H1. Rerun only the tasks that failed
-
-One of the advantages of job arrays from Tuesday's lecture is that a failure only costs you the tasks that failed. Let's try it.
-
-1.  In `coverage.R` (your improved version), set `njobs = 8` and run it in R on a compute node with `nsims` = 1,000, line by line, up to and including `job <- sbatch(job)`. Note the job ID.
-2.  While it's running, cancel two of the tasks from the terminal, for example `scancel <jobid>_3 <jobid>_6`.
-3.  Run `status(job)` and `Slurm_collect(job)`. What happens?
-4.  Resubmit only those two tasks with `job <- sbatch(job, array = "3,6")`, wait, and collect again. Do you get the table for `nsims` = 1,000?
-5.  Clean up with `Slurm_clean(job)`.
-
-Answer briefly in `lab12.qmd`: why could slurmR rerun only those two tasks, without recomputing anything else? What would you have had to do with last week's hand-written job array?
-
-## H2. Hand it in
-
-If you did the [bonus](#bonus), push from CHPC. Otherwise, copy the folder from CHPC into your class repository, from a terminal on your laptop (not the VS Code terminal connected to CHPC):
-
-``` bash
-scp -r <uid>@notchpeak.chpc.utah.edu:~/lab12 .
-```
-
-Before pushing, delete the slurmR job folders (`coverage-sim/` and any others); they can be large and are not needed. Then render `lab12.qmd` and push the `lab12/` folder. It should contain:
-
-- `lab12.qmd` and the rendered HTML, with your answers to Hands-on 1 and H1, and a short note on what you asked Codex in Hands-on 2 and what it changed;
-- `coverage-original.R`, your improved `coverage.R` and `coverage.slurm`, the `coverage-*.out` logs, and `sacct-baseline.txt`.
-
 # Reference
 
 - Tuesday's lecture: [*Slurm and slurmR under the hood*](slides.qmd).
 - George G. Vega Yon, [*Applied HPC with R*](https://book-hpc.ggvy.cl){target="_blank"}, in particular the chapters on running R on Slurm and on slurmR.
 - The [slurmR package](https://github.com/USCbiostats/slurmR){target="_blank"}: `?Slurm_lapply`, `?opts_slurmR`, `?Slurm_collect`.
 
-# Appendix: Hands-on 1 discussion {#appendix}
+# Appendix: Extra things to try {#extra-things}
+
+These activities are optional. They extend the lab but are not part of the in-class exercise.
+
+## Rerun only the tasks that failed
+
+One of the advantages of job arrays from Tuesday's lecture is that a failure only costs you the tasks that failed. Let's try it.
+
+1.  In `coverage.R` (your improved version), set `njobs = 8` and run it in R on a compute node with `nsims` = 1,000, line by line, up to and including `job <- sbatch(job)`. Stop before `wait_slurm(job)`, and note the job ID.
+2.  While it's running, cancel two of the tasks from the terminal, for example `scancel <jobid>_3 <jobid>_6`.
+3.  Run `status(job)` and `Slurm_collect(job)`. What happens?
+4.  Resubmit only those two tasks with `job <- sbatch(job, array = "3,6")`, run `wait_slurm(job)`, and collect again. Do you get the table for `nsims` = 1,000?
+5.  Clean up with `Slurm_clean(job)`.
+
+Think about why slurmR could rerun only those two tasks without recomputing anything else. What would you have had to do with last week's hand-written job array?
+
+## Save a copy of your work
+
+If you did the [bonus](#bonus), your work is already in a GitHub repository. Otherwise, you can copy the folder from CHPC to your laptop. Run this from a terminal on your laptop, not the VS Code terminal connected to CHPC:
+
+``` bash
+scp -r <uid>@notchpeak.chpc.utah.edu:~/lab12 .
+```
+
+Before saving or pushing the folder, delete the slurmR job folders (`coverage-sim/` and any others); they can be large and are not needed. You may also render `lab12.qmd`. Useful files to keep include:
+
+- `lab12.qmd` and the rendered HTML, with your answers to Hands-on 1 and a short note on what you asked Codex in Hands-on 2 and what it changed;
+- `coverage-original.R`, your improved `coverage.R` and `coverage.slurm`, the `coverage-*.out` logs, and `sacct-baseline.txt`.
+
+# Appendix: Hands-on 1 discussion {#hands-on-1-discussion}
 
 **a.** Before submission: `00-rscript.r`, `01-bash.sh`, `X_0001.rds` to `X_0004.rds` (one chunk of replicate ids per task), `FUN.rds` (that's `sim_one`), `grid.rds`, `INDICES.rds`, `mc.cores.rds`, `seeds.rds`, and `job.rds`. After it runs: `02-output-<jobid>-<task>.out` (the logs, written by Slurm) and `03-answer-001.rds` to `03-answer-004.rds` (written by the tasks).
 
-**b.** `--array=1-4` comes from `njobs = 4`, and `--cpus-per-task=1` from `mc.cores = 1`. The other four come from `sbatch_opt`: each element becomes an `#SBATCH --name=value` line.
+**b.** `--array=1-4` comes from `njobs = 4`, and `--cpus-per-task=1` from `mc.cores = 1`. The other six come from `sbatch_opt`: each element becomes an `#SBATCH --name=value` line.
 
 **c.** `X <- readRDS(sprintf(".../X_%04d.rds", ARRAY_ID))`: each task reads the chunk that matches its `SLURM_ARRAY_TASK_ID`. `grid` was passed through `...`, so slurmR saved it as `grid.rds`, reads it in every task, and adds it to the `mclapply()` call.
 

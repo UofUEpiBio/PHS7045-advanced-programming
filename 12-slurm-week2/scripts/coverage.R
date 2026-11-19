@@ -52,6 +52,8 @@ job <- Slurm_lapply(
   sbatch_opt = list(
     account   = "notchpeak-shared-short",
     partition = "notchpeak-shared-short",
+    qos       = "notchpeak-shared-short",
+    nodes     = 1,
     time      = "01:00:00",
     mem       = "8G"
   )
@@ -60,6 +62,7 @@ job <- Slurm_lapply(
 # Submit, then wait for and collect the results
 start <- Sys.time()
 job   <- sbatch(job)
+wait_slurm(job)
 ans   <- Slurm_collect(job)
 elapsed <- as.numeric(difftime(Sys.time(), start, units = "secs"))
 
