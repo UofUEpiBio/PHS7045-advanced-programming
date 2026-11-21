@@ -171,9 +171,9 @@ tmp_folder <- tempfile("boringpkg")
 # Creating the package
 usethis::create_package(
   path = tmp_folder,
-  roxygen = TRUE,
-  rstudio = TRUE,
-  fields = list(
+  roxygen = TRUE,   # Docs and NAMESPACE are generated from roxygen2 comments
+  rstudio = TRUE,   # Adds an .Rproj file so you can open it as an RStudio project
+  fields = list(    # Values written to the DESCRIPTION file
     Package = "boringpkg",
     Version = "0.0.0.9000",
     Title = "A boring package",
@@ -205,28 +205,34 @@ usethis::use_mit_license(copyright_holder = "George G. Vega Yon")
 usethis::use_news_md()
 ```
 
-If you are planning to use GitHub:
+If you are planning to use GitHub, you can set up GitHub Actions. This is GitHub's built-in automation service: it runs scripts on GitHub's own machines whenever something happens in your repo, such as a push. This setup is often called continuous integration (CI).
 
 ```r
 # Some basic CI infrastructure
-usethis::use_github_action_check_standard()
+usethis::use_github_action("check-standard")
 ```
 
-Try it out! Other things we are not setting up: Codecoverage (checkout the `usethis::use_coverage()` function).
+Try it out! Other things we are not setting up: code coverage, which measures how much of your code your tests actually run (check out the `usethis::use_coverage()` function).
 
 ## Step 1: Set up the structure (cont. 2)
 
+::: {style="font-size: 20pt"}
+
 What did happen?
 
-1. `use_readme_rmd()`: Creates a readme file that will be in the project's main folder. Think about it as the home page of your project.
+1. `use_readme_rmd()`: Creates a `README.Rmd` file in the project's main folder. Think about it as the home page of your project. You edit the `.Rmd` and knit it into `README.md`, which is what GitHub shows on the repo page. Since it can run R code, you can include working examples.
 
-2. `use_testthat()`: The basic infrastructure for testing packages will be created.
+2. `use_testthat()`: Sets up the testing infrastructure. It creates the `tests/testthat/` folder (your test files go there) and `tests/testthat.R` (the script `R CMD check` uses to run them), and adds `testthat` to `Suggests` in `DESCRIPTION`.
 
-3. `use_mit_license(copyright_holder = "George G. Vega Yon")`: Creates the `LICENSE` file and puts it under ‘George G. Vega Yon’.
+3. `use_mit_license(copyright_holder = "George G. Vega Yon")`: Creates the `LICENSE` file and puts it under ‘George G. Vega Yon’. It also sets `License: MIT + file LICENSE` in `DESCRIPTION`. Without a license, others can't legally reuse your code.
 
-4.  `use_news_md()`: Creates the `news.md` file which us used for tracking changes and communicating them to the users (e.g. [netdiffuseR](https://github.com/USCCANA/netdiffuseR/blob/master/NEWS.md))
+4.  `use_news_md()`: Creates the `NEWS.md` file, which is used for tracking changes and communicating them to the users (e.g. [netdiffuseR](https://github.com/USCCANA/netdiffuseR/blob/master/NEWS.md)). Add a short entry every time you release a new version.
+
+5. `use_github_action("check-standard")`: Adds the workflow file `.github/workflows/R-CMD-check.yaml`. Every time you push to GitHub (or open a pull request), GitHub runs `R CMD check` on macOS, Windows, and Ubuntu with the release and development versions of R. You can see the results in the **Actions** tab of your repo. This is how you find out your package breaks on Windows before CRAN tells you.
 
 Now that we have the structure, we can start coding!
+
+:::
 
 
 
