@@ -23,8 +23,34 @@ set up:
 
 - Uses GitHub Actions for continuous integration.
 
-The R package doesn't have any testing in place, needs a license, and doesn't
-have coverage checking.
+The R package doesn't have any testing in place and doesn't have coverage checking.
+
+## Before you start
+
+Since the package uses C++ code, you need a compiler. Run the following in R:
+
+```r
+pkgbuild::check_build_tools(debug = TRUE)
+```
+
+If it reports a problem, install the build tools for your system: the Xcode Command Line Tools on macOS (run `xcode-select --install` in the Terminal), or [Rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
+
+::: {.callout-tip collapse="true"}
+## Useful commands
+
+These are the functions from the lecture that you will need today. Run them from inside the package project.
+
+| Function | What it does |
+|---|---|
+| `usethis::use_r("name")` | Creates `R/name.R` and opens it |
+| `usethis::use_testthat()` | Sets up the testing infrastructure (run once) |
+| `usethis::use_test("name")` | Creates `tests/testthat/test-name.R` and opens it |
+| `usethis::use_package("pkg")` | Adds `pkg` to `Imports` in `DESCRIPTION` |
+| `devtools::document()` | Updates `man/` and `NAMESPACE` from roxygen comments (Ctrl/Cmd + Shift + D). For packages with C++ code, it also compiles the code |
+| `devtools::load_all()` | Loads the package so you can try your functions (Ctrl/Cmd + Shift + L) |
+| `devtools::test()` | Runs the tests (Ctrl/Cmd + Shift + T) |
+| `devtools::check()` | Runs `R CMD check` (Ctrl/Cmd + Shift + E) |
+:::
 
 ## Question 1: Make sure you can compile the package
 
@@ -33,18 +59,33 @@ and clone it to your local computer. Once you have a copy, do the following:
 
 1. Inspect its contents and the file located at `.github/workflows`.
 
-2. Make sure you can install it using Rstudio.
+2. GitHub does not run workflows on forks until you allow it. Go to the **Actions** tab of your fork and click the button to enable workflows. Otherwise, nothing will happen when you push.
 
-3. Run R CMD check using RStudio.
+3. Make sure you can install it using RStudio.
 
-4. Run R CMD check using the command line (if available).
+4. Run R CMD check using RStudio.
+
+5. Run R CMD check using the command line (if available).
 
 If you don't fork it and instead downloaded it manually, make sure you 
 set up a GitHub repository in your account to push your changes.
 
+::: {.callout-tip collapse="true"}
+## Hints for Question 1
+
+- In RStudio, both install and check are in the **Build** pane (Install, and More > Check).
+
+- On the command line, go to the folder that *contains* `egpkg/` and run:
+
+  ```shell
+  R CMD build egpkg
+  R CMD check egpkg_1.0.tar.gz
+  ```
+:::
+
 ## Question 2: Adding a plot function
 
-Copy the following R function and add it to the package:
+Here is a function and an example of how to use it:
 
 ```r
 # Here is the function
@@ -72,26 +113,40 @@ y <- rnorm(100)
 myplot(x, y)
 ```
 
-Notice that you will need to:
+Add the function to the package. Notice that you will need to:
 
-1. Add it to the R folder.
+1. Add **only the function** to the `R` folder (not the example code).
 2. Document it using roxygen2.
-3. Add the graphics package to the namespace (because of the `plot` function).
-4. Add an example to the documentation (using the `@examples` tag).
-4. Add a test for checking that the error message is thrown when the input is not numeric.
+3. Add the example to the documentation (using the `@examples` tag).
+4. Declare the `graphics` package as a dependency (because of the `plot` function).
+5. Add a test for checking that the error message is thrown when the input is not numeric.
 
-Remember to commit and push your changes.
+Run `devtools::check()` to make sure everything works. Remember to commit and push your changes.
+
+::: {.callout-tip collapse="true"}
+## Hints for Question 2
+
+- `usethis::use_r("myplot")` creates `R/myplot.R`. Code outside of functions in the `R` folder runs every time the package is loaded, which is why the example goes under `@examples`.
+
+- The roxygen block needs at least a title, `@param`, `@return`, and `@export`.
+
+- Declaring `graphics` takes two steps:
+  - In `NAMESPACE`: either write `graphics::plot()` in the function, or add `#' @importFrom graphics plot` to the roxygen block.
+  - In `DESCRIPTION`: run `usethis::use_package("graphics")` to add it to `Imports`.
+
+- The package doesn't have tests yet. First run `usethis::use_testthat()`, then `usethis::use_test("myplot")`. The `expect_error()` function checks that an error is thrown, and can also check its message.
+
+- Run `devtools::document()` after changing roxygen comments.
+:::
 
 ## Question 3: Adding a C++ function
 
 Add the `ps_match` function [we wrote on Week 5](https://github.com/UofUEpiBio/PHS7045-advanced-programming/issues/8#issuecomment-1424974938).
-The function should be named `ps_match`:
+The linked comment has three versions (`ps_match1`, `ps_match2`, and `ps_match3`). Use `ps_match1` and rename it to `ps_match`.
 
-1. Add the function in a separate c++ file in the `src` folder. Make sure to document
+1. Add the function in a separate C++ file in the `src` folder. Make sure to document
 it using `roxygen`. Once you finish that, ensure it compiles and the function
-is visible.[^reminder] (then commit and push)
-
-[^reminder]: Remember to run `roxygen2::roxygenise()`, `devtools::document()`, or Ctr + Shift + D, if using RStudio.
+is visible. (then commit and push)
 
 2. Write an example with artificial data passing a random vector with ten elements
    distributed U[0, 1]. Add the example to the documentation using the `@examples` tag. (then commit and push)
@@ -118,9 +173,21 @@ is visible.[^reminder] (then commit and push)
 
 (then commit and push)
 
-## Question 4: Checkout the coverage of the package (if time permits)
+::: {.callout-tip collapse="true"}
+## Hints for Question 3
 
-Using the `covr` R package, checkout the coverage using the following function
+- Leave out the `/*** R ... */` block at the end of the Week 5 code. It only works with `Rcpp::sourceCpp()`.
+
+- In C++ files, roxygen comments start with `//'` (not `#'`) and go above the `// [[Rcpp::export]]` line. Follow the format in `src/rcpp_hello_world.cpp`.
+
+- `devtools::document()` (Ctrl/Cmd + Shift + D) compiles the C++ code and updates the documentation and `NAMESPACE`. Then run `devtools::load_all()` and try `ps_match(runif(10))`.
+
+- For the test, create the file with `usethis::use_test("ps_match")` and put the R code above at the top of it. Then compare the two functions inside a `test_that()` block. `expect_equal()` will be useful here.
+:::
+
+## Question 4: Check out the coverage of the package (if time permits)
+
+Using the `covr` R package, check out the coverage using the following function
 
 ```r
 covr::package_coverage()
