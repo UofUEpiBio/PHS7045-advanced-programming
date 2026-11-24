@@ -151,6 +151,10 @@ Writing R packages is an iterative process
 
 :::
 
+## Dev cycle (overview)
+
+![](fig-dev-workflow.svg){fig-alt="R package development workflow: set up the structure once, then for every function write, document, test, check, and commit, and finally release the package." width="100%"}
+
 # Handson
 
 ## Step 1: Set up the structure

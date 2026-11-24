@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 410" width="1400" height="410" role="img" aria-labelledby="t d">
+  <title id="t">R package development workflow</title>
+  <desc id="d">Set up the package structure once, then for every function loop through write, document, test, check and commit, and finally release the package.</desc>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1f2933"/>
+    </marker>
+    <marker id="ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#be0000"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: #1f2933; text-anchor: middle; }
+      .title { font-size: 18px; font-weight: 700; }
+      .num { fill: #be0000; }
+      .desc { font-size: 13px; }
+      .code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; }
+      .list { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; fill: #45525f; }
+      .key { font-size: 11px; fill: #62707d; }
+      .head { font-size: 16px; font-weight: 700; text-anchor: start; }
+      .loop { font-size: 13px; fill: #be0000; font-weight: 600; }
+      .box { fill: #ffffff; stroke: #8796a6; stroke-width: 1.5; }
+      .end { fill: #ffffff; stroke: #1f2933; stroke-width: 2; }
+      .pill { fill: #eef1f5; }
+      .arrow { fill: none; stroke: #1f2933; stroke-width: 1.8; marker-end: url(#ah); }
+    </style>
+  </defs>
+
+  <rect width="1400" height="410" fill="#ffffff"/>
+
+  <!-- loop container -->
+  <rect x="270" y="30" width="880" height="355" rx="14" fill="#f3f6fa" stroke="#c9d3df" stroke-width="1.5"/>
+  <text class="head" x="290" y="64"><tspan class="num">2</tspan>  Code: repeat for every function</text>
+
+  <!-- 1 set up -->
+  <rect class="end" x="20" y="90" width="210" height="200" rx="10"/>
+  <text class="title" x="125" y="124"><tspan class="num">1</tspan> Set up</text>
+  <text class="desc" x="125" y="146">once per package</text>
+  <rect class="pill" x="33" y="160" width="184" height="26" rx="6"/>
+  <text class="code" x="125" y="177">usethis::create_package()</text>
+  <text class="list" x="125" y="212">use_readme_rmd()</text>
+  <text class="list" x="125" y="229">use_testthat()</text>
+  <text class="list" x="125" y="246">use_mit_license()</text>
+  <text class="list" x="125" y="263">use_news_md()</text>
+
+  <!-- 2.1 write -->
+  <rect class="box" x="290" y="90" width="152" height="200" rx="10"/>
+  <text class="title" x="366" y="124"><tspan class="num">2.1</tspan> Write</text>
+  <text class="desc" x="366" y="154">functions in</text>
+  <text class="desc" x="366" y="172">R/*.R</text>
+  <rect class="pill" x="297" y="198" width="138" height="26" rx="6"/>
+  <text class="code" x="366" y="215">devtools::load_all()</text>
+  <text class="key" x="366" y="258">Ctrl + Shift + L</text>
+
+  <!-- 2.2 document -->
+  <rect class="box" x="462" y="90" width="152" height="200" rx="10"/>
+  <text class="title" x="538" y="124"><tspan class="num">2.2</tspan> Document</text>
+  <text class="desc" x="538" y="154">roxygen2 comments</text>
+  <text class="desc" x="538" y="172">to man/, NAMESPACE</text>
+  <rect class="pill" x="469" y="198" width="138" height="26" rx="6"/>
+  <text class="code" x="538" y="215">devtools::document()</text>
+  <text class="key" x="538" y="258">Ctrl + Shift + D</text>
+
+  <!-- 2.3 test -->
+  <rect class="box" x="634" y="90" width="152" height="200" rx="10"/>
+  <text class="title" x="710" y="124"><tspan class="num">2.3</tspan> Test</text>
+  <text class="desc" x="710" y="154">expectations in</text>
+  <text class="desc" x="710" y="172">tests/testthat/</text>
+  <rect class="pill" x="641" y="198" width="138" height="26" rx="6"/>
+  <text class="code" x="710" y="215">devtools::test()</text>
+  <text class="key" x="710" y="258">Ctrl + Shift + T</text>
+
+  <!-- 2.4 check -->
+  <rect class="box" x="806" y="90" width="152" height="200" rx="10"/>
+  <text class="title" x="882" y="124"><tspan class="num">2.4</tspan> Check</text>
+  <text class="desc" x="882" y="154">R CMD check: 0 errors,</text>
+  <text class="desc" x="882" y="172">0 warnings, 0 notes</text>
+  <rect class="pill" x="813" y="198" width="138" height="26" rx="6"/>
+  <text class="code" x="882" y="215">devtools::check()</text>
+  <text class="key" x="882" y="258">Ctrl + Shift + E</text>
+
+  <!-- 2.5 commit -->
+  <rect class="box" x="978" y="90" width="152" height="200" rx="10"/>
+  <text class="title" x="1054" y="124"><tspan class="num">2.5</tspan> Commit</text>
+  <text class="desc" x="1054" y="154">update NEWS.md,</text>
+  <text class="desc" x="1054" y="172">push, CI runs the check</text>
+  <rect class="pill" x="985" y="198" width="138" height="26" rx="6"/>
+  <text class="code" x="1054" y="215">git commit, git push</text>
+  <text class="key" x="1054" y="258">GitHub Actions</text>
+
+  <!-- 3 release -->
+  <rect class="end" x="1190" y="90" width="190" height="200" rx="10"/>
+  <text class="title" x="1285" y="124"><tspan class="num">3</tspan> Release</text>
+  <text class="desc" x="1285" y="154">R CMD build to .tar.gz,</text>
+  <text class="desc" x="1285" y="172">submit to CRAN</text>
+  <rect class="pill" x="1205" y="198" width="160" height="26" rx="6"/>
+  <text class="code" x="1285" y="215">devtools::release()</text>
+  <text class="key" x="1285" y="258">or Bioconductor</text>
+
+  <!-- forward arrows -->
+  <path class="arrow" d="M234 190 H286"/>
+  <path class="arrow" d="M444 190 H459"/>
+  <path class="arrow" d="M616 190 H631"/>
+  <path class="arrow" d="M788 190 H803"/>
+  <path class="arrow" d="M960 190 H975"/>
+  <path class="arrow" d="M1134 190 H1186"/>
+
+  <!-- return arrow -->
+  <path d="M1054 292 V326 Q1054 338 1042 338 H378 Q366 338 366 326 V295" fill="none" stroke="#be0000" stroke-width="2" marker-end="url(#ahr)"/>
+  <text class="loop" x="710" y="364">next function, or fix what the check found</text>
+</svg>
