@@ -642,6 +642,24 @@ Test are run every time that you run R CMD check
 
 `R CMD check` is R's built-in tool for testing a whole package. It builds and installs the package, then runs a long list of checks: whether the `DESCRIPTION` is valid, whether every exported function is documented, whether the examples run, whether the tests pass, and whether the code uses packages it doesn't declare. It reports back errors, warnings, and notes. CRAN runs the same checks on every submission, so a clean check locally is the first thing to aim for. From R, `devtools::check()` runs it for you.
 
+::: {.callout-note collapse="true"}
+## What exactly does `R CMD check` mean?
+
+**The name.** `R CMD` runs R's command-line tools from a terminal, not from the R console. `check` is one of them. Others are `R CMD build` (bundles the package into a `.tar.gz`) and `R CMD INSTALL`. You should check the built `.tar.gz`, not the source folder, because that file is what users and CRAN receive.
+
+**The results.** Each problem is reported at one of three levels:
+
+| Level | Meaning | For CRAN |
+|---|---|---|
+| ERROR | Something is broken, e.g., the package doesn't install or a test fails | Must fix |
+| WARNING | Likely a problem, e.g., the help file doesn't match the function's arguments | Must fix |
+| NOTE | Minor, or something to look at | Keep to a minimum, and explain any that remain |
+
+The full logs, including example and test output, are saved in a `boringpkg.Rcheck/` folder. Look there when something fails.
+
+**`devtools::check()`** runs `document()`, builds the `.tar.gz`, and then runs `R CMD check --as-cran` on it. The `--as-cran` option turns on CRAN's stricter checks.
+:::
+
 Running `R CMD check` is easy with RStudio
 
   - If you don’t have C/C++ code Just press Ctrl + Shift + E
