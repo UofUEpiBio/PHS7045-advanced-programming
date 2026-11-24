@@ -259,7 +259,33 @@ What did happen?
 
 5. `use_git()` and `use_github()`: `use_git()` initializes a Git repository in the package folder and offers to make a first commit. `use_github()` creates a repo with the same name on your GitHub account, connects it to your local one, and pushes your files. It needs a personal access token: run `usethis::create_github_token()` to make one and `gitcreds::gitcreds_set()` to store it (see [Happy Git](https://happygitwithr.com/https-pat) for details).
 
-6. `use_github_action("check-standard")`: Adds the workflow file `.github/workflows/R-CMD-check.yaml`. Every time you push to GitHub (or open a pull request), GitHub runs `R CMD check` on macOS, Windows, and Ubuntu with the release and development versions of R. You can see the results in the **Actions** tab of your repo. This is how you find out your package breaks on Windows before CRAN tells you. Remember to commit and push the new workflow file, since GitHub only sees what you've pushed.
+6. `use_github_action("check-standard")`: Adds the workflow file `.github/workflows/R-CMD-check.yaml`. Every time you push to GitHub (or open a pull request), GitHub runs `R CMD check` on macOS, Windows, and Ubuntu with several versions of R. You can see the results in the **Actions** tab of your repo. This is how you find out your package breaks on another operating system before CRAN tells you. Remember to commit and push `.github/workflows/R-CMD-check.yaml`: it only exists on your computer until you push it, and GitHub can only run what is in your repo.
+
+::: {.callout-note collapse="true"}
+## What exactly does `use_github_action("check-standard")` do?
+
+**On your computer**, it:
+
+- Creates `.github/workflows/R-CMD-check.yaml`, a copy of the "check-standard" workflow maintained by the r-lib team (the people behind `devtools` and `usethis`).
+- Adds `.github` to `.Rbuildignore`, so the folder isn't part of the built package.
+- Adds a status badge to your README that shows whether the latest check passed. This step needs the GitHub repo, so run `use_github()` first.
+
+It does not commit or push anything.
+
+**On GitHub**, once the file is pushed, the workflow runs on every push to `main` and on every pull request. It runs five checks, each on a fresh virtual machine:
+
+| Operating system | R version |
+|---|---|
+| macOS | release |
+| Windows | release |
+| Ubuntu | devel |
+| Ubuntu | release |
+| Ubuntu | oldrel-1 (the previous version of R) |
+
+Each check installs R and your package's dependencies, then runs `R CMD check`. A check fails if there are any errors **or warnings**. Notes are allowed.
+
+You can change which systems and R versions are checked by editing the `matrix` section of the YAML file.
+:::
 
 Now that we have the structure, we can start coding!
 
