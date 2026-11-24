@@ -839,12 +839,24 @@ If your package isn't about biological data, CRAN is the usual choice.
 
 To submit to CRAN:
 
-  1. Run `usethis::use_release_issue()`. It opens a GitHub issue with a checklist of everything to do before a release (see the box below).
+  1. Run `usethis::use_release_issue()`. It opens a GitHub issue with a checklist of everything to do before a release (see "Before you submit to CRAN" below).
 
   2. Work through the checklist.
 
   3. Run `devtools::submit_cran()`. It builds the package and uploads it to CRAN. CRAN then emails you a link to confirm the submission.
 
+:::
+
+::: {.callout-note collapse="true"}
+## What is CRAN, and who runs it?
+
+CRAN started in 1997 and is run by a small team of volunteers under the R Foundation for Statistical Computing, a non-profit in Vienna that holds the copyright to R. Its main server is hosted at the Vienna University of Economics and Business (WU Wien).
+
+CRAN distributes R itself (the installers for Windows and macOS, and the source code) and over 20,000 packages. It checks every package regularly on several operating systems and R versions, and archives packages that start failing.
+
+CRAN is copied to many servers ("mirrors") around the world, run by universities and companies, so downloads are fast everywhere. The default in RStudio, `cloud.r-project.org`, is a mirror run by Posit that sends you to a nearby server.
+
+Because a handful of volunteers handle thousands of packages, CRAN relies on automated checks and expects maintainers to follow its rules closely. This is why reviews can feel strict. The rules are in the [CRAN Repository Policy](https://cran.r-project.org/web/packages/policies.html).
 :::
 
 ::: {.callout-note collapse="true"}
