@@ -7,9 +7,9 @@ format:
 
 ## Due date
 
-The R package is due by the end of Tuesday December 10th. 
+The in-class Final will be on Friday, December 11th.
 
-The in-class presentation will be Thursday, December 12th.
+The final submission (R package) is due by the end of Friday, December 18th.
 
 ## Task
 

@@ -113,10 +113,10 @@ The current course schedule is subject to change. Students will be notified of a
 | Nov. 3 | University of Utah CHPC introduction; no class Nov. 5 |
 | Nov. 10 and 12 | University of Utah CHPC coding agents; Slurm |
 | Nov. 17 and 19 | Additional Slurm practice; R packages I |
-| Nov. 24 and 26 | R packages I lab; Thanksgiving recess on Nov. 26 |
-| Dec. 1 and 3 | Automatic reports with GitHub Actions; Dec. 3 topic TBD |
+| Nov. 24 and 26 | R packages I (cont'd); Thanksgiving recess on Nov. 26 |
+| Dec. 1 and 3 | R packages I lab and automatic reports with GitHub Actions; Dec. 3 topic TBD |
 | Dec. 8 and 10 | Final project preparation hackathon |
-| Dec. 15 and 17 | Final project activities |
+| Dec. 11 | Final; final project due Dec. 18 |
 
 # University and course policies
 

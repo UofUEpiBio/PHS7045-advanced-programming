@@ -25,11 +25,10 @@ date,week,session,name,issue,link_text,link,source,extra,notes,who,homework,home
 11/12/26,12,Lecture and Lab,"Simulating π on CHPC",,slides,11-simpi/slides.html,11-simpi/slides.qmd,,,Mui
 11/17/26,13,Lab,More practice with slurm,,slides,12-slurm-week2/slides.html,12-slurm-week2/slides.qmd,,,George
 11/19/26,13,Lecture,R packages I,,slides,13-rpkgs-i/slides.html,13-rpkgs-i/slides.qmd,,Mui out,George,12-slurm-week2/hw4.html,12-slurm-week2/hw4.qmd
-11/24/26,14,Lab,R packages I,,lab,13-rpkgs-i/lab.html,13-rpkgs-i/lab.qmd,,Mui out,George
+11/24/26,14,Lecture,R packages I (cont'd),,,,,,Mui out,George
 11/26/26,14,Lab,Thanksgiving recess,,,,,,,
-12/1/26,15,Lecture,Automatic Reports with GitHub Actions,,slides,15-autoreport/slides.html,15-autoreport/slides.qmd,,,George
+12/1/26,15,Lecture and Lab,R packages I (lab) and Automatic Reports with GitHub Actions,,R packages I lab,13-rpkgs-i/lab.html,13-rpkgs-i/lab.qmd,"<a href=""https://UofUEpiBio.github.io/PHS7045-advanced-programming/15-autoreport/slides.html"" target=""_blank"" rel=""noopener"">Automatic Reports slides</a> (<a href=""https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/15-autoreport/slides.qmd"" target=""_blank"" rel=""noopener"">source</a>)",,George
 12/3/26,15,Off,TBD (maybe something about agents orchestration or whatnot),,,,,,,Mui
 12/8/26,16,Lecture,Final Prep (Hackathon),,,,,,,"Mui, George"
 12/10/26,16,Lab,Final Prep (Hackathon),,,,,,,"Mui, George"
-12/15/26,17,Lecture,Final,,,,,,,"Mui, George"
-12/17/26,17,Lecture,Final,,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html,,,,"Mui, George"
+12/11/26,16,Final,Final,,Requirements,https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html,,"Final due Friday 12/18",,"Mui, George"

@@ -212,14 +212,15 @@ R functions and slides due before class</td>
 <td style="text-align: left;">11/19/26</td>
 <td style="text-align: left;">Lecture</td>
 <td style="text-align: left;">R packages I</td>
-<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/13-rpkgs-i/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
+<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/13-rpkgs-i/slides.qmd" target="_blank" rel="noopener">source</a>)<br />
+<a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/12-slurm-week2/hw4.html" target="_blank" rel="noopener">homework</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/12-slurm-week2/hw4.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
 <td style="text-align: right;">14</td>
 <td style="text-align: left;">11/24/26</td>
-<td style="text-align: left;">Lab</td>
-<td style="text-align: left;">R packages I</td>
-<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html" target="_blank" rel="noopener">lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/13-rpkgs-i/lab.qmd" target="_blank" rel="noopener">source</a>)</td>
+<td style="text-align: left;">Lecture</td>
+<td style="text-align: left;">R packages I (cont'd)</td>
+<td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: right;">14</td>
@@ -231,9 +232,10 @@ R functions and slides due before class</td>
 <tr>
 <td style="text-align: right;">15</td>
 <td style="text-align: left;">12/1/26</td>
-<td style="text-align: left;">Lecture</td>
-<td style="text-align: left;">Automatic Reports with GitHub Actions</td>
-<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/15-autoreport/slides.html" target="_blank" rel="noopener">slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/15-autoreport/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
+<td style="text-align: left;">Lecture and Lab</td>
+<td style="text-align: left;">R packages I (lab) and Automatic Reports with GitHub Actions</td>
+<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/13-rpkgs-i/lab.html" target="_blank" rel="noopener">R packages I lab</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/13-rpkgs-i/lab.qmd" target="_blank" rel="noopener">source</a>)<br />
+<a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/15-autoreport/slides.html" target="_blank" rel="noopener">Automatic Reports slides</a> (<a href="https://github.com/UofUEpiBio/PHS7045-advanced-programming/blob/main/15-autoreport/slides.qmd" target="_blank" rel="noopener">source</a>)</td>
 </tr>
 <tr>
 <td style="text-align: right;">15</td>
@@ -257,18 +259,12 @@ R functions and slides due before class</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr>
-<td style="text-align: right;">17</td>
-<td style="text-align: left;">12/15/26</td>
-<td style="text-align: left;">Lecture</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: left;">12/11/26</td>
 <td style="text-align: left;">Final</td>
-<td style="text-align: left;"></td>
-</tr>
-<tr>
-<td style="text-align: right;">17</td>
-<td style="text-align: left;">12/17/26</td>
-<td style="text-align: left;">Lecture</td>
 <td style="text-align: left;">Final</td>
-<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html" target="_blank" rel="noopener">Requirements</a></td>
+<td style="text-align: left;"><a href="https://UofUEpiBio.github.io/PHS7045-advanced-programming/exams/02-final.html" target="_blank" rel="noopener">Requirements</a><br />
+Final due Friday 12/18</td>
 </tr>
 </tbody>
 </table>
